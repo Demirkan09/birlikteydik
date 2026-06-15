@@ -148,15 +148,6 @@ export default function LoginPage() {
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 80% 60% at 30% 20%, rgba(201,168,76,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(232,160,160,0.05) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0d1220 60%, #0a0d18 100%)" }} />
       <HeartsCanvas />
 
-      {/* Üst logo */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 10, padding: "0 24px", height: "64px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <Link href="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: C.text, letterSpacing: "0.04em", textDecoration: "none" }}>
-          anılarımız<span style={{ color: C.gold }}>.com</span>
-        </Link>
-        <Link href="/register"
-          style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "30px", background: C.gold, color: "#0B0F1A", textDecoration: "none", fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.1em", fontWeight: 600 }}
-        >Kayıt Ol</Link>
-      </div>
 
       {/* Ana içerik */}
       <main style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "80px 24px 40px" }}>

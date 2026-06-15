@@ -93,36 +93,43 @@ function Input({
   );
 }
 
-// ─── Şifre güç göstergesi ───────────────────────────────────────────────────
+// ─── Şifre güç göstergesi (sadece uzunluk kontrolü) ─────────────────────────
 function PasswordStrength({ password }: { password: string }) {
-  const checks = [
-    { label: "En az 8 karakter", ok: password.length >= 8 },
-    { label: "Büyük harf", ok: /[A-Z]/.test(password) },
-    { label: "Küçük harf", ok: /[a-z]/.test(password) },
-    { label: "Rakam", ok: /[0-9]/.test(password) },
-  ];
-  const score = checks.filter((c) => c.ok).length;
-  const colors = ["", "#E8A0A0", "#E8C8A0", C.gold, C.success];
-  const labels = ["", "Zayıf", "Orta", "İyi", "Güçlü"];
-
   if (!password) return null;
+
+  const isOk = password.length >= 8;
+  const barColor = password.length === 0
+    ? ""
+    : password.length < 8
+    ? "#E8A0A0"
+    : password.length < 12
+    ? C.gold
+    : C.success;
+  const label = password.length === 0
+    ? ""
+    : password.length < 8
+    ? "Çok kısa"
+    : password.length < 12
+    ? "Yeterli"
+    : "Güçlü";
 
   return (
     <div style={{ marginTop: "4px" }}>
-      <div style={{ display: "flex", gap: "4px", marginBottom: "8px" }}>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} style={{ flex: 1, height: "3px", borderRadius: "4px", background: i <= score ? colors[score] : "rgba(255,255,255,0.07)", transition: "background 0.3s" }} />
-        ))}
+      <div style={{ height: "3px", borderRadius: "4px", background: "rgba(255,255,255,0.07)", overflow: "hidden", marginBottom: "8px" }}>
+        <div style={{
+          height: "100%",
+          borderRadius: "4px",
+          background: barColor,
+          width: `${Math.min((password.length / 16) * 100, 100)}%`,
+          transition: "width 0.3s, background 0.3s",
+        }} />
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: score > 0 ? colors[score] : C.muted }}>{labels[score]}</span>
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-        {checks.map((c) => (
-          <span key={c.label} style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: c.ok ? C.success : "rgba(240,237,232,0.25)", fontWeight: 300 }}>
-            <FaCheck size={8} color={c.ok ? C.success : "rgba(240,237,232,0.15)"} />{c.label}
-          </span>
-        ))}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <FaCheck size={8} color={isOk ? C.success : "rgba(240,237,232,0.15)"} />
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: isOk ? C.success : barColor || "rgba(240,237,232,0.25)", fontWeight: 300 }}>
+          En az 8 karakter{isOk ? " ✓" : ` (${password.length}/8)`}
+        </span>
+        {label && <span style={{ marginLeft: "auto", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: barColor, fontWeight: 400 }}>{label}</span>}
       </div>
     </div>
   );
@@ -157,12 +164,26 @@ export default function RegisterPage() {
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
-    // ─── GERÇEK PROJEde buraya API çağrısı yap ───
-    await new Promise((r) => setTimeout(r, 1400));
-    const mockUser = { name, email };
-    localStorage.setItem("anilarimiz_user", JSON.stringify(mockUser));
-    setLoading(false);
-    router.push("/profil");
+    setErrors({});
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), email: email.toLowerCase().trim(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrors({ general: data.error ?? "Bir hata oluştu. Tekrar dene." });
+        setLoading(false);
+        return;
+      }
+      // Başarılı kayıt — kullanıcı bilgisini localStorage'a yaz
+      localStorage.setItem("anilarimiz_user", JSON.stringify({ name: data.user.name, email: data.user.email }));
+      router.push("/");
+    } catch {
+      setErrors({ general: "Sunucuya bağlanılamadı. İnternet bağlantını kontrol et." });
+      setLoading(false);
+    }
   };
 
   return (
@@ -181,15 +202,6 @@ export default function RegisterPage() {
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 80% 60% at 70% 20%, rgba(201,168,76,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 20% 80%, rgba(184,169,212,0.05) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0d1220 60%, #0a0d18 100%)" }} />
       <HeartsCanvas />
 
-      {/* Header */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 10, padding: "0 24px", height: "64px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <Link href="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: C.text, letterSpacing: "0.04em", textDecoration: "none" }}>
-          anılarımız<span style={{ color: C.gold }}>.com</span>
-        </Link>
-        <Link href="/login"
-          style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "30px", background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(240,237,232,0.65)", textDecoration: "none", fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.1em", fontWeight: 500 }}
-        >Giriş Yap</Link>
-      </div>
 
       <main style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "88px 24px 48px" }}>
         <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} style={{ width: "100%", maxWidth: "480px" }}>
@@ -214,6 +226,11 @@ export default function RegisterPage() {
 
             {/* Form */}
             <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              {(errors as Record<string, string>).general && (
+                <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
+                  {(errors as Record<string, string>).general}
+                </div>
+              )}
               <Input label="Adın" value={name} onChange={setName} placeholder="Adın Soyadın" icon={<HiOutlineUser size={17} />} error={errors.name} />
               <Input label="E-posta" type="email" value={email} onChange={setEmail} placeholder="ornek@mail.com" icon={<HiOutlineMail size={17} />} error={errors.email} />
               <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>

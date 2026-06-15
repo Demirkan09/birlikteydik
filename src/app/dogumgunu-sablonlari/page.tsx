@@ -90,6 +90,38 @@ const templates = [
       "Hızlı ve Kolay Özelleştirme",
     ],
   },
+  {
+    id: "sablon-mavi",
+    title: "Premium Mavi",
+    subtitle: "Denizlerin ve Balık Burçlarının Rengi",
+    emoji: "💙",
+    accentColor: "#4a5bfa",
+    tag: "Yeni",
+    description: "Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
+    demoUrl: "/sablon-mavi",
+    features: [
+      "Parıldayan Kalp Parçacıkları",
+      "Sıcak Kırmızı Geçiş Efektleri",
+      "Fotoğraf Filtre Desteği",
+      "Hızlı ve Kolay Özelleştirme",
+    ],
+  },
+  {
+    id: "sablon-mavi",
+    title: "Premium Mavi",
+    subtitle: "Denizlerin ve Balık Burçlarının Rengi",
+    emoji: "💙",
+    accentColor: "#4a5bfa",
+    tag: "Yeni",
+    description: "Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
+    demoUrl: "/sablon-oyun",
+    features: [
+      "Parıldayan Kalp Parçacıkları",
+      "Sıcak Kırmızı Geçiş Efektleri",
+      "Fotoğraf Filtre Desteği",
+      "Hızlı ve Kolay Özelleştirme",
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

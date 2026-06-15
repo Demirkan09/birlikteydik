@@ -22,7 +22,6 @@ const memories = [
     title: "İlk Bakış, İlk Gülüş",
     description: "Seni gördüğüm o an, zamanın tüm hızını unutup durduğu saniyeydi. O gün anladım kaderimin seninle yazıldığını.",
     date: "26 Ekim 2024",
-    number: "01",
     angle: -4,
     note: "Güneşin yüzünde bıraktığı gölgeler bile sana hayrandı.",
   },
@@ -32,7 +31,6 @@ const memories = [
     title: "Sıkıca, Hiç Bırakmamacasına",
     description: "Bileğimizdeki ipler, boncuklar ve kalbimizi birbirine bağlayan o görünmez düğüm...",
     date: "12 Kasım 2024",
-    number: "02",
     angle: 3,
     note: "Sırılsıklam ıslansak bile yanındayken üşümüyordum.",
   },
@@ -42,7 +40,6 @@ const memories = [
     title: "Eski Bir Şarkının İzinde",
     description: "Tozlu rafların arasında, eski plakların cızırtısında kaybolduğumuz o pazar günü.",
     date: "14 Aralık 2024",
-    number: "03",
     angle: -2,
     note: "Dünyanın en huzurlu yeri senin omuzların, en güzel sesi senin sesin...",
   },
@@ -52,7 +49,6 @@ const memories = [
     title: "Yıldızların Altında",
     description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
     date: "18 Ocak 2025",
-    number: "04",
     angle: 5,
     note: "En soğuk günlerde bile beni ısıtan tek şey senin gülüşündü.",
   },
@@ -62,7 +58,6 @@ const memories = [
     title: "Maviye Açılan Sonsuzluk",
     description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
     date: "22 Nisan 2025",
-    number: "05",
     angle: -4,
     note: "Sadece seninle yan yana uzanıp hiçbir şey düşünmemek...",
   },
@@ -72,7 +67,6 @@ const memories = [
     title: "Birlikte Yeni Bir Başlangıç",
     description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
     date: "12 Haziran 2025",
-    number: "06",
     angle: 3,
     note: "Geleceğe seninle attığım bir adım daha",
   },
@@ -82,7 +76,6 @@ const memories = [
     title: "Beyazlar İçinde Bir Ömür",
     description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
     date: "18 Eylül 2025",
-    number: "07",
     angle: -2,
     note: "Dünyanın en güzel gelini, kalbimin ebedi sahibi...",
   },
@@ -92,7 +85,6 @@ const memories = [
     title: "Sonsuzluğun Kıyısında",
     description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
     date: "02 Mayıs 2026",
-    number: "08",
     angle: 4,
     note: "Dünya dönmeyi bıraksa bile, biz bu denizde sonsuza dek kalacağız.",
   },
@@ -228,17 +220,6 @@ function DesktopPolaroidCard({ memory, index }: { memory: (typeof memories)[0]; 
       className={`relative flex items-center justify-center min-h-[90vh] px-16 xl:px-32 gap-16 xl:gap-28`}
       style={{ flexDirection: isEven ? "row" : "row-reverse" }}
     >
-      <div
-        className="absolute pointer-events-none select-none font-serif text-[18rem] font-bold text-[#C9A84C]/[0.015]"
-        style={{
-          right: isEven ? "8vw" : "auto",
-          left: isEven ? "auto" : "8vw",
-          top: "40%",
-          transform: "translateY(-50%)",
-        }}
-      >
-        {memory.number}
-      </div>
 
       <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ transform: `rotate(${memory.angle * 0.8}deg)` }}>
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-[#D8D2C4]/60 border-y border-stone-300/10 shadow-sm backdrop-blur-[2px] rotate-[-2deg] z-20 mix-blend-multiply" />
