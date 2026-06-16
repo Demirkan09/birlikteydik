@@ -2,10 +2,17 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";                          // ← ekle
-import { FaWhatsapp, FaInstagram, FaHeart } from "react-icons/fa";  // ← ekle
-import { HiOutlineUser, HiOutlineUserAdd, HiMenuAlt3, HiX, HiOutlineShoppingCart } from "react-icons/hi";  // ← ekle
+import Link from "next/link";
+import { FaWhatsapp, FaInstagram, FaHeart } from "react-icons/fa";
+import { HiOutlineShoppingCart } from "react-icons/hi";
+
 // ─────────────────────────────────────────────────────────────────────────────
+// Sosyal medya sabitleri (yüzer butonlar için)
+// ─────────────────────────────────────────────────────────────────────────────
+const WHATSAPP_NUMBER  = "905349829940";
+const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
+const INSTAGRAM_URL    = "https://instagram.com/birlikteydik";
+
 // VERİ — Yeni bir özel gün eklemek için sadece bu diziye bir obje ekle.
 // Kart otomatik olarak grid'e eklenir, başka bir şey yapman gerekmez.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -513,135 +520,6 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// NAV
-// ─────────────────────────────────────────────────────────────────────────────
-const WHATSAPP_NUMBER = "905349829940";   // ← kendi numaran
-const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
-const INSTAGRAM_URL = "https://instagram.com/anilarimiz";  // ← kendi instagram
-
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
-  const navBg = scrolled || mobileOpen;
-
-  return (
-    <>
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        padding: "0 24px", height: "64px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: navBg ? "rgba(11,15,26,0.95)" : "transparent",
-        backdropFilter: navBg ? "blur(20px)" : "none",
-        WebkitBackdropFilter: navBg ? "blur(20px)" : "none",
-        borderBottom: navBg ? "1px solid rgba(255,255,255,0.06)" : "none",
-        transition: "background 0.4s ease, border-color 0.4s ease",
-        fontFamily: "'Inter', sans-serif",
-      }}>
-        {/* Logo */}
-        <a href="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: "#F0EDE8", letterSpacing: "0.04em", textDecoration: "none" }}>
-          birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
-        </a>
-
-        {/* Desktop nav links */}
-        <div className="nb-desktop" style={{ display: "flex", alignItems: "center", gap: "22px" }}>
-          {[
-            { label: "Nasıl Çalışır", href: "#nasil-calisir" },
-            { label: "Özel Günler", href: "#ozel-gunler" },
-            { label: "Fiyatlar", href: "#fiyatlar" },
-            { label: "SSS", href: "#sss" },
-          ].map((l) => (
-            <a key={l.href} href={l.href}
-              style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(240,237,232,0.5)", textDecoration: "none", fontWeight: 400, transition: "color 0.2s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#F0EDE8")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(240,237,232,0.5)")}
-            >{l.label}</a>
-          ))}
-        </div>
-
-        {/* Desktop sağ butonlar */}
-        <div className="nb-desktop" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {/* Instagram */}
-          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" title="Instagram"
-            style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(240,237,232,0.6)", textDecoration: "none", transition: "all 0.2s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.15)"; e.currentTarget.style.borderColor = "#C9A84C66"; e.currentTarget.style.color = "#C9A84C"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(240,237,232,0.6)"; }}
-          ><FaInstagram size={15} /></a>
-
-          {/* WhatsApp */}
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 14px", borderRadius: "30px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.25)", color: "#25D366", textDecoration: "none", fontSize: "11px", letterSpacing: "0.08em", fontWeight: 500, transition: "background 0.2s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(37,211,102,0.2)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(37,211,102,0.1)"; }}
-          ><FaWhatsapp size={14} /><span>Sipariş Ver</span></a>
-
-          {/* Login */}
-          <Link href="/login"
-            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "30px", background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(240,237,232,0.65)", textDecoration: "none", fontSize: "11px", letterSpacing: "0.08em", fontWeight: 400, transition: "all 0.2s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"; e.currentTarget.style.color = "#F0EDE8"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(240,237,232,0.65)"; }}
-          ><HiOutlineUser size={14} /><span>Giriş</span></Link>
-
-          {/* Register */}
-          <Link href="/register"
-            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "11px", letterSpacing: "0.1em", fontWeight: 600, transition: "opacity 0.2s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-          ><HiOutlineUserAdd size={14} /><span>Kayıt Ol</span></Link>
-        </div>
-
-        {/* Mobile hamburger */}
-        <button className="nb-mobile" onClick={() => setMobileOpen(!mobileOpen)}
-          style={{ background: "none", border: "none", color: "#F0EDE8", cursor: "pointer", padding: "4px", display: "none", alignItems: "center" }}>
-          {mobileOpen ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
-        </button>
-      </nav>
-
-      {/* Mobile menü */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.22 }}
-            style={{ position: "fixed", top: "64px", left: 0, right: 0, zIndex: 49, background: "rgba(11,15,26,0.98)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "20px 24px 28px", display: "flex", flexDirection: "column", gap: "4px", fontFamily: "'Inter', sans-serif" }}>
-            {[
-              { label: "Nasıl Çalışır", href: "#nasil-calisir" },
-              { label: "Özel Günler", href: "#ozel-gunler" },
-              { label: "Fiyatlar", href: "#fiyatlar" },
-              { label: "SSS", href: "#sss" },
-            ].map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)}
-                style={{ fontSize: "13px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(240,237,232,0.6)", textDecoration: "none", padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-              >{l.label}</a>
-            ))}
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "16px" }}>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "30px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.25)", color: "#25D366", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}
-              ><FaWhatsapp size={16} />WhatsApp ile Sipariş Ver</a>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "30px", background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", color: "#C9A84C", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}
-              ><FaInstagram size={16} />Instagram'ı Takip Et</a>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <Link href="/login" onClick={() => setMobileOpen(false)}
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "13px", borderRadius: "30px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(240,237,232,0.7)", textDecoration: "none", fontSize: "13px" }}
-                ><HiOutlineUser size={16} />Giriş</Link>
-                <Link href="/register" onClick={() => setMobileOpen(false)}
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "13px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}
-                ><HiOutlineUserAdd size={16} />Kayıt Ol</Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HERO
@@ -791,13 +669,34 @@ function Hero() {
         </a>
       </motion.div>
 
+      {/* Sample link preview — açıklama etiketi */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.4, duration: 0.8 }}
+        style={{ marginTop: "56px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style={{ height: "1px", width: "20px", background: "rgba(201,168,76,0.3)" }} />
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "10px",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            color: "rgba(201,168,76,0.6)",
+            fontWeight: 500,
+          }}>
+            Müşteriye verilen link böyle görünür
+          </span>
+          <div style={{ height: "1px", width: "20px", background: "rgba(201,168,76,0.3)" }} />
+        </div>
+
       {/* Sample link preview */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
         style={{
-          marginTop: "56px",
           padding: "14px 28px",
           borderRadius: "14px",
           background: "rgba(255,255,255,0.04)",
@@ -821,6 +720,7 @@ function Hero() {
           birlikteydik.com/
           <span style={{ color: "#C9A84C" }}>senintasarimin</span>
         </span>
+      </motion.div>
       </motion.div>
 
       {/* Scroll indicator */}
@@ -914,9 +814,6 @@ export default function LandingPage() {
     onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
   ><FaInstagram size={19} /></a>
 </div>
-      {/* Nav */}
-      <Navbar />
-
       <main>
         {/* HERO */}
         <Hero />

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff, HiOutlineUser } from "react-icons/hi";
 import { FaHeart, FaCheck } from "react-icons/fa";
+import MarketingConsentModal from "@/components/marketing-consent-modal";
 
 const C = {
   bg: "#0B0F1A",
@@ -145,6 +146,8 @@ export default function RegisterPage() {
   const [showPass, setShowPass] = useState(false);
   const [showPassC, setShowPassC] = useState(false);
   const [agree, setAgree] = useState(false);
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [marketingModalOpen, setMarketingModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -169,7 +172,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), email: email.toLowerCase().trim(), password }),
+        body: JSON.stringify({ name: name.trim(), email: email.toLowerCase().trim(), password, marketingConsent }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -179,6 +182,7 @@ export default function RegisterPage() {
       }
       // Başarılı kayıt — kullanıcı bilgisini localStorage'a yaz
       localStorage.setItem("anilarimiz_user", JSON.stringify({ name: data.user.name, email: data.user.email }));
+      window.dispatchEvent(new Event("auth-change"));
       router.push("/");
     } catch {
       setErrors({ general: "Sunucuya bağlanılamadı. İnternet bağlantını kontrol et." });
@@ -255,7 +259,7 @@ export default function RegisterPage() {
                 }
               />
 
-              {/* Checkbox */}
+              {/* Zorunlu: KVK & Kullanım Koşulları */}
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", cursor: "pointer" }}>
                   <div
@@ -265,11 +269,38 @@ export default function RegisterPage() {
                     {agree && <FaCheck size={9} color={C.gold} />}
                   </div>
                   <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300, lineHeight: 1.55 }}>
-                    <a href="#" style={{ color: C.gold, textDecoration: "none" }}>Kullanım Koşulları</a>'nı ve{" "}
-                    <a href="#" style={{ color: C.gold, textDecoration: "none" }}>Gizlilik Politikası</a>'nı kabul ediyorum.
+                    <a href="/kvkk-metni" target="_blank" style={{ color: C.gold, textDecoration: "none" }}>Kullanım Koşulları</a>'nı ve{" "}
+                    <a href="/kvkk-metni" target="_blank" style={{ color: C.gold, textDecoration: "none" }}>Gizlilik Politikası</a>'nı kabul ediyorum.
                   </span>
                 </label>
                 {errors.agree && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.error, fontWeight: 300, marginLeft: "30px" }}>{errors.agree}</p>}
+              </div>
+
+              {/* İsteğe bağlı: Ticari Elektronik İleti Onayı */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                  <div
+                    onClick={() => setMarketingConsent(!marketingConsent)}
+                    style={{ width: "18px", height: "18px", borderRadius: "5px", border: `1px solid ${marketingConsent ? "rgba(184,169,212,0.6)" : "rgba(255,255,255,0.12)"}`, background: marketingConsent ? "rgba(184,169,212,0.12)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "2px", transition: "all 0.2s", cursor: "pointer" }}
+                  >
+                    {marketingConsent && <FaCheck size={9} color="#B8A9D4" />}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "7px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "10px", color: "rgba(184,169,212,0.5)", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", border: "1px solid rgba(184,169,212,0.2)", padding: "1px 6px", borderRadius: "3px", fontFamily: "'Inter', sans-serif" }}>Opsiyonel</span>
+                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12.5px", color: "rgba(240,237,232,0.45)", fontWeight: 300 }}>
+                        Kampanya ve yeni şablonlardan haberdar olmak istiyorum.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setMarketingModalOpen(true)}
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(184,169,212,0.55)", textDecoration: "underline", textDecorationColor: "rgba(184,169,212,0.25)", textUnderlineOffset: "2px" }}
+                    >
+                      Aydınlatma metnini oku
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Submit */}
@@ -308,6 +339,13 @@ export default function RegisterPage() {
         <FaHeart size={10} color="rgba(232,160,160,0.25)" />
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} anılarımız.com</p>
       </footer>
+
+      {/* Ticari İleti Aydınlatma Modalı */}
+      <MarketingConsentModal
+        open={marketingModalOpen}
+        onClose={() => setMarketingModalOpen(false)}
+        onAccept={() => setMarketingConsent(true)}
+      />
     </>
   );
 }

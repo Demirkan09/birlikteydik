@@ -101,13 +101,35 @@ function Input({
 }
 
 // ─── Login Sayfası ───────────────────────────────────────────────────────────
+// Beni Hatırla timeout süresi: 1 saat (milisaniye cinsinden)
+const REMEMBER_ME_TTL = 60 * 60 * 1000;
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+
+  // Sayfa açılışında kayıtlı oturumu kontrol et
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("anilarimiz_remember");
+      if (saved) {
+        const { email: savedEmail, expiresAt } = JSON.parse(saved);
+        if (Date.now() < expiresAt) {
+          // Süresi dolmamış — e-postayı doldur, checkbox'ı işaretle
+          setEmail(savedEmail);
+          setRememberMe(true);
+        } else {
+          // Süresi dolmuş — temizle
+          localStorage.removeItem("anilarimiz_remember");
+        }
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   const validate = () => {
     const e: typeof errors = {};
@@ -122,14 +144,44 @@ export default function LoginPage() {
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
-    // ─── GERÇEK PROJEde buraya API çağrısı yap ───
-    // Örnek: next-auth signIn("credentials", { email, password })
-    // Şimdilik mock login:
-    await new Promise((r) => setTimeout(r, 1200));
-    const mockUser = { name: email.split("@")[0], email };
-    localStorage.setItem("anilarimiz_user", JSON.stringify(mockUser));
-    setLoading(false);
-    router.push("/profil");
+    setErrors({});
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.toLowerCase().trim(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrors({ general: data.error ?? "E-posta veya şifre hatalı." });
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("anilarimiz_user", JSON.stringify({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        marketingConsent: data.user.marketingConsent,
+      }));
+      window.dispatchEvent(new Event("auth-change"));
+
+      // Beni Hatırla
+      if (rememberMe) {
+        localStorage.setItem(
+          "anilarimiz_remember",
+          JSON.stringify({ email, expiresAt: Date.now() + REMEMBER_ME_TTL })
+        );
+      } else {
+        localStorage.removeItem("anilarimiz_remember");
+      }
+
+      setLoading(false);
+      router.push("/profil");
+    } catch {
+      setErrors({ general: "Giriş yapılırken sunucu hatası oluştu. Lütfen tekrar dene." });
+      setLoading(false);
+    }
   };
 
   return (
@@ -192,7 +244,29 @@ export default function LoginPage() {
                 }
               />
 
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              {/* Beni Hatırla + Şifremi Unuttum satırı */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "9px", cursor: "pointer", userSelect: "none" }}>
+                  <div
+                    onClick={() => setRememberMe(!rememberMe)}
+                    style={{
+                      width: "17px", height: "17px", borderRadius: "4px", flexShrink: 0,
+                      border: `1px solid ${rememberMe ? C.gold + "88" : "rgba(255,255,255,0.18)"}`,
+                      background: rememberMe ? C.gold + "22" : "transparent",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      transition: "all 0.2s", cursor: "pointer",
+                    }}
+                  >
+                    {rememberMe && (
+                      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                        <path d="M1 3.5L3.5 6L8 1" stroke="#C9A84C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: rememberMe ? "rgba(240,237,232,0.7)" : "rgba(240,237,232,0.38)", fontWeight: 300, transition: "color 0.2s" }}>
+                    Beni Hatırla
+                  </span>
+                </label>
                 <a href="#" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>Şifremi Unuttum</a>
               </div>
 
@@ -233,7 +307,7 @@ export default function LoginPage() {
           {/* Alt bilgi */}
           <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
             Giriş yaparak{" "}
-            <a href="#" style={{ color: C.gold + "66", textDecoration: "none" }}>Kullanım Koşulları</a>'nı kabul etmiş olursun.
+            <a href="/kvkk-metni" target="_blank" style={{ color: C.gold + "66", textDecoration: "none" }}>Kullanım Koşulları</a>'nı kabul etmiş olursun.
           </p>
         </motion.div>
       </main>

@@ -107,7 +107,7 @@ const templates = [
     ],
   },
   {
-    id: "sablon-mavi",
+    id: "sablon-oyun",
     title: "Premium Mavi",
     subtitle: "Denizlerin ve Balık Burçlarının Rengi",
     emoji: "💙",

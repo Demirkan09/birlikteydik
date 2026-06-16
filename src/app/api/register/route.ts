@@ -5,10 +5,11 @@ import pool from "@/lib/db";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, password } = body as {
+    const { name, email, password, marketingConsent } = body as {
       name?: string;
       email?: string;
       password?: string;
+      marketingConsent?: boolean;
     };
 
     // ── Sunucu tarafı validasyon ───────────────────────────────────────────
@@ -45,10 +46,10 @@ export async function POST(request: Request) {
 
     // ── Kullanıcıyı veritabanına kaydet ───────────────────────────────────
     const result = await pool.query(
-      `INSERT INTO users (name, email, password_hash)
-       VALUES ($1, $2, $3)
-       RETURNING id, name, email, created_at`,
-      [name.trim(), email.toLowerCase().trim(), passwordHash]
+      `INSERT INTO users (name, email, password_hash, marketing_consent)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, name, email, marketing_consent, created_at`,
+      [name.trim(), email.toLowerCase().trim(), passwordHash, !!marketingConsent]
     );
 
     const newUser = result.rows[0];
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
           id: newUser.id,
           name: newUser.name,
           email: newUser.email,
+          marketingConsent: newUser.marketing_consent,
         },
       },
       { status: 201 }
