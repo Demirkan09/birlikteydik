@@ -301,10 +301,12 @@ export default function MinimalTemplate() {
         }}
       />
 
-      {/* MINIMAL NOTE WIDGET */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <MinimalNoteWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-      </div>
+      {/* Centered mobile-framed container for content */}
+      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#F6F3F0] shadow-[0_0_80px_rgba(0,0,0,0.08)] border-x border-[#EAE3DC] z-10 flex flex-col">
+        {/* MINIMAL NOTE WIDGET */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <MinimalNoteWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
+        </div>
 
       {/* ── HERO ── */}
       <section
@@ -537,6 +539,7 @@ export default function MinimalTemplate() {
       >
         MİNİMALİST TEMA — ANILARIMIZ.COM
       </footer>
+      </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Source+Sans+3:wght@300;400;600&display=swap');

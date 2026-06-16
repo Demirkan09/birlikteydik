@@ -467,10 +467,12 @@ export default function MaviTemplate() {
         }}
       />
 
-      {/* PUSULA WİDGET */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <CompassWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-      </div>
+      {/* Centered mobile-framed container for content */}
+      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#0A1628] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+        {/* PUSULA WİDGET */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <CompassWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
+        </div>
 
       {/* ── HERO (SPLIT LAYOUT) ── */}
       <section
@@ -824,6 +826,7 @@ export default function MaviTemplate() {
       >
         MAVİ TEMA — ANILARIMIZ.COM
       </footer>
+      </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');

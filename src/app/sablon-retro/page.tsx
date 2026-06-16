@@ -362,7 +362,6 @@ function CassetteWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggle
 // ─────────────────────────────────────────────────────────────────────────────
 export default function RetroPremiumPage() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [countdown, setCountdown] = useState(4);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -370,13 +369,6 @@ export default function RetroPremiumPage() {
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(heroScroll, [0, 1], [0, 120]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   useEffect(() => {
     audioRef.current = new Audio(config.musicUrl);
@@ -423,10 +415,12 @@ export default function RetroPremiumPage() {
       </div>
       <div className="fixed inset-0 pointer-events-none z-30 shadow-[inset_0_0_90px_rgba(0,0,0,0.9)]" />
 
-      {/* FLOATING WIDGET */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <CassetteWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-      </div>
+      {/* Centered mobile-framed container for content */}
+      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#0B0A09] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+        {/* FLOATING WIDGET */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <CassetteWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
+        </div>
 
       {/* ── HERO SECTION ── */}
       <section
@@ -569,9 +563,7 @@ export default function RetroPremiumPage() {
 
       {/* ── FOTOĞRAF KARTLARI ── */}
       <div className="relative z-10" style={{ background: "#0A0908" }}>
-        {isMobile
-          ? memories.map((m) => <MobilePolaroidCard key={m.id} memory={m} />)
-          : memories.map((m, i) => <DesktopPolaroidCard key={m.id} memory={m} index={i} />)}
+        {memories.map((m) => <MobilePolaroidCard key={m.id} memory={m} />)}
       </div>
 
       {/* ── FİNAL EPİLOG ── */}
@@ -601,6 +593,7 @@ export default function RetroPremiumPage() {
           </motion.span>
         </motion.div>
       </section>
+      </div>
 
       {/* ── STYLES ── */}
       <style>{`

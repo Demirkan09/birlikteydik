@@ -357,10 +357,12 @@ export default function GameTemplate() {
         }}
       />
 
-      {/* Gamepad Widget */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <GamepadWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-      </div>
+      {/* Centered mobile-framed container for content */}
+      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#111111] shadow-[0_0_80px_rgba(203,255,62,0.12)] border-x border-[#CBFF3E]/20 z-10 flex flex-col">
+        {/* Gamepad Widget */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <GamepadWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
+        </div>
 
       {/* ── HERO ── */}
       <section
@@ -678,6 +680,7 @@ export default function GameTemplate() {
       >
         PIXEL TEMA — ANILARIMIZ.COM
       </footer>
+      </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');

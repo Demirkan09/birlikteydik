@@ -374,10 +374,12 @@ export default function RomanticRedTemplate() {
       {/* FLOATING HEARTS CANVAS */}
       <FloatingRedHearts />
 
-      {/* LOVE BOOK WIDGET */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <LoveBookWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-      </div>
+      {/* Centered mobile-framed container for content */}
+      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#0B0204] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+        {/* LOVE BOOK WIDGET */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <LoveBookWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
+        </div>
 
       {/* ── HERO ── */}
       <section
@@ -644,6 +646,7 @@ export default function RomanticRedTemplate() {
       >
         ROMANTİK RED TEMA — ANILARIMIZ.COM
       </footer>
+      </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700&display=swap');

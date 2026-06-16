@@ -405,107 +405,12 @@ export default function CinematicTemplate() {
         }}
       />
 
-      {/* PERDE GİRİŞ EKRANI */}
-      <AnimatePresence>
-        {showCurtain && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ y: "-100%", opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center text-center px-6"
-            style={{ background: "#000000" }}
-          >
-            {/* Film kare efekti */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage: "repeating-linear-gradient(0deg, rgba(184,169,212,0.015) 0px, rgba(184,169,212,0.015) 1px, transparent 1px, transparent 4px)",
-              }}
-            />
-
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.9 }}
-              className="flex flex-col items-center gap-6 relative z-10"
-            >
-              <span
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "9px",
-                  letterSpacing: "0.55em",
-                  color: "rgba(184,169,212,0.65)",
-                  textTransform: "uppercase",
-                }}
-              >
-                ANILARIMIZ GURURLA SUNAR
-              </span>
-
-              <div className="w-12 h-px" style={{ background: "rgba(184,169,212,0.3)" }} />
-
-              <h2
-                style={{
-                  fontFamily: "'Cinzel', serif",
-                  fontSize: "clamp(2.5rem, 8vw, 5.5rem)",
-                  fontWeight: 400,
-                  letterSpacing: "0.12em",
-                  color: "#F0EDE8",
-                  lineHeight: 1.1,
-                  textTransform: "uppercase",
-                }}
-              >
-                {config.coupleNames}
-              </h2>
-
-              <div className="w-12 h-px my-2" style={{ background: "rgba(184,169,212,0.2)" }} />
-
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "10px",
-                  letterSpacing: "0.3em",
-                  color: "rgba(120,110,140,0.8)",
-                  textTransform: "uppercase",
-                  lineHeight: 1.8,
-                }}
-              >
-                Bir Sevgi Belgeseli
-              </p>
-
-              <button
-                onClick={handleStartMovie}
-                className="group flex flex-col items-center gap-2 mt-8"
-              >
-                <div
-                  className="w-14 h-14 flex items-center justify-center rounded-full transition-all group-hover:scale-105"
-                  style={{
-                    border: "1px solid rgba(184,169,212,0.3)",
-                    background: "rgba(184,169,212,0.05)",
-                  }}
-                >
-                  <Play size={20} fill="#B8A9D4" style={{ color: "#B8A9D4", marginLeft: "3px" }} />
-                </div>
-                <span
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "9px",
-                    letterSpacing: "0.3em",
-                    color: "rgba(120,110,140,0.7)",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  FİLME GİRİŞ YAPIN
-                </span>
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* PROJEKTÖR WİDGET */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <ProjectorWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-      </div>
+      {/* Centered mobile-framed container for content */}
+      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#050505] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+        {/* PROJEKTÖR WİDGET */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <ProjectorWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
+        </div>
 
       {/* ── HERO ── */}
       <section
@@ -750,6 +655,7 @@ export default function CinematicTemplate() {
       >
         SİNEMATİK TEMA — ANILARIMIZ.COM
       </footer>
+      </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@400;500&display=swap');

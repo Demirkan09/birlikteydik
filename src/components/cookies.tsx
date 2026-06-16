@@ -2,11 +2,26 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const STORAGE_KEY = "birlikteydik_cookie_consent";
 
+// Çerez onay balonunun görüneceği sayfalar
+const PAGES = [
+  "/",
+  "/login",
+  "/register",
+  "/profil",
+  "/kvkk-metni",
+  "/dogumgunu-sablonlari",
+  "/yildonumu-sablonlari",
+  "/sevgililergunu-sablonlari",
+  "/ilktanisma-sablonlari",
+];
+
 export default function CookieBanner() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -22,6 +37,9 @@ export default function CookieBanner() {
     localStorage.setItem(STORAGE_KEY, "accepted");
     setVisible(false);
   };
+
+  // Sadece PAGES listesindeki sayfalarda göster
+  if (!PAGES.includes(pathname)) return null;
 
   return (
     <AnimatePresence>
