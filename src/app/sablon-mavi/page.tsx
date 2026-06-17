@@ -19,26 +19,58 @@ const memories = [
   {
     id: 1,
     image: "/moment.jpg",
-    title: "İlk Kesişme Noktası",
-    description: "Milyonlarca insanın arasında, tam da o anda, tam da o yerde. Tesadüf denen şey bazen çok güzel bir mimar.",
-    date: "Ekim 2024",
-    tag: "01 — BAŞLANGIÇ",
+    title: "Aşkın Rengi",
+    description: "İlk kez bana sımsıcak gülümsediğinde, içimdeki tüm kışların eriyip sıcacık bir bahara dönüştüğü o eşsiz gün.",
+    date: "14 Şubat 2025",
   },
   {
     id: 2,
     image: "/moment2.jpg",
-    title: "Büyüyen Bir Yapı",
-    description: "Her gün birbirine eklenen bir katman gibi, sevgimiz büyüdü. Sağlam temeller üzerine inşa edilmiş bir duygu.",
-    date: "Aralık 2024",
-    tag: "02 — GELİŞİM",
+    title: "Kalp Atışlarımız",
+    description: "Sadece elini tutmak bile kalbimin ritmini hızlandırıp, tüm dünyadaki en mutlu ezgiyi çalıyormuş gibi hissettiriyor.",
+    date: "12 Mart 2025",
   },
   {
     id: 3,
+    image: "/moment7.jpg",
+    title: "Sonsuz Bağımız",
+    description: "Her saniye, her nefeste sana olan sevgimin daha da alevlendiğini, bizi ayıramayacak güçlü bir bağa dönüştüğünü biliyorum.",
+    date: "25 Nisan 2025",
+  },
+  {
+    id: 4,
     image: "/moment3.jpg",
-    title: "Tamamlanan Bir Proje",
-    description: "Artık iki ayrı çizim değiliz. Aynı planın parçaları, aynı yapının tamamlayıcıları olduk.",
-    date: "Nisan 2025",
-    tag: "03 — BÜTÜNLÜK",
+    title: "Yıldızların Altında",
+    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
+    date: "18 Ocak 2025",
+  },
+  {
+    id: 5,
+    image: "/moment4.jpg",
+    title: "Maviye Açılan Sonsuzluk",
+    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
+    date: "22 Nisan 2025",
+  },
+  {
+    id: 6,
+    image: "/moment5.jpg",
+    title: "Birlikte Yeni Bir Başlangıç",
+    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
+    date: "12 Haziran 2025",
+  },
+  {
+    id: 7,
+    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
+    title: "Beyazlar İçinde Bir Ömür",
+    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
+    date: "18 Eylül 2025",
+  },
+  {
+    id: 8,
+    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
+    title: "Sonsuzluğun Kıyısında",
+    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
+    date: "02 Mayıs 2026",
   },
 ];
 
@@ -214,7 +246,7 @@ function CompassWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggleM
 // MARQUEE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 function Marquee() {
-  const text = "SEN & BEN ★ ANILARIMIZ ★ SEN & BEN ★ ANILARIMIZ ★ SEN & BEN ★ ANILARIMIZ ★ ";
+  const text = "SEN & BEN ★ birlikteydik ★ SEN & BEN ★ birlikteydik ★ SEN & BEN ★ birlikteydik ★ ";
   return (
     <div
       style={{
@@ -266,17 +298,10 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       ref={ref}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "0",
-        alignItems: "stretch",
-        direction: isEven ? "ltr" : "rtl",
-        position: "relative",
-      }}
-      className="flex-col lg:grid"
+      className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${isEven ? "" : "md:flex-row-reverse"}`}
+      style={{ position: "relative" }}
     >
       {/* Fon büyük numara */}
       <div
@@ -286,7 +311,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           left: "50%",
           transform: "translate(-50%, -50%)",
           fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: "clamp(6rem, 15vw, 14rem)",
+          fontSize: "clamp(6rem, 15vw, 12rem)",
           fontWeight: 700,
           color: "rgba(62,160,148,0.04)",
           lineHeight: 1,
@@ -299,18 +324,18 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       </div>
 
       {/* Fotoğraf */}
-      <motion.div variants={fadeIn} style={{ position: "relative", overflow: "hidden", aspectRatio: "4/5", zIndex: 1 }}>
-        <motion.img
+      <motion.div
+        variants={fadeIn}
+        className="relative flex-shrink-0 w-full max-w-[330px]"
+        style={{ position: "relative", overflow: "hidden", zIndex: 1 }}
+      >
+        <img
           src={memory.image}
           alt={memory.title}
           style={{
-            position: "absolute",
-            inset: 0,
             width: "100%",
-            height: "120%",
-            objectFit: "cover",
-            top: "-10%",
-            y: imageY,
+            height: "auto",
+            display: "block",
             filter: "saturate(0.9) contrast(1.05)",
           }}
         />
@@ -328,11 +353,8 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       {/* Metin */}
       <motion.div
         variants={stagger}
+        className="flex flex-col max-w-sm gap-4"
         style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "clamp(32px, 6vw, 72px)",
           direction: "ltr",
           position: "relative",
           zIndex: 1,
@@ -345,34 +367,17 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             width: "40px",
             height: "2px",
             background: "#3EA094",
-            marginBottom: "20px",
+            marginBottom: "12px",
           }}
         />
-
-        <motion.span
-          variants={fadeIn}
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "10px",
-            fontWeight: 500,
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
-            color: "#3EA094",
-            marginBottom: "16px",
-          }}
-        >
-          {memory.tag}
-        </motion.span>
-
         <motion.h3
           variants={fadeUp}
           style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+            fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
             fontWeight: 600,
             color: "#E8F4F2",
-            lineHeight: 1.15,
-            marginBottom: "20px",
+            lineHeight: 1.2,
           }}
         >
           {memory.title}
@@ -382,18 +387,16 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           variants={fadeUp}
           style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "0.9rem",
+            fontSize: "0.875rem",
             fontWeight: 300,
             color: "rgba(232,244,242,0.55)",
-            lineHeight: 1.85,
-            marginBottom: "24px",
-            maxWidth: "28rem",
+            lineHeight: 1.8,
           }}
         >
           {memory.description}
         </motion.p>
 
-        <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
           <div style={{ width: "24px", height: "1px", background: "rgba(62,160,148,0.4)" }} />
           <span
             style={{
@@ -704,18 +707,13 @@ export default function MaviTemplate() {
       <Marquee />
 
       {/* ── ANLAR ── */}
-      <section className="relative z-10">
-        {memories.map((m, i) => (
-          <div
-            key={m.id}
-            style={{
-              borderBottom: i < memories.length - 1 ? "1px solid rgba(62,160,148,0.1)" : "none",
-            }}
-          >
-            <MemoryCard memory={m} index={i} />
-          </div>
-        ))}
-      </section>
+      <div className="relative z-10 py-16 px-6 max-w-4xl mx-auto">
+        <div className="flex flex-col gap-32">
+          {memories.map((m, i) => (
+            <MemoryCard key={m.id} memory={m} index={i} />
+          ))}
+        </div>
+      </div>
 
       {/* ── FİNAL ── */}
       <section
@@ -824,7 +822,7 @@ export default function MaviTemplate() {
           borderTop: "1px solid rgba(62,160,148,0.1)",
         }}
       >
-        MAVİ TEMA — ANILARIMIZ.COM
+        MAVİ TEMA — birlikteydik.com
       </footer>
       </div>
 

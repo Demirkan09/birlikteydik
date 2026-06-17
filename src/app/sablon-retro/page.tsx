@@ -170,12 +170,11 @@ function MobilePolaroidCard({ memory }: { memory: (typeof memories)[0] }) {
         className="bg-[#EAE6DE] p-4 pb-12 shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-stone-200/10 flex flex-col relative w-full max-w-[310px]"
         style={{ transform: `rotate(${memory.angle}deg)` }}
       >
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#D8D2C4]/60 border-y border-stone-300/10 shadow-sm backdrop-blur-[2px] rotate-[-1deg] z-10 mix-blend-multiply" />
-        <div className="relative aspect-[4/3] bg-stone-900 overflow-hidden shadow-inner border border-stone-300/20">
+        <div className="relative bg-stone-900 overflow-hidden shadow-inner border border-stone-300/20">
           <img
             src={memory.image}
             alt={memory.title}
-            className="w-full h-full object-cover grayscale-[20%] sepia-[30%] brightness-[92%] contrast-[1.05]"
+            className="w-full h-auto block grayscale-[20%] sepia-[30%] brightness-[92%] contrast-[1.05]"
           />
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none" />
         </div>
@@ -224,12 +223,11 @@ function DesktopPolaroidCard({ memory, index }: { memory: (typeof memories)[0]; 
       <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ transform: `rotate(${memory.angle * 0.8}deg)` }}>
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-[#D8D2C4]/60 border-y border-stone-300/10 shadow-sm backdrop-blur-[2px] rotate-[-2deg] z-20 mix-blend-multiply" />
         <div className="bg-[#EAE6DE] p-6 pb-16 shadow-[0_20px_50px_rgba(0,0,0,0.65)] border border-stone-200/10 rounded-sm" style={{ width: "350px" }}>
-          <div className="relative aspect-[4/3] bg-stone-950 overflow-hidden shadow-inner border border-stone-300/20">
-            <motion.img
+          <div className="relative bg-stone-950 overflow-hidden shadow-inner border border-stone-300/20">
+            <img
               src={memory.image}
               alt={memory.title}
-              className="absolute inset-x-0 w-full h-[120%] object-cover grayscale-[18%] sepia-[28%] brightness-[92%] contrast-[1.05]"
-              style={{ y: imageY, top: "-10%" }}
+              className="w-full h-auto block grayscale-[18%] sepia-[28%] brightness-[92%] contrast-[1.05]"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none" />
           </div>

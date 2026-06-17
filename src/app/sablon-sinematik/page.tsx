@@ -19,23 +19,74 @@ const memories = [
   {
     id: 1,
     image: "/moment.jpg",
-    title: "SAHNE I: BEKLENMEDİK KARŞILAŞMA",
-    description: "Kaderin kamerası kayda girdiğinde, gözlerimizin buluştuğu o ilk saniye. Hayatımızın dönüm noktası.",
-    date: "Ekim 2024",
+    title: "İlk Bakış, İlk Gülüş",
+    description: "Seni gördüğüm o an, zamanın tüm hızını unutup durduğu saniyeydi. O gün anladım kaderimin seninle yazıldığını.",
+    date: "26 Ekim 2024",
+    angle: -4,
+    note: "Güneşin yüzünde bıraktığı gölgeler bile sana hayrandı.",
   },
   {
     id: 2,
     image: "/moment2.jpg",
-    title: "SAHNE II: İLK KAHKAHALAR",
-    description: "Senaryosuz, tamamen doğaçlama akan, içten gelen en saf mutluluğumuz.",
-    date: "Aralık 2024",
+    title: "Sıkıca, Hiç Bırakmamacasına",
+    description: "Bileğimizdeki ipler, boncuklar ve kalbimizi birbirine bağlayan o görünmez düğüm...",
+    date: "12 Kasım 2024",
+    angle: 3,
+    note: "Sırılsıklam ıslansak bile yanındayken üşümüyordum.",
   },
   {
     id: 3,
+    image: "/moment7.jpg",
+    title: "Eski Bir Şarkının İzinde",
+    description: "Tozlu rafların arasında, eski plakların cızırtısında kaybolduğumuz o pazar günü.",
+    date: "14 Aralık 2024",
+    angle: -2,
+    note: "Dünyanın en huzurlu yeri senin omuzların, en güzel sesi senin sesin...",
+  },
+  {
+    id: 4,
     image: "/moment3.jpg",
-    title: "SAHNE III: YOL HİKAYESİ",
-    description: "Sonsuz ufuklara doğru sürdüğümüz, arkamızda güzel melodiler bıraktığımız unutulmaz an.",
-    date: "Nisan 2025",
+    title: "Yıldızların Altında",
+    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
+    date: "18 Ocak 2025",
+    angle: 5,
+    note: "En soğuk günlerde bile beni ısıtan tek şey senin gülüşündü.",
+  },
+  {
+    id: 5,
+    image: "/moment4.jpg",
+    title: "Maviye Açılan Sonsuzluk",
+    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
+    date: "22 Nisan 2025",
+    angle: -4,
+    note: "Sadece seninle yan yana uzanıp hiçbir şey düşünmemek...",
+  },
+  {
+    id: 6,
+    image: "/moment5.jpg",
+    title: "Birlikte Yeni Bir Başlangıç",
+    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
+    date: "12 Haziran 2025",
+    angle: 3,
+    note: "Geleceğe seninle attığım bir adım daha",
+  },
+{
+    id: 7,
+    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
+    title: "Beyazlar İçinde Bir Ömür",
+    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
+    date: "18 Eylül 2025",
+    angle: -2,
+    note: "Dünyanın en güzel gelini, kalbimin ebedi sahibi...",
+  },
+{
+    id: 8,
+    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
+    title: "Sonsuzluğun Kıyısında",
+    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
+    date: "02 Mayıs 2026",
+    angle: 4,
+    note: "Dünya dönmeyi bıraksa bile, biz bu denizde sonsuza dek kalacağız.",
   },
 ];
 
@@ -221,7 +272,6 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       variants={stagger}
       className="flex flex-col gap-5"
     >
-      {/* Widescreen letterbox çerçeve */}
       <motion.div
         variants={fadeUp}
         className="relative overflow-hidden"
@@ -231,7 +281,6 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           border: "1px solid rgba(184,169,212,0.12)",
           boxShadow: "0 25px 60px rgba(0,0,0,0.85)",
           borderRadius: "2px",
-          aspectRatio: "21/9",
         }}
       >
         {/* REC göstergesi */}
@@ -274,11 +323,10 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         </div>
 
         {/* Fotoğraf */}
-        <motion.img
+        <img
           src={memory.image}
           alt={memory.title}
-          className="w-full h-full object-cover"
-          style={{ y: imageY, opacity: 0.88, filter: "contrast(1.05) saturate(0.85)" }}
+          style={{ width: "100%", height: "auto", display: "block", opacity: 0.88, filter: "contrast(1.05) saturate(0.85)" }}
         />
 
         {/* Film grain overlay */}
@@ -653,7 +701,7 @@ export default function CinematicTemplate() {
           color: "rgba(80,70,100,0.7)",
         }}
       >
-        SİNEMATİK TEMA — ANILARIMIZ.COM
+        SİNEMATİK TEMA — birlikteydik.com
       </footer>
       </div>
 

@@ -181,7 +181,7 @@ export default function RegisterPage() {
         return;
       }
       // Başarılı kayıt — kullanıcı bilgisini localStorage'a yaz
-      localStorage.setItem("anilarimiz_user", JSON.stringify({ name: data.user.name, email: data.user.email }));
+      localStorage.setItem("birlikteydik_user", JSON.stringify({ name: data.user.name, email: data.user.email }));
       window.dispatchEvent(new Event("auth-change"));
       router.push("/");
     } catch {
@@ -337,7 +337,7 @@ export default function RegisterPage() {
 
       <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
         <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} anılarımız.com</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
       </footer>
 
       {/* Ticari İleti Aydınlatma Modalı */}

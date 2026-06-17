@@ -694,7 +694,7 @@ export default function PremiumDarkPage() {
               color: `${config.accentColor}90`,
             }}
           >
-            Anılarımız
+            birlikteydik
           </span>
           <div className="w-10 h-px" style={{ background: `${config.accentColor}40` }} />
         </motion.div>

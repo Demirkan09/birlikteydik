@@ -8,9 +8,9 @@ import { Volume2, VolumeX, Heart } from "lucide-react";
 // 🎮 MÜŞTERİ VERİLERİ (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
 const config = {
-  coupleNames: "SEN & BEN",
-  tagline: "GAME OVER OLMAYAN TEK MACERA",
-  accentColor: "#CBFF3E",
+  coupleNames: "SEN\n&\nBen",
+  tagline: "SENİNLE EN İYİ MACERALARA",
+  accentColor: "#cbff3e",
   specialDate: "26.10.2024",
   musicUrl: "/music/pixel.mp3",
 };
@@ -19,26 +19,74 @@ const memories = [
   {
     id: 1,
     image: "/moment.jpg",
-    title: "STAGE 1: İLK KARŞILAŞMA",
-    description: "Yeni bir oyuncuyla karşılaştım ve hayatım sonsuza dek değişti. Bu macera tek başıma oynayabileceğim türden değildi.",
-    date: "EKİM 2024",
-    score: "10.000",
+    title: "İlk Bakış, İlk Gülüş",
+    description: "Seni gördüğüm o an, zamanın tüm hızını unutup durduğu saniyeydi. O gün anladım kaderimin seninle yazıldığını.",
+    date: "26 Ekim 2024",
+    angle: -4,
+    note: "Güneşin yüzünde bıraktığı gölgeler bile sana hayrandı.",
   },
   {
     id: 2,
     image: "/moment2.jpg",
-    title: "STAGE 2: YAN YANA",
-    description: "İkimiz birlikte her engeli aştık. Ekip olunca her seviye daha kolay, her zafer daha güzel geliyor.",
-    date: "ARALIK 2024",
-    score: "25.500",
+    title: "Sıkıca, Hiç Bırakmamacasına",
+    description: "Bileğimizdeki ipler, boncuklar ve kalbimizi birbirine bağlayan o görünmez düğüm...",
+    date: "12 Kasım 2024",
+    angle: 3,
+    note: "Sırılsıklam ıslansak bile yanındayken üşümüyordum.",
   },
   {
     id: 3,
+    image: "/moment7.jpg",
+    title: "Eski Bir Şarkının İzinde",
+    description: "Tozlu rafların arasında, eski plakların cızırtısında kaybolduğumuz o pazar günü.",
+    date: "14 Aralık 2024",
+    angle: -2,
+    note: "Dünyanın en huzurlu yeri senin omuzların, en güzel sesi senin sesin...",
+  },
+  {
+    id: 4,
     image: "/moment3.jpg",
-    title: "STAGE 3: BOSS BATTLE",
-    description: "Hayatın zor anlarında yanımdasın. Birlikte hiçbir boss'u yenemeyeceğimiz bir seviye yok.",
-    date: "NİSAN 2025",
-    score: "99.999",
+    title: "Yıldızların Altında",
+    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
+    date: "18 Ocak 2025",
+    angle: 5,
+    note: "En soğuk günlerde bile beni ısıtan tek şey senin gülüşündü.",
+  },
+  {
+    id: 5,
+    image: "/moment4.jpg",
+    title: "Maviye Açılan Sonsuzluk",
+    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
+    date: "22 Nisan 2025",
+    angle: -4,
+    note: "Sadece seninle yan yana uzanıp hiçbir şey düşünmemek...",
+  },
+  {
+    id: 6,
+    image: "/moment5.jpg",
+    title: "Birlikte Yeni Bir Başlangıç",
+    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
+    date: "12 Haziran 2025",
+    angle: 3,
+    note: "Geleceğe seninle attığım bir adım daha",
+  },
+{
+    id: 7,
+    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
+    title: "Beyazlar İçinde Bir Ömür",
+    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
+    date: "18 Eylül 2025",
+    angle: -2,
+    note: "Dünyanın en güzel gelini, kalbimin ebedi sahibi...",
+  },
+{
+    id: 8,
+    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
+    title: "Sonsuzluğun Kıyısında",
+    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
+    date: "02 Mayıs 2026",
+    angle: 4,
+    note: "Dünya dönmeyi bıraksa bile, biz bu denizde sonsuza dek kalacağız.",
   },
 ];
 
@@ -220,33 +268,20 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         >
           {memory.title}
         </span>
-        <span
-          style={{
-            fontFamily: "'VT323', monospace",
-            fontSize: "16px",
-            color: "rgba(203,255,62,0.55)",
-          }}
-        >
-          SCORE: {memory.score}
-        </span>
       </motion.div>
 
       {/* Fotoğraf + Scanlines */}
       <motion.div
         variants={fadeUp}
-        style={{ position: "relative", overflow: "hidden", aspectRatio: "16/9" }}
+        style={{ position: "relative", overflow: "hidden" }}
       >
-        <motion.img
+        <img
           src={memory.image}
           alt={memory.title}
           style={{
-            position: "absolute",
-            inset: 0,
             width: "100%",
-            height: "120%",
-            objectFit: "cover",
-            y: imageY,
-            top: "-10%",
+            height: "auto",
+            display: "block",
             filter: "saturate(1.1) contrast(1.05)",
           }}
         />
@@ -436,6 +471,7 @@ export default function GameTemplate() {
                 color: "#CBFF3E",
                 textShadow: "4px 4px 0 rgba(0,0,0,0.8), 0 0 30px rgba(203,255,62,0.4)",
                 marginBottom: "0.5rem",
+                whiteSpace: "pre-line",
               }}
             >
               {config.coupleNames}
@@ -503,7 +539,7 @@ export default function GameTemplate() {
                   transition: "opacity 0.1s steps(1)",
                 }}
               >
-                ✨ bence tiklamalysin, boylesi cok daha guzel
+                ✨ bence tıklamalısın, böylesi çok daha güzel
               </span>
             </motion.div>
           </motion.div>
@@ -577,7 +613,7 @@ export default function GameTemplate() {
               letterSpacing: "0.05em",
             }}
           >
-            ANILARIN HARİTASI
+            BIZIM HIKAYEMIZ
           </motion.h2>
         </motion.div>
       </div>
@@ -661,7 +697,7 @@ export default function GameTemplate() {
               letterSpacing: "0.1em",
             }}
           >
-            HIGH SCORE: ∞ &nbsp;|&nbsp; {config.specialDate}
+            SENINLE OLDUGUM HER ZAMAN <br></br>EN YUKSEK SKORUN SAHIBI BENIM <br></br> {config.specialDate}
           </motion.p>
         </motion.div>
       </section>
@@ -678,7 +714,7 @@ export default function GameTemplate() {
           borderTop: "2px solid rgba(203,255,62,0.1)",
         }}
       >
-        PIXEL TEMA — ANILARIMIZ.COM
+        PIXEL TEMA — birlikteydik.com
       </footer>
       </div>
 

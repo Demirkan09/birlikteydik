@@ -32,10 +32,45 @@ const memories = [
   },
   {
     id: 3,
-    image: "/moment3.jpg",
+    image: "/moment7.jpg",
     title: "Sonsuz Bağımız",
     description: "Her saniye, her nefeste sana olan sevgimin daha da alevlendiğini, bizi ayıramayacak güçlü bir bağa dönüştüğünü biliyorum.",
     date: "25 Nisan 2025",
+  },
+  {
+    id: 4,
+    image: "/moment3.jpg",
+    title: "Yıldızların Altında",
+    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
+    date: "18 Ocak 2025",
+  },
+  {
+    id: 5,
+    image: "/moment4.jpg",
+    title: "Maviye Açılan Sonsuzluk",
+    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
+    date: "22 Nisan 2025",
+  },
+  {
+    id: 6,
+    image: "/moment5.jpg",
+    title: "Birlikte Yeni Bir Başlangıç",
+    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
+    date: "12 Haziran 2025",
+  },
+  {
+    id: 7,
+    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
+    title: "Beyazlar İçinde Bir Ömür",
+    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
+    date: "18 Eylül 2025",
+  },
+  {
+    id: 8,
+    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
+    title: "Sonsuzluğun Kıyısında",
+    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
+    date: "02 Mayıs 2026",
   },
 ];
 
@@ -261,12 +296,11 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             boxShadow: "0 16px 48px rgba(0,0,0,0.65)",
           }}
         >
-          <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
-            <motion.img
+          <div className="relative overflow-hidden rounded-sm">
+            <img
               src={memory.image}
               alt={memory.title}
-              className="absolute inset-x-0 w-full h-[120%] object-cover"
-              style={{ y: imageY, top: "-10%" }}
+              className="w-full h-auto block"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#160408]/30 via-transparent to-transparent pointer-events-none" />
           </div>
@@ -644,7 +678,7 @@ export default function RomanticRedTemplate() {
           color: "rgba(105,41,49,0.7)",
         }}
       >
-        ROMANTİK RED TEMA — ANILARIMIZ.COM
+        ROMANTİK RED TEMA — birlikteydik.com
       </footer>
       </div>
 

@@ -116,7 +116,7 @@ export default function LoginPage() {
   // Sayfa açılışında kayıtlı oturumu kontrol et
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("anilarimiz_remember");
+      const saved = localStorage.getItem("birlikteydik_remember");
       if (saved) {
         const { email: savedEmail, expiresAt } = JSON.parse(saved);
         if (Date.now() < expiresAt) {
@@ -125,7 +125,7 @@ export default function LoginPage() {
           setRememberMe(true);
         } else {
           // Süresi dolmuş — temizle
-          localStorage.removeItem("anilarimiz_remember");
+          localStorage.removeItem("birlikteydik_remember");
         }
       }
     } catch { /* ignore */ }
@@ -158,7 +158,7 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem("anilarimiz_user", JSON.stringify({
+      localStorage.setItem("birlikteydik_user", JSON.stringify({
         id: data.user.id,
         name: data.user.name,
         email: data.user.email,
@@ -169,11 +169,11 @@ export default function LoginPage() {
       // Beni Hatırla
       if (rememberMe) {
         localStorage.setItem(
-          "anilarimiz_remember",
+          "birlikteydik_remember",
           JSON.stringify({ email, expiresAt: Date.now() + REMEMBER_ME_TTL })
         );
       } else {
-        localStorage.removeItem("anilarimiz_remember");
+        localStorage.removeItem("birlikteydik_remember");
       }
 
       setLoading(false);
@@ -315,7 +315,7 @@ export default function LoginPage() {
       {/* Footer mini */}
       <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
         <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} anılarımız.com</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
       </footer>
 
       <style>{`

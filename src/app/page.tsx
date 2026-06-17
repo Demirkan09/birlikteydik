@@ -227,7 +227,7 @@ function OccasionCard({
           backdropFilter: "blur(18px)",
           WebkitBackdropFilter: "blur(18px)",
           boxShadow: hovered
-            ? `0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px ${occasion.accentColor}33`
+            ? `0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px ${occasion.accentColor}33`
             : "0 4px 32px rgba(0,0,0,0.35)",
           transition: "border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s ease",
           transform: hovered ? "translateY(-5px)" : "translateY(0)",
@@ -298,7 +298,7 @@ const testimonials = [
     occasion: "Sebepsiz Sevgi",
   },
   {
-    quote: "3 yıllık anılarımızı böyle güzel bir sayfada görmek inanılmazdı.",
+    quote: "3 yıllık birlikteydikı böyle güzel bir sayfada görmek inanılmazdı.",
     name: "Selin T.",
     occasion: "Yıldönümü",
   },
@@ -340,7 +340,7 @@ function FaqItem({ faq }: { faq: (typeof faqs)[0] }) {
   return (
     <div
       style={{
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
         padding: "20px 0",
       }}
     >

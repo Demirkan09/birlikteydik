@@ -46,7 +46,7 @@ function useAuthState() {
 
   const checkUser = () => {
     try {
-      const stored = localStorage.getItem("anilarimiz_user");
+      const stored = localStorage.getItem("birlikteydik_user");
       if (stored) {
         setUser(JSON.parse(stored));
       } else {
@@ -66,7 +66,7 @@ function useAuthState() {
   }, []);
 
   const logout = () => {
-    localStorage.removeItem("anilarimiz_user");
+    localStorage.removeItem("birlikteydik_user");
     setUser(null);
     window.dispatchEvent(new Event("auth-change"));
     window.location.href = "/";

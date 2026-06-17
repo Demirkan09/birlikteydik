@@ -17,12 +17,12 @@ const templates = [
     emoji: "🎞️",
     accentColor: "#C9A84C",
     tag: "En Çok Satan",
-    description: "Polaroid çerçeveleri, nostaljik renk filtreleri ve loş mum ışığı geçişleriyle anılarınızı sıcak bir sinema şeridine dönüştürün.",
+    description: "Eski bir sinema makinesinin cızırtısında, sararmış sayfalar arasında saklanan en güzel hikayemiz... Polaroid çerçeveleri, nostaljik renk filtreleri ve mum ışığı geçişleriyle anılarınızı sıcak bir sinema şeridine dönüştürün.",
     demoUrl: "/sablon-retro",
     features: [
       "12-24 Fotoğraf Kapasitesi",
-      "Kişisel Müzik / Spotify Desteği",
-      "Nostaljik Polaroid Kart Tasarımı",
+      "Nostaljik Plak ve Müzik Desteği",
+      "Polaroid Tasarımlı Fotoğraf Akışı",
       "Sonsuza Kadar Aktif Link",
     ],
   },
@@ -31,14 +31,14 @@ const templates = [
     title: "Modern Minimal",
     subtitle: "Sade, Şık ve Estetik",
     emoji: "🖤",
-    accentColor: "#8c7e6c",
+    accentColor: "#8C7E6C",
     tag: "Yeni",
-    description: "Sadelikten yana olanlar için modern yazı tipleri, geniş boşluklar ve pürüzsüz geçişlerle tasarlanmış minimalist bir aşk hikayesi.",
+    description: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben. Sadelikten yana olanlar için modern yazı tipleri, geniş boşluklar ve pürüzsüz geçişlerle tasarlanmış minimalist bir aşk hikayesi.",
     demoUrl: "/sablon-minimal",
     features: [
       "15-30 Fotoğraf Kapasitesi",
+      "Modern ve Temiz Arayüz Tasarımı",
       "Özel Müzik Oynatıcı Paneli",
-      "Gelişmiş Tipografi Efektleri",
       "Hızlı Yüklenen Hafif Altyapı",
     ],
   },
@@ -49,13 +49,13 @@ const templates = [
     emoji: "🎬",
     accentColor: "#B8A9D4",
     tag: "Premium",
-    description: "Girişte video/fotoğraf perdesi, arkada çalan duygusal piyano melodisi ve adeta film jeneriği gibi akan büyüleyici anılarınız.",
+    description: "Bir sevgi belgeseli, başrollerde sadece bizim olduğumuz... Girişte video/fotoğraf perdesi, arkada çalan duygusal piyano melodisi ve adeta film jeneriği gibi akan büyüleyici anılarınız.",
     demoUrl: "/sablon-sinematik",
     features: [
       "50 Fotoğrafa Kadar Yükleme",
-      "Giriş Videosu Desteği",
-      "Dinamik Arka Plan Parçacıkları",
-      "Öncelikli Hazırlama (12 Saat)",
+      "Giriş Perdesi & Karşılama Ekranı",
+      "Film Jeneriği Temalı Akış",
+      "Özel Video ve Müzik Desteği",
     ],
   },
   {
@@ -65,12 +65,12 @@ const templates = [
     emoji: "🌲",
     accentColor: "#D4AF37",
     tag: "Özel Tasarım",
-    description: "Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
+    description: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki aşk hikayeniz... Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
     demoUrl: "/sablon-emerald",
     features: [
-      "Özel Altın Çerçeve Tasarımı",
+      "Derin Orman Yeşili ve Altın Teması",
       "Premium Arka Plan Melodisi",
-      "Altın Işıltılı Efektler",
+      "Lüks Zümrüt Efektli Geçişler",
       "Sonsuza Kadar Aktif Link",
     ],
   },
@@ -81,45 +81,45 @@ const templates = [
     emoji: "❤️",
     accentColor: "#E63946",
     tag: "Popüler",
-    description: "Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
+    description: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim... Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
     demoUrl: "/sablon-kirmizi",
     features: [
       "Parıldayan Kalp Parçacıkları",
       "Sıcak Kırmızı Geçiş Efektleri",
-      "Fotoğraf Filtre Desteği",
-      "Hızlı ve Kolay Özelleştirme",
+      "Duygusal ve Romantik Arayüz",
+      "Kolay ve Hızlı Özelleştirme",
     ],
   },
   {
     id: "sablon-mavi",
     title: "Premium Mavi",
-    subtitle: "Denizlerin ve Balık Burçlarının Rengi",
+    subtitle: "Editoryal Dergi Estetiği ve Pusula",
     emoji: "💙",
-    accentColor: "#4a5bfa",
+    accentColor: "#3EA094",
     tag: "Yeni",
-    description: "Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
+    description: "İki hayatın kesiştiği noktada başlayan, sonsuzluğa uzanan bu hikaye... Modern Space Grotesk tipografisi, özel pusula müzik çaları ve dergi (magazine) tarzı sanatsal fotoğraf kartlarıyla hazırlanan elit bir tasarım.",
     demoUrl: "/sablon-mavi",
     features: [
-      "Parıldayan Kalp Parçacıkları",
-      "Sıcak Kırmızı Geçiş Efektleri",
-      "Fotoğraf Filtre Desteği",
-      "Hızlı ve Kolay Özelleştirme",
+      "Pusula Temalı Müzik Oynatıcı",
+      "Modern Editoryal Dergi Tasarımı",
+      "Akıcı Kaydırma ve Dinamik Yazılar",
+      "Sonsuza Kadar Aktif Link",
     ],
   },
   {
     id: "sablon-oyun",
-    title: "Premium Mavi",
-    subtitle: "Denizlerin ve Balık Burçlarının Rengi",
-    emoji: "💙",
-    accentColor: "#4a5bfa",
+    title: "Oyuncu Şablonu",
+    subtitle: "Gamer Çiftler İçin Tasarım",
+    emoji: "🎮",
+    accentColor: "#CBFF3E",
     tag: "Yeni",
-    description: "Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
+    description: "Seninle en iyi maceralara! Retro oyun konsolu tasarımlı müzik kontrolü, neon yeşili çizgiler, Space Grotesk yazı tipi ve piksel sanat detaylarıyla oyun sever çiftlerin dijital macerası.",
     demoUrl: "/sablon-oyun",
     features: [
-      "Parıldayan Kalp Parçacıkları",
-      "Sıcak Kırmızı Geçiş Efektleri",
-      "Fotoğraf Filtre Desteği",
-      "Hızlı ve Kolay Özelleştirme",
+      "Retro Oyun Kolu Oynatıcısı",
+      "Neon Lime & Pixel-Art Detaylar",
+      "Dinamik Animasyonlar",
+      "Gamer Çiftlere Özel Eğlenceli Vibe",
     ],
   },
 ];
@@ -235,12 +235,12 @@ function HeartsCanvas() {
 // SECTIONS & LAYOUT BUTTONS
 // ─────────────────────────────────────────────────────────────────────────────
 const WHATSAPP_NUMBER = "905349829940";
-const INSTAGRAM_URL = "https://instagram.com/anilarimiz";
+const INSTAGRAM_URL = "https://instagram.com/birlikteydik";
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const WHATSAPP_MESSAGE = "Merhaba! Anılarımız.com'dan sipariş vermek istiyorum.";
+  const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
   useEffect(() => {
@@ -266,7 +266,7 @@ function Navbar() {
       }}>
         {/* Logo */}
         <Link href="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: "#F0EDE8", letterSpacing: "0.04em", textDecoration: "none" }}>
-          anılarımız<span style={{ color: "#C9A84C" }}>.com</span>
+          birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
         </Link>
 
         {/* Desktop Links */}
@@ -416,7 +416,7 @@ function SmartphoneMockup({ accentColor, title, emoji }: { accentColor: string; 
         }}>
           {/* Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "6px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em" }}>anılarımız.com</span>
+            <span style={{ fontSize: "6px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em" }}>birlikteydik.com</span>
             <span style={{ fontSize: "6px", color: accentColor }}>❤️</span>
           </div>
 
@@ -903,7 +903,7 @@ export default function TemplatesPage() {
         margin: "0 auto",
       }}>
         <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.1rem", color: "rgba(240,237,232,0.5)" }}>
-          anılarımız<span style={{ color: "#C9A84C" }}>.com</span>
+          birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
         </span>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
           © {new Date().getFullYear()} — Sevgiyle yapıldı

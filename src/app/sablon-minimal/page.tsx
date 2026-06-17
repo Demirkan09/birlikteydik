@@ -19,23 +19,74 @@ const memories = [
   {
     id: 1,
     image: "/moment.jpg",
-    title: "Sessiz Bir Gün",
-    description: "Dünyanın tüm kalabalığını arkamızda bırakıp sadece gözlerimizle konuştuğumuz o sade an.",
-    date: "Ekim 2024",
+    title: "İlk Bakış, İlk Gülüş",
+    description: "Seni gördüğüm o an, zamanın tüm hızını unutup durduğu saniyeydi. O gün anladım kaderimin seninle yazıldığını.",
+    date: "26 Ekim 2024",
+    angle: -4,
+    note: "Güneşin yüzünde bıraktığı gölgeler bile sana hayrandı.",
   },
   {
     id: 2,
     image: "/moment2.jpg",
-    title: "Ortak Bir Ritim",
-    description: "Aynı anda susup, aynı gökyüzüne bakıp, içimizden geçenleri tek bir tebessümle paylaşmamız.",
-    date: "Aralık 2024",
+    title: "Sıkıca, Hiç Bırakmamacasına",
+    description: "Bileğimizdeki ipler, boncuklar ve kalbimizi birbirine bağlayan o görünmez düğüm...",
+    date: "12 Kasım 2024",
+    angle: 3,
+    note: "Sırılsıklam ıslansak bile yanındayken üşümüyordum.",
   },
   {
     id: 3,
+    image: "/moment7.jpg",
+    title: "Eski Bir Şarkının İzinde",
+    description: "Tozlu rafların arasında, eski plakların cızırtısında kaybolduğumuz o pazar günü.",
+    date: "14 Aralık 2024",
+    angle: -2,
+    note: "Dünyanın en huzurlu yeri senin omuzların, en güzel sesi senin sesin...",
+  },
+  {
+    id: 4,
     image: "/moment3.jpg",
-    title: "Yol Arkadaşım",
-    description: "Nereye gittiğimizin önemi yoktu, yanımda yürüdüğün sürece her yol en güzel adresti.",
-    date: "Şubat 2025",
+    title: "Yıldızların Altında",
+    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
+    date: "18 Ocak 2025",
+    angle: 5,
+    note: "En soğuk günlerde bile beni ısıtan tek şey senin gülüşündü.",
+  },
+  {
+    id: 5,
+    image: "/moment4.jpg",
+    title: "Maviye Açılan Sonsuzluk",
+    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
+    date: "22 Nisan 2025",
+    angle: -4,
+    note: "Sadece seninle yan yana uzanıp hiçbir şey düşünmemek...",
+  },
+  {
+    id: 6,
+    image: "/moment5.jpg",
+    title: "Birlikte Yeni Bir Başlangıç",
+    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
+    date: "12 Haziran 2025",
+    angle: 3,
+    note: "Geleceğe seninle attığım bir adım daha",
+  },
+{
+    id: 7,
+    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
+    title: "Beyazlar İçinde Bir Ömür",
+    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
+    date: "18 Eylül 2025",
+    angle: -2,
+    note: "Dünyanın en güzel gelini, kalbimin ebedi sahibi...",
+  },
+{
+    id: 8,
+    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
+    title: "Sonsuzluğun Kıyısında",
+    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
+    date: "02 Mayıs 2026",
+    angle: 4,
+    note: "Dünya dönmeyi bıraksa bile, biz bu denizde sonsuza dek kalacağız.",
   },
 ];
 
@@ -172,13 +223,13 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
-      className={`flex flex-col lg:flex-row items-stretch gap-12 lg:gap-24 ${isEven ? "" : "lg:flex-row-reverse"}`}
+      className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-24 ${isEven ? "" : "lg:flex-row-reverse"}`}
     >
       {/* Fotoğraf */}
       <motion.div
         variants={fadeUp}
-        className="flex-1"
-        style={{ maxWidth: "380px" }}
+        className="relative flex-shrink-0 w-full"
+        style={{ maxWidth: "350px" }}
       >
         <div
           className="overflow-hidden"
@@ -189,12 +240,12 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             boxShadow: "0 5px 20px rgba(0,0,0,0.04)",
           }}
         >
-          <div className="relative aspect-[3/4] overflow-hidden" style={{ background: "#F0ECE8" }}>
-            <motion.img
+          <div className="relative overflow-hidden" style={{ background: "#F0ECE8" }}>
+            <img
               src={memory.image}
               alt={memory.title}
-              className="absolute inset-x-0 w-full h-[120%] object-cover"
-              style={{ y: imageY, top: "-10%", filter: "saturate(0.88) contrast(1.02)" }}
+              className="w-full h-auto block"
+              style={{ filter: "saturate(0.88) contrast(1.02)" }}
             />
           </div>
         </div>
@@ -203,7 +254,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       {/* Metin */}
       <motion.div
         variants={fadeUp}
-        className="flex-1 flex flex-col justify-center gap-6 max-w-md"
+        className="flex flex-col justify-center gap-6 w-full max-w-md"
       >
         <div className="flex items-center gap-3">
           <div className="w-5 h-px" style={{ background: "#8C7E6C", opacity: 0.4 }} />
@@ -537,7 +588,7 @@ export default function MinimalTemplate() {
           borderTop: "1px solid #EAE3DC",
         }}
       >
-        MİNİMALİST TEMA — ANILARIMIZ.COM
+        MİNİMALİST TEMA — birlikteydik.com
       </footer>
       </div>
 

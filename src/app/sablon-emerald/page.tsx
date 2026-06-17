@@ -9,7 +9,7 @@ import { ChevronDown, Volume2, VolumeX, Heart, Gem } from "lucide-react";
 // ─────────────────────────────────────────────────────────────────────────────
 const config = {
   coupleNames: "Sen & Ben",
-  tagline: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki anılarımız...",
+  tagline: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki birlikteydik...",
   accentColor: "#D4AF37",
   specialDate: "2024",
   musicUrl: "/music/emerald.mp3",
@@ -230,12 +230,12 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             borderRadius: "2px",
           }}
         >
-          <div className="relative aspect-[3/4] overflow-hidden">
-            <motion.img
+          <div className="relative overflow-hidden">
+            <img
               src={memory.image}
               alt={memory.title}
-              className="absolute inset-x-0 w-full h-[120%] object-cover"
-              style={{ y: imageY, top: "-10%", filter: "contrast(1.05) saturate(0.9)" }}
+              className="w-full h-auto block"
+              style={{ filter: "contrast(1.05) saturate(0.9)" }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#061C16]/30 via-transparent to-transparent pointer-events-none" />
           </div>
@@ -645,7 +645,7 @@ export default function EmeraldTemplate() {
           color: "rgba(85,105,96,0.6)",
         }}
       >
-        PREMIUM EMERALD TEMA — ANILARIMIZ.COM
+        PREMIUM EMERALD TEMA — birlikteydik.com
       </footer>
       </div>
 

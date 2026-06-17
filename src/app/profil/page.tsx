@@ -156,7 +156,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const stored = localStorage.getItem("anilarimiz_user");
+        const stored = localStorage.getItem("birlikteydik_user");
         if (!stored) {
           router.push("/login");
           return;
@@ -199,7 +199,7 @@ export default function ProfilePage() {
 
   // Handle Logout
   const handleLogout = () => {
-    localStorage.removeItem("anilarimiz_user");
+    localStorage.removeItem("birlikteydik_user");
     window.dispatchEvent(new Event("auth-change"));
     router.push("/");
   };
@@ -259,7 +259,7 @@ export default function ProfilePage() {
         name: data.user.name,
         email: data.user.email,
       };
-      localStorage.setItem("anilarimiz_user", JSON.stringify(updatedUser));
+      localStorage.setItem("birlikteydik_user", JSON.stringify(updatedUser));
       setUser(updatedUser);
       window.dispatchEvent(new Event("auth-change"));
 
@@ -303,7 +303,7 @@ export default function ProfilePage() {
 
       setMarketingConsent(checked);
       const updatedUser = { ...user, marketingConsent: checked };
-      localStorage.setItem("anilarimiz_user", JSON.stringify(updatedUser));
+      localStorage.setItem("birlikteydik_user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
       setSuccessMsg(checked ? "Kampanya ve iletişim onayı verildi." : "Kampanya ve iletişim onayı kaldırıldı.");
@@ -348,7 +348,7 @@ export default function ProfilePage() {
       }
 
       // Clear local storage and redirect
-      localStorage.removeItem("anilarimiz_user");
+      localStorage.removeItem("birlikteydik_user");
       window.dispatchEvent(new Event("auth-change"));
       router.push("/");
     } catch {

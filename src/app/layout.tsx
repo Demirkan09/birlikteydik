@@ -18,7 +18,7 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "Anılarımız",
+  title: "birlikteydik",
   description: "Birlikte geçen her güzel anı.",
 };
 
