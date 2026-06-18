@@ -909,7 +909,7 @@ const featuredTemplates = [
       "Parıldayan Kalp Parçacıkları",
       "Sıcak Kırmızı Geçiş Efektleri",
       "Duygusal ve Romantik Arayüz",
-      "Kolay ve Hızlı Özelleştirme",
+      "Aşkın Kırmızısı Loş Arka Işıklar",
     ],
   },
   {
@@ -922,9 +922,9 @@ const featuredTemplates = [
     demoUrl: "/sablonlar/sablon-emerald",
     features: [
       "Derin Orman Yeşili ve Altın Teması",
-      "Premium Arka Plan Melodisi",
       "Lüks Zümrüt Efektli Geçişler",
-      "Sonsuza Kadar Aktif Link",
+      "Altın Işıltılı Arka Plan Efektleri",
+      "Asil ve Şık Görsel Çerçeveler",
     ],
   },
   {
@@ -939,7 +939,7 @@ const featuredTemplates = [
       "Pusula Temalı Müzik Oynatıcı",
       "Modern Editoryal Dergi Tasarımı",
       "Akıcı Kaydırma ve Dinamik Yazılar",
-      "Sonsuza Kadar Aktif Link",
+      "Sanatsal Dergi Kartı Görünümü",
     ],
   },
   {
@@ -951,10 +951,10 @@ const featuredTemplates = [
     description: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum... Sıcak amber tonlarında radial ışıltılar, altın esintili çerçeveler ve samimi anılarınızı en iyi yansıtan dikey albüm tasarımı.",
     demoUrl: "/sablonlar/sablon-amber",
     features: [
-      "Sıcak Altın Parçacıklar",
-      "Gelişmiş Ses Kontrolü",
-      "Didaktik Romantik Akış",
-      "Sonsuza Kadar Aktif Link",
+      "Uçuşan Sıcak Amber Ateşböcekleri",
+      "Gelişmiş Estetik Müzik Çalar",
+      "Dikey Romantik Albüm Akışı",
+      "Sıcak Amber Radial Işıltılar",
     ],
   }
 ];

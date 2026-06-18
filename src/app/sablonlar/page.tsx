@@ -20,10 +20,10 @@ const templates = [
     description: "Eski bir sinema makinesinin cızırtısında, sararmış sayfalar arasında saklanan en güzel hikayemiz... Polaroid çerçeveleri, nostaljik renk filtreleri ve mum ışığı geçişleriyle anılarınızı sıcak bir sinema şeridine dönüştürün.",
     demoUrl: "/sablonlar/sablon-retro",
     features: [
-      "12-24 Fotoğraf Kapasitesi",
-      "Nostaljik Plak ve Müzik Desteği",
       "Polaroid Tasarımlı Fotoğraf Akışı",
-      "Sonsuza Kadar Aktif Link",
+      "Nostaljik Plak ve Müzik Desteği",
+      "Sıcak Mum Işığı Renk Filtreleri",
+      "Klasik Daktilo Yazı Estetiği",
     ],
   },
   {
@@ -35,10 +35,10 @@ const templates = [
     description: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben. Sadelikten yana olanlar için modern yazı tipleri, geniş boştımaklar ve pürüzsüz geçişlerle tasarlanmış minimalist bir aşk hikayesi.",
     demoUrl: "/sablonlar/sablon-minimal",
     features: [
-      "15-30 Fotoğraf Kapasitesi",
       "Modern ve Temiz Arayüz Tasarımı",
-      "Özel Müzik Oynatıcı Paneli",
-      "Hızlı Yüklenen Hafif Altyapı",
+      "Geniş Boşluklu Minimalist Müzik Çalar",
+      "Zarif ve Net Tipografi Düzeni",
+      "Sade ve Akıcı Sayfa Geçişleri",
     ],
   },
   {
@@ -50,10 +50,10 @@ const templates = [
     description: "Bir sevgi belgeseli, başrollerde sadece bizim olduğumuz... Girişte video/fotoğraf perdesi, arkada çalan duygusal piyano melodisi ve adeta film jeneriği gibi akan büyüleyici anılarınız.",
     demoUrl: "/sablonlar/sablon-sinematik",
     features: [
-      "50 Fotoğrafa Kadar Yükleme",
-      "Giriş Perdesi & Karşılama Ekranı",
-      "Film Jeneriği Temalı Akış",
-      "Özel Video ve Müzik Desteği",
+      "Büyüleyici Giriş Perdesi & Karşılama Ekranı",
+      "Film Jeneriği Temalı Akış Tasarımı",
+      "Özel Video ve Sinematik Müzik Desteği",
+      "Loş ve Duygusal Işık Efektleri",
     ],
   },
   {
@@ -66,9 +66,9 @@ const templates = [
     demoUrl: "/sablonlar/sablon-emerald",
     features: [
       "Derin Orman Yeşili ve Altın Teması",
-      "Premium Arka Plan Melodisi",
       "Lüks Zümrüt Efektli Geçişler",
-      "Sonsuza Kadar Aktif Link",
+      "Altın Işıltılı Arka Plan Efektleri",
+      "Asil ve Şık Görsel Çerçeveler",
     ],
   },
   {
@@ -83,7 +83,7 @@ const templates = [
       "Parıldayan Kalp Parçacıkları",
       "Sıcak Kırmızı Geçiş Efektleri",
       "Duygusal ve Romantik Arayüz",
-      "Kolay ve Hızlı Özelleştirme",
+      "Aşkın Kırmızısı Loş Arka Işıklar",
     ],
   },
   {
@@ -98,7 +98,7 @@ const templates = [
       "Pusula Temalı Müzik Oynatıcı",
       "Modern Editoryal Dergi Tasarımı",
       "Akıcı Kaydırma ve Dinamik Yazılar",
-      "Sonsuza Kadar Aktif Link",
+      "Sanatsal Dergi Kartı Görünümü",
     ],
   },
   {
@@ -110,9 +110,9 @@ const templates = [
     description: "Seninle en iyi maceralara! Retro oyun konsolu tasarımlı müzik kontrolü, neon yeşili çizgiler, Space Grotesk yazı tipi ve piksel sanat detaylarıyla oyun sever çiftlerin dijital macerası.",
     demoUrl: "/sablonlar/sablon-oyun",
     features: [
-      "Retro Oyun Kolu Oynatıcısı",
+      "Retro Oyun Konsolu Müzik Oynatıcısı",
       "Neon Lime & Pixel-Art Detaylar",
-      "Dinamik Animasyonlar",
+      "Eğlenceli Retro Arcade Animasyonları",
       "Gamer Çiftlere Özel Eğlenceli Vibe",
     ],
   },
@@ -127,8 +127,8 @@ const templates = [
     features: [
       "Yumuşak Lavanta Parçacıkları",
       "Zarif Müzik Oynatıcı",
-      "Modern Tipografi",
-      "Sonsuza Kadar Aktif Link"
+      "Modern Düşsel Tipografi",
+      "Düşsel Mor Radial Işıltılar",
     ]
   },
   {
@@ -140,10 +140,10 @@ const templates = [
     description: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum... Sıcak amber tonlarında radial ışıltılar, altın esintili çerçeveler ve samimi anılarınızı en iyi yansıtan dikey albüm tasarımı.",
     demoUrl: "/sablonlar/sablon-amber",
     features: [
-      "Sıcak Altın Parçacıklar",
-      "Gelişmiş Ses Kontrolü",
-      "Didaktik Romantik Akış",
-      "Sonsuza Kadar Aktif Link"
+      "Uçuşan Sıcak Amber Ateşböcekleri",
+      "Gelişmiş Estetik Müzik Çalar",
+      "Dikey Romantik Albüm Akışı",
+      "Sıcak Amber Radial Işıltılar",
     ]
   },
   {
@@ -156,9 +156,9 @@ const templates = [
     demoUrl: "/sablonlar/sablon-rose",
     features: [
       "Rose Gold Parıltılar",
-      "Estetik Fotoğraf Albümü",
-      "Cormorant Şıklığı",
-      "Sonsuza Kadar Aktif Link"
+      "Zarif Gül Kurusu Renk Teması",
+      "Cormorant Garamond Başlık Şıklığı",
+      "Estetik ve Yumuşak Fotoğraf Kartları",
     ]
   },
   {
@@ -171,9 +171,9 @@ const templates = [
     demoUrl: "/sablonlar/sablon-indigo",
     features: [
       "Gece Mavisi Kalp Parçacıkları",
-      "Yıldızlı Ambiyans Işıkları",
-      "Minimalist Tasarım Dili",
-      "Sonsuza Kadar Aktif Link"
+      "Yıldızlı Gökyüzü Işıltısı",
+      "Minimalist Gece Yarısı Tasarım Dili",
+      "Pürüzsüz Dikey Akış Efektleri",
     ]
   }
 ];

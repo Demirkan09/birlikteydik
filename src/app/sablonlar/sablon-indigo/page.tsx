@@ -1,643 +1,358 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, Variants } from "framer-motion";
-import { ChevronDown, Volume2, VolumeX, Heart, Sparkles } from "lucide-react";
+import { motion, Variants, useScroll, useTransform } from "framer-motion";
+import { Play, Pause, Star } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚙️ ŞABLON AYARLARI (Kolayca Düzenlenebilir)
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── MÜŞTERİ VERİLERİ ───────────────────────────────────────────────────────
 const config = {
-  coupleNames: "Burcu & Mert",
-  tagline: "Sonsuz gece gökyüzünün altında, seninle parıldayan iki yıldız gibi...",
-  accentColor: "#818CF8", // Varsayılan: Altın Sarısı (#C9A84C)
-  specialDate: "26 Ekim 2024",
-  musicUrl: "/music/default.mp3", // Müzik dosyası yolu
+  coupleNames: "Sen & Ben",
+  partnerName: "Sana",
+  tagline: "Gecenin en derin mavisinde, yıldızlar bile bizim hikayemizi fısıldıyor.",
+  specialDate: "14 Şubat 2025",
+  musicUrl: "/music/romantic.mp3",
 };
 
 const memories = [
-  {
-    id: 1,
-    image: "/moment.jpg",
-    title: "Aşkın Rengi",
-    description: "İlk kez bana sımsıcak gülümsediğinde, içimdeki tüm kışların eriyip sıcacık bir bahara dönüştüğü o eşsiz gün.",
-    date: "14 Şubat 2025",
-  },
-  {
-    id: 2,
-    image: "/moment2.jpg",
-    title: "Kalp Atışlarımız",
-    description: "Sadece elini tutmak bile kalbimin ritmini hızlandırıp, tüm dünyadaki en mutlu ezgiyi çalıyormuş gibi hissettiriyor.",
-    date: "12 Mart 2025",
-  },
-  {
-    id: 3,
-    image: "/moment7.jpg",
-    title: "Sonsuz Bağımız",
-    description: "Her saniye, her nefeste sana olan sevgimin daha da alevlendiğini, bizi ayıramayacak güçlü bir bağa dönüştüğünü biliyorum.",
-    date: "25 Nisan 2025",
-  },
-  {
-    id: 4,
-    image: "/moment3.jpg",
-    title: "Yıldızların Altında",
-    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
-    date: "18 Ocak 2025",
-  },
-  {
-    id: 5,
-    image: "/moment4.jpg",
-    title: "Maviye Açılan Sonsuzluk",
-    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
-    date: "22 Nisan 2025",
-  },
-  {
-    id: 6,
-    image: "/moment5.jpg",
-    title: "Birlikte Yeni Bir Başlangıç",
-    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
-    date: "12 Haziran 2025",
-  },
-  {
-    id: 7,
-    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
-    title: "Beyazlar İçinde Bir Ömür",
-    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
-    date: "18 Eylül 2025",
-  },
-  {
-    id: 8,
-    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
-    title: "Sonsuzluğun Kıyısında",
-    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
-    date: "02 Mayıs 2026",
-  },
+  { id: 1, image: "/moment.jpg", title: "İlk Bakış", description: "Gözlerin ilk kez benimkilerle buluştuğunda, tüm evren bir an için sessizleşti.", date: "14 Şubat 2025", frame: "01" },
+  { id: 2, image: "/moment2.jpg", title: "Gece Yürüyüşü", description: "Sokak lambalarının altında, ellerimiz birbirine kenetlenmiş, dünya sadece bizden ibaretti.", date: "12 Mart 2025", frame: "02" },
+  { id: 3, image: "/moment7.jpg", title: "Sonsuz An", description: "Zamanın durduğu o saniyelerde, seni ne kadar sevdiğimi kelimeler anlatamaz.", date: "25 Nisan 2025", frame: "03" },
+  { id: 4, image: "/moment3.jpg", title: "Yıldızlar Altında", description: "Gökyüzüne baktık ama ben sadece seni gördüm. Sen benim en parlak yıldızımsın.", date: "18 Ocak 2025", frame: "04" },
+  { id: 5, image: "/moment4.jpg", title: "Huzur", description: "Yanında olmak; dalgaların sakin olduğu, rüzgarın dindiği, kalbimin huzur bulduğu tek yer.", date: "22 Nisan 2025", frame: "05" },
+  { id: 6, image: "/moment5.jpg", title: "Yeni Ufuklar", description: "Seninle her yeni başlangıç, daha güzel bir geleceğe açılan bir kapı.", date: "12 Haziran 2025", frame: "06" },
+  { id: 7, image: "/moment6.jpg", title: "Ebediyet", description: "Sonsuzluğa verdiğim söz, senin ellerinde güvende.", date: "18 Eylül 2025", frame: "07" },
+  { id: 8, image: "/moment8.jpg", title: "Ufuk", description: "Horizon'un ötesinde ne olursa olsun, seninle yürümek istiyorum.", date: "02 Mayıs 2026", frame: "08" },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ANİMASYON VARİANTLARI
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── ANİMASYON ────────────────────────────────────────────────────────────────
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 50, filter: "blur(8px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } },
 };
-
-const fadeIn: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 1 } },
-};
-
 const stagger: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.15 } },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ❤️ YÜZER KALP PARÇACIKLARI CANVAS
-// ─────────────────────────────────────────────────────────────────────────────
-type Particle = {
-  x: number;
-  y: number;
-  size: number;
-  speed: number;
-  opacity: number;
-  drift: number;
-  phase: number;
-};
-
-function HeartsCanvas() {
+// ─── YILDIZ PARTİKÜLLERİ ─────────────────────────────────────────────────────
+function StarField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const rafRef = useRef<number>(0);
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener("resize", resize);
-
-    particlesRef.current = Array.from({ length: 20 }, () => ({
+    const stars = Array.from({ length: 120 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: Math.random() * 6 + 3,
-      speed: Math.random() * 0.25 + 0.08,
-      opacity: Math.random() * 0.12 + 0.03,
-      drift: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.3,
+      alpha: Math.random(),
+      speed: Math.random() * 0.005 + 0.002,
       phase: Math.random() * Math.PI * 2,
     }));
-
-    const drawHeart = (cx: number, cy: number, size: number, opacity: number) => {
-      ctx.save();
-      ctx.globalAlpha = opacity;
-      ctx.fillStyle = config.accentColor;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy + size * 0.3);
-      ctx.bezierCurveTo(cx, cy, cx - size * 0.7, cy, cx - size * 0.7, cy - size * 0.4);
-      ctx.bezierCurveTo(cx - size * 0.7, cy - size * 1.0, cx, cy - size * 0.9, cx, cy - size * 0.5);
-      ctx.bezierCurveTo(cx, cy - size * 0.9, cx + size * 0.7, cy - size * 1.0, cx + size * 0.7, cy - size * 0.4);
-      ctx.bezierCurveTo(cx + size * 0.7, cy, cx, cy, cx, cy + size * 0.3);
-      ctx.fill();
-      ctx.restore();
-    };
-
     let t = 0;
-    const animate = () => {
+    let raf: number;
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      t += 0.006;
-      particlesRef.current.forEach((p) => {
-        p.y -= p.speed;
-        p.x += Math.sin(t + p.phase) * p.drift;
-        if (p.y < -20) {
-          p.y = canvas.height + 10;
-          p.x = Math.random() * canvas.width;
-        }
-        drawHeart(p.x, p.y, p.size, p.opacity);
+      t += 0.01;
+      stars.forEach(s => {
+        const a = 0.3 + 0.7 * Math.abs(Math.sin(t * s.speed * 20 + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(160,200,255,${a * 0.6})`;
+        ctx.fill();
       });
-      rafRef.current = requestAnimationFrame(animate);
+      raf = requestAnimationFrame(draw);
     };
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      cancelAnimationFrame(rafRef.current);
-    };
+    draw();
+    return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(raf); };
   }, []);
-
   return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 🎵 PREMIUM PLAK MÜZİK WİDGET'I
-// ─────────────────────────────────────────────────────────────────────────────
-function MusicVinylWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggleMusic: () => void }) {
+// ─── MÜZİK OYNATICI ──────────────────────────────────────────────────────────
+function VinylPlayer({ isPlaying, toggle }: { isPlaying: boolean; toggle: () => void }) {
   return (
     <div
-      className="flex items-center gap-4 rounded-xl p-3 cursor-pointer transition-transform hover:scale-[1.02] backdrop-blur-xl"
+      onClick={toggle}
       style={{
-        background: "linear-gradient(135deg, #030514 0%, #090D26 60%, #030514 100%)",
-        border: "1px solid rgba(129,140,248,0.15)",
-        boxShadow: "0 12px 40px rgba(0,0,0,0.85)",
+        display: "flex", alignItems: "center", gap: "12px",
+        background: "rgba(10,20,50,0.85)",
+        border: "1px solid rgba(100,160,255,0.2)",
+        borderRadius: "12px",
+        padding: "12px 16px",
+        cursor: "pointer",
+        backdropFilter: "blur(20px)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
       }}
-      onClick={toggleMusic}
     >
-      {/* Plak Döner Disk */}
-      <div className="relative flex-shrink-0" style={{ width: 44, height: 44 }}>
-        <motion.div
-          animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
-          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            background: "repeating-radial-gradient(circle, #27272A, #09090B 1px, #18181B 5px)",
-            border: "2px solid #3F3F46",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.6)",
-          }}
-        >
-          {/* Ortadaki Göbek */}
-          <div
-            style={{
-              width: "14px",
-              height: "14px",
-              borderRadius: "50%",
-              background: config.accentColor,
-              border: "1px solid rgba(255,255,255,0.3)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#030514" }} />
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Metin Detayları */}
-      <div className="flex flex-col">
-        <span
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "13px",
-            fontStyle: "italic",
-            color: isPlaying ? config.accentColor : "rgba(255,255,255,0.75)",
-            letterSpacing: "0.04em",
-          }}
-        >
-          {isPlaying ? "Melodi Çalıyor..." : "Arka Plan Melodisi"}
+      <motion.div
+        animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
+        transition={isPlaying ? { duration: 3, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
+        style={{
+          width: 40, height: 40, borderRadius: "50%",
+          background: "conic-gradient(from 0deg, #0a1432, #1a3a7a, #0a1432, #0d2060, #0a1432)",
+          border: "2px solid rgba(100,160,255,0.3)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          position: "relative",
+        }}
+      >
+        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0a1432", border: "1px solid rgba(100,160,255,0.5)" }} />
+        <div style={{
+          position: "absolute", inset: 4, borderRadius: "50%",
+          border: "1px solid rgba(100,160,255,0.1)",
+        }} />
+      </motion.div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "11px", color: isPlaying ? "rgba(160,200,255,0.9)" : "rgba(100,140,200,0.7)", letterSpacing: "0.05em" }}>
+          {isPlaying ? "Çalıyor..." : "Müzik"}
         </span>
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "9px",
-            color: "rgba(255,255,255,0.4)",
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            marginTop: "2px",
-          }}
-        >
-          {isPlaying ? "Tıkla & Durdur" : "Tıkla & Dinle"}
+        <span style={{ fontFamily: "monospace", fontSize: "9px", color: "rgba(60,100,180,0.6)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+          {isPlaying ? "Durdur" : "Dinle"}
         </span>
       </div>
-
-      {/* Ses İkonu */}
-      <div className="ml-auto pr-1">
-        {isPlaying ? (
-          <Volume2 size={14} style={{ color: config.accentColor, opacity: 0.9 }} className="animate-pulse" />
-        ) : (
-          <VolumeX size={14} style={{ color: "rgba(255,255,255,0.4)" }} />
-        )}
+      <div style={{ marginLeft: "auto" }}>
+        {isPlaying
+          ? <Pause size={14} color="rgba(100,160,255,0.8)" />
+          : <Play size={14} color="rgba(60,100,180,0.6)" />}
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 📸 FOTOĞRAF KART KOMPONENTI (Tamamen Uyumlu ve Hizalı)
-// ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+// ─── FİLM ŞERİDİ KART ────────────────────────────────────────────────────────
+function FilmCard({ memory, index }: { memory: typeof memories[0]; index: number }) {
   const isEven = index % 2 === 0;
-
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "-80px" }}
       variants={stagger}
-      className="flex flex-col items-center gap-8"
-      style={{ position: "relative" }}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}
     >
-
-
-      {/* Fotoğraf Çerçevesi (Yatay & Dikey Tüm Resimleri Çözünürlük Fark Etmeksizin Tam Gösterir) */}
-      <motion.div
-        variants={fadeUp}
-        className="relative flex-shrink-0 w-full max-w-[330px]"
-        style={{ zIndex: 1 }}
-      >
-        <div
-          className="relative overflow-hidden rounded-lg"
-          style={{
-            background: "#090D26",
-            padding: "8px",
-            border: "1px solid rgba(129,140,248,0.15)",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
-          }}
-        >
-          {/* Görselin tam olarak kesilmeden gözükmesi için w-full h-auto block kullanılmıştır */}
-          <img
-            src={memory.image}
-            alt={memory.title}
-            className="w-full h-auto block rounded-sm"
-          />
+      {/* Film şeridi çerçeve */}
+      <motion.div variants={fadeUp} style={{ width: "100%", maxWidth: "340px", position: "relative" }}>
+        {/* Üst delik şeridi */}
+        <div style={{ display: "flex", gap: "6px", marginBottom: "4px", paddingLeft: "8px" }}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} style={{ width: "16px", height: "10px", borderRadius: "2px", background: "rgba(30,60,120,0.8)", border: "1px solid rgba(60,100,180,0.3)" }} />
+          ))}
+        </div>
+        {/* Fotoğraf */}
+        <div style={{
+          position: "relative", overflow: "hidden",
+          border: "3px solid rgba(30,60,120,0.9)",
+          background: "#040d24",
+        }}>
+          <div style={{ position: "absolute", top: "8px", left: "8px", zIndex: 2, fontFamily: "monospace", fontSize: "9px", color: "rgba(100,160,255,0.5)", letterSpacing: "0.2em" }}>
+            {memory.frame}
+          </div>
+          <img src={memory.image} alt={memory.title} style={{ width: "100%", display: "block", filter: "brightness(0.9) contrast(1.05)" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(4,13,36,0.6) 100%)", pointerEvents: "none" }} />
+        </div>
+        {/* Alt delik şeridi */}
+        <div style={{ display: "flex", gap: "6px", marginTop: "4px", paddingLeft: "8px" }}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} style={{ width: "16px", height: "10px", borderRadius: "2px", background: "rgba(30,60,120,0.8)", border: "1px solid rgba(60,100,180,0.3)" }} />
+          ))}
         </div>
       </motion.div>
 
-      {/* Metin İçeriği */}
-      <div className="flex flex-col items-center justify-center text-center max-w-sm gap-4 relative z-10">
-        <motion.div variants={fadeIn} className="flex items-center justify-center gap-3">
-          <div className="w-8 h-px" style={{ background: config.accentColor, opacity: 0.4 }} />
-          <span
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "9px",
-              color: "rgba(255,255,255,0.5)",
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-            }}
-          >
-            {memory.date}
-          </span>
-          <div className="w-8 h-px" style={{ background: config.accentColor, opacity: 0.4 }} />
-        </motion.div>
-
-        <motion.h3
-          variants={fadeUp}
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-            fontWeight: 400,
-            color: "#FFFFFF",
-            lineHeight: 1.2,
-            textAlign: "center",
-          }}
-        >
+      {/* Metin */}
+      <motion.div variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", maxWidth: "300px", textAlign: "center" }}>
+        <motion.span variants={fadeUp} style={{ fontFamily: "monospace", fontSize: "9px", color: "rgba(60,100,180,0.7)", letterSpacing: "0.35em", textTransform: "uppercase" }}>
+          {memory.date}
+        </motion.span>
+        <motion.h3 variants={fadeUp} style={{
+          fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.4rem, 5vw, 2rem)",
+          fontWeight: 400, color: "rgba(200,225,255,0.95)", lineHeight: 1.15, letterSpacing: "0.02em",
+        }}>
           {memory.title}
         </motion.h3>
-
-        <motion.p
-          variants={fadeUp}
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "0.875rem",
-            color: "rgba(255,255,255,0.55)",
-            lineHeight: 1.8,
-            fontWeight: 300,
-            textAlign: "center",
-          }}
-        >
+        <motion.p variants={fadeUp} style={{
+          fontFamily: "'Space Grotesk', sans-serif", fontSize: "0.82rem",
+          color: "rgba(130,170,230,0.55)", lineHeight: 1.85, fontWeight: 300,
+        }}>
           {memory.description}
         </motion.p>
-      </div>
+        <motion.div variants={fadeUp} style={{ width: "24px", height: "1px", background: "rgba(60,100,180,0.4)" }} />
+      </motion.div>
     </motion.div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 👑 ANA SAYFA COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-export default function IndigoTemplate() {
+// ─── ANA COMPONENT ────────────────────────────────────────────────────────────
+export default function MidnightVelvetTemplate() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [countdown, setCountdown] = useState(4);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   useEffect(() => {
     audioRef.current = new Audio(config.musicUrl);
     audioRef.current.loop = true;
-    return () => {
-      audioRef.current?.pause();
-    };
+    return () => { audioRef.current?.pause(); };
   }, []);
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      if (audioRef.current) {
-        audioRef.current
-          .play()
-          .then(() => setIsPlaying(true))
-          .catch(() => {});
-      }
-    }
-  }, [countdown]);
-
-  const toggleMusic = () => {
+  const toggle = () => {
     if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {});
-    }
+    if (isPlaying) { audioRef.current.pause(); setIsPlaying(false); }
+    else { audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {}); }
   };
 
   return (
-    <main
-      className="min-h-screen overflow-x-hidden selection:bg-white/10"
-      style={{ background: "#030514", color: "#FFFFFF" }}
-    >
-      {/* PARÇACIK EFEKTİ */}
-      <HeartsCanvas />
+    <main style={{ minHeight: "100vh", overflowX: "hidden", background: "#04091a", color: "#c8e1ff", fontFamily: "'Space Grotesk', sans-serif" }}>
+      {/* Ambient */}
+      <div style={{
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        background: `
+          radial-gradient(ellipse 90% 60% at 50% -5%, rgba(30,80,200,0.18) 0%, transparent 65%),
+          radial-gradient(ellipse 50% 40% at 15% 80%, rgba(10,40,120,0.12) 0%, transparent 60%),
+          radial-gradient(ellipse 50% 40% at 85% 30%, rgba(20,60,160,0.1) 0%, transparent 60%)
+        `
+      }} />
+      <StarField />
 
-      {/* Mobil Uyumlu Merkez Çerçeve Wrapper */}
-      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#030514] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
-        {/* Müzik Widget'ı */}
-        <div className="fixed lg:absolute bottom-6 left-6 z-40">
-          <MusicVinylWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
-        </div>
+      {/* Music widget */}
+      <div style={{ position: "fixed", bottom: "24px", left: "24px", zIndex: 40 }}>
+        <VinylPlayer isPlaying={isPlaying} toggle={toggle} />
+      </div>
 
-        {/* ── KAHRAMAN BÖLÜMÜ (HERO) ── */}
-        <section className="relative flex flex-col items-center justify-center overflow-hidden w-full h-[100svh]">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="relative z-20 flex flex-col items-center px-6 text-center"
-          >
-            <motion.div variants={fadeIn} className="flex items-center gap-4 mb-8">
-              <div className="w-8 h-px" style={{ background: config.accentColor }} />
-              <Sparkles size={12} style={{ color: config.accentColor }} className="animate-pulse" />
-              <span
+      {/* Centered container */}
+      <div style={{ position: "relative", width: "100%", maxWidth: "480px", margin: "0 auto", minHeight: "100vh", zIndex: 10, borderLeft: "1px solid rgba(30,60,120,0.15)", borderRight: "1px solid rgba(30,60,120,0.15)" }}>
+
+        {/* HERO */}
+        <section ref={heroRef} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100svh", overflow: "hidden" }}>
+          <motion.div style={{ y: heroY, opacity: heroOpacity }} initial="hidden" animate="visible">
+            <motion.div variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 32px" }}>
+
+              {/* Yıldız dekorasyonu */}
+              <motion.div variants={fadeUp} style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
+                <Star size={8} fill="rgba(100,160,255,0.4)" stroke="none" />
+                <span style={{ fontFamily: "monospace", fontSize: "9px", color: "rgba(60,100,200,0.7)", letterSpacing: "0.5em", textTransform: "uppercase" }}>
+                  {config.specialDate}
+                </span>
+                <Star size={8} fill="rgba(100,160,255,0.4)" stroke="none" />
+              </motion.div>
+
+              <motion.h1 variants={fadeUp} style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(3.5rem, 14vw, 9rem)",
+                fontWeight: 400,
+                lineHeight: 0.95,
+                letterSpacing: "0.03em",
+                background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(100,160,255,0.6) 50%, rgba(50,100,220,0.5) 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>
+                {config.coupleNames}
+              </motion.h1>
+
+              {/* Yatay çizgi */}
+              <motion.div variants={fadeUp} style={{ display: "flex", alignItems: "center", gap: "16px", margin: "28px 0" }}>
+                <div style={{ flex: 1, height: "1px", background: "linear-gradient(to right, transparent, rgba(60,100,200,0.4))" }} />
+                <Star size={12} fill="rgba(100,160,255,0.7)" stroke="none" style={{ filter: "drop-shadow(0 0 6px rgba(100,160,255,0.8))" }} />
+                <div style={{ flex: 1, height: "1px", background: "linear-gradient(to left, transparent, rgba(60,100,200,0.4))" }} />
+              </motion.div>
+
+              <motion.p variants={fadeUp} style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: "0.78rem",
+                color: "rgba(130,170,230,0.55)",
+                letterSpacing: "0.08em",
+                lineHeight: 2,
+                maxWidth: "22rem",
+                marginBottom: "40px",
+              }}>
+                {config.tagline}
+              </motion.p>
+
+              <motion.button
+                variants={fadeUp}
+                onClick={toggle}
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "monospace",
                   fontSize: "9px",
-                  color: config.accentColor,
-                  letterSpacing: "0.4em",
+                  letterSpacing: "0.45em",
                   textTransform: "uppercase",
-                }}
-              >
-                Biz Birlikteyken
-              </span>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeUp}
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
-                fontWeight: 300,
-                lineHeight: 1.15,
-                color: "#FFFFFF",
-                marginBottom: "1.5rem",
-              }}
-            >
-              {config.coupleNames}
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp}
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "12px",
-                color: "rgba(255,255,255,0.5)",
-                maxWidth: "280px",
-                lineHeight: 1.7,
-                marginBottom: "2rem",
-              }}
-            >
-              {config.tagline}
-            </motion.p>
-
-            <motion.div
-              variants={fadeUp}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "12px",
-                marginBottom: "2.5rem",
-              }}
-            >
-              <button
-                onClick={toggleMusic}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 24px",
-                  borderRadius: "30px",
-                  border: `1px solid ${config.accentColor}`,
-                  background: isPlaying ? "rgba(201,168,76,0.1)" : "transparent",
-                  color: isPlaying ? "#FFFFFF" : config.accentColor,
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "11px",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
+                  padding: "13px 32px",
+                  border: "1px solid rgba(60,100,200,0.35)",
+                  color: "rgba(130,170,230,0.8)",
+                  background: "rgba(10,30,80,0.3)",
+                  borderRadius: "3px",
                   cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  boxShadow: isPlaying ? `0 0 15px ${config.accentColor}33` : "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = isPlaying ? "rgba(201,168,76,0.2)" : `${config.accentColor}18`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isPlaying ? "rgba(201,168,76,0.1)" : "transparent";
+                  backdropFilter: "blur(10px)",
                 }}
               >
-                {isPlaying ? <Volume2 size={13} /> : <VolumeX size={13} />}
-                <span>{isPlaying ? "Sesi Durdur" : "Hikayeyi Sesli Dinle"}</span>
-              </button>
-              <motion.span
-                animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
-                transition={{ duration: 0.6 }}
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "13px",
-                  fontStyle: "italic",
-                  color: "rgba(255, 255, 255, 0.6)",
-                  textAlign: "center",
-                }}
-              >
-                ✨ bence tıklamalısın, böylesi çok daha güzel
-              </motion.span>
-            </motion.div>
+                {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
+              </motion.button>
 
-            <motion.div
-              variants={fadeIn}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", opacity: 0.5 }}
-            >
-              <div style={{ width: "1px", height: "32px", background: `linear-gradient(to bottom, transparent, ${config.accentColor})` }} />
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                style={{ width: "6px", height: "6px", borderRadius: "50%", background: config.accentColor }}
-              />
-              <span
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "8px",
-                  letterSpacing: "0.3em",
-                  textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.7)",
-                  marginTop: "4px",
-                }}
-              >
-                Kaydırın
-              </span>
             </motion.div>
+          </motion.div>
+
+          {/* Scroll */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.45 }} transition={{ delay: 2, duration: 1.5 }}
+            style={{ position: "absolute", bottom: "32px", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+            <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.5, repeat: Infinity }}>
+              <div style={{ width: "1px", height: "40px", background: "linear-gradient(to bottom, rgba(60,100,200,0.5), transparent)" }} />
+            </motion.div>
+            <span style={{ fontFamily: "monospace", fontSize: "7px", letterSpacing: "0.4em", color: "rgba(60,100,200,0.6)", textTransform: "uppercase" }}>Kaydır</span>
           </motion.div>
         </section>
 
-        {/* ── FOTOĞRAF KARTLARI (BELLEKLER BÖLÜMÜ) ── */}
-        <div className="relative z-10 py-16 px-6 max-w-4xl mx-auto">
-          <div className="flex flex-col gap-32">
-            {memories.map((m, i) => (
-              <MemoryCard key={m.id} memory={m} index={i} />
-            ))}
-          </div>
+        {/* BÖLÜM BAŞLIK */}
+        <div style={{ padding: "80px 32px 60px", textAlign: "center", borderTop: "1px solid rgba(30,60,120,0.2)", background: "linear-gradient(to bottom, #04091a, #060d28)" }}>
+          <motion.span initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+            style={{ fontFamily: "monospace", fontSize: "8px", color: "rgba(60,100,180,0.6)", letterSpacing: "0.5em", textTransform: "uppercase" }}>
+            Gece Mavisi Serisi
+          </motion.span>
+          <motion.h2 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: "rgba(200,225,255,0.9)", marginTop: "12px", letterSpacing: "0.03em" }}>
+            Birlikte Yazılan Hikaye
+          </motion.h2>
         </div>
 
-        {/* ── BİTİŞ EPİLOG BÖLÜMÜ ── */}
-        <section
-          className="relative flex flex-col items-center justify-center overflow-hidden py-36 z-10"
-          style={{ background: "#060608", borderTop: "1px solid rgba(255,255,255,0.05)" }}
-        >
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(circle at 50% 50%, ${config.accentColor}11 0%, transparent 70%)` }}
-          />
+        {/* KARTLAR */}
+        <div style={{ padding: "0 24px 80px", display: "flex", flexDirection: "column", gap: "80px" }}>
+          {memories.map((m, i) => <FilmCard key={m.id} memory={m} index={i} />)}
+        </div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={stagger}
-            className="relative z-10 flex flex-col items-center px-6 text-center"
-          >
-            <motion.div variants={fadeUp} className="mb-8">
-              <Heart
-                size={28}
-                fill={config.accentColor}
-                stroke="none"
-                className="animate-pulse"
-                style={{ filter: `drop-shadow(0 0 12px ${config.accentColor}aa)` }}
-              />
+        {/* FİNAL */}
+        <section style={{ padding: "80px 32px", textAlign: "center", borderTop: "1px solid rgba(30,60,120,0.2)", background: "#04091a" }}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+            <motion.div variants={fadeUp} style={{ display: "flex", gap: "8px" }}>
+              <Star size={8} fill="rgba(100,160,255,0.3)" stroke="none" />
+              <Star size={14} fill="rgba(100,160,255,0.8)" stroke="none" style={{ filter: "drop-shadow(0 0 8px rgba(100,160,255,0.7))" }} />
+              <Star size={8} fill="rgba(100,160,255,0.3)" stroke="none" />
             </motion.div>
-            <motion.h2
-              variants={fadeUp}
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(1.8rem, 4vw, 3.5rem)",
-                fontWeight: 400,
-                color: "#FFFFFF",
-                letterSpacing: "0.04em",
-                marginBottom: "1.5rem",
-                lineHeight: 1.2,
-              }}
-            >
-              Sonsuza Dek Birlikte
+            <motion.h2 variants={fadeUp} style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 6vw, 3.5rem)", fontWeight: 400, color: "rgba(200,225,255,0.9)", lineHeight: 1.15, letterSpacing: "0.03em" }}>
+              Sonsuza Kadar<br />Seninle
             </motion.h2>
-
-            <motion.span
-              variants={fadeUp}
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "11px",
-                letterSpacing: "0.42em",
-                textTransform: "uppercase",
-                color: "rgba(255,255,255,0.6)",
-              }}
-            >
+            <motion.span variants={fadeUp} style={{ fontFamily: "monospace", fontSize: "9px", color: "rgba(60,100,180,0.6)", letterSpacing: "0.45em", textTransform: "uppercase" }}>
               {config.coupleNames}
             </motion.span>
-            <motion.span
-              variants={fadeIn}
-              style={{
-                fontFamily: "monospace",
-                fontSize: "9px",
-                color: "rgba(255,255,255,0.3)",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                marginTop: "0.75rem",
-              }}
-            >
+            <motion.span variants={fadeUp} style={{ fontFamily: "monospace", fontSize: "8px", color: "rgba(30,60,120,0.8)", letterSpacing: "0.3em" }}>
               {config.specialDate}
             </motion.span>
           </motion.div>
         </section>
 
-        {/* ── FOOTER ── */}
-        <footer
-          className="py-12 text-center relative z-10"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "9px",
-            letterSpacing: "0.45em",
-            textTransform: "uppercase",
-            color: "rgba(255,255,255,0.3)",
-          }}
-        >
-          birlikteydik.com — Hazır Şablon
+        {/* FOOTER */}
+        <footer style={{ padding: "32px", textAlign: "center", fontFamily: "monospace", fontSize: "8px", letterSpacing: "0.45em", textTransform: "uppercase", color: "rgba(30,60,120,0.6)" }}>
+          Midnight Velvet — birlikteydik.com
         </footer>
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
       `}</style>
     </main>
   );
