@@ -315,15 +315,15 @@ const testimonials = [
 const faqs = [
   {
     q: "Sayfa ne kadar sürede hazır olur?",
-    a: "Siparişin onaylandıktan itibaren 24 saat içinde özel linkin e-posta ile sana iletilir.",
+    a: "Temel pakette siparişin onaylandıktan itibaren 24 saat içinde özel linkin e-posta ile sana iletilir.",
   },
   {
     q: "Kaç fotoğraf gönderebilirim?",
-    a: "İstediğin kadar fotoğraf gönderebilirsin. Paketine göre sayfanda 10'dan 50'ye kadar fotoğraf gösterilir.",
+    a: "İstediğin kadar fotoğraf gönderebilirsin. Paketine göre sayfanda 16'dan 64'e kadar fotoğraf gösterilir.",
   },
   {
     q: "Link ne kadar süre aktif kalır?",
-    a: "Temel pakette 1 yıl, premium pakette sonsuza kadar aktif kalır.",
+    a: "Temel pakette 6 ay, premium pakette 18 ay aktif kalır.",
   },
   {
     q: "Müzik ekleyebilir miyim?",
@@ -331,7 +331,7 @@ const faqs = [
   },
   {
     q: "Sayfa tasarımını sonradan değiştirebilir miyim?",
-    a: "Premium pakette sınırsız revizyon hakkın var. Temel pakette yayına alındıktan sonra 1 revizyon yapılabilir.",
+    a: "Temel pakette yayına alındıktan sonra 1 revizyon yapılabilir. Premium ve Premium+ pakette 3 revizyon hakkın var. ",
   },
 ];
 
@@ -420,26 +420,56 @@ const plans = [
     name: "Temel",
     price: "₺499",
     features: [
-      "12 fotoğrafa kadar",
+      "16 fotoğrafa kadar",
       "Özel mesaj & isim",
+      "Özel müzik ekleme",
       "6 ay aktif link",
-      "3 şablon seçeneği",
+      "Şifreyle koruma",
     ],
     highlighted: false,
     cta: "Sipariş Ver",
   },
   {
     name: "Premium",
-    price: "₺1499",
+    price: "₺1299",
     features: [
-      "50 fotoğrafa kadar",
+      "32 fotoğrafa kadar",
+      "Özel mesaj & isim",
       "Özel müzik ekleme",
-      "1 yıl aktif link",
-      "20+ şablon seçeneği",
+      "18 ay aktif link",
       "Öncelikli hazırlama (12 saat)",
+      "Şifreyle koruma",
+    ],
+    highlighted: false,
+    cta: "En Çok Tercih Edilen",
+  },
+  {
+    name: "Premium+",
+    price: "₺2499",
+    features: [
+      "64 fotoğrafa kadar",
+      "Özel mesaj & isim",
+      "Özel müzik ekleme",
+      "2 yıl aktif link",
+      "Öncelikli hazırlama (12 saat)",
+      "Şifreyle koruma",
+    ],
+    highlighted: false,
+    cta: "Sipariş Ver",
+  },
+  {
+    name: "Özel",
+    price: "Size Özel Tasarım Mı?",
+    features: [
+      "İstediğiniz kadar fotoğraf",
+      "Özel mesaj & isim",
+      "Özel müzik ekleme",
+      "Sınırsız aktif link",
+      "Öncelikli hazırlama (12 saat)",
+      "Şifreyle koruma",
     ],
     highlighted: true,
-    cta: "En Çok Tercih Edilen",
+    cta: "İletişime Geç",
   },
 ];
 
