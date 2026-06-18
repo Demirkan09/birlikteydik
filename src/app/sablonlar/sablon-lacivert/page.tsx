@@ -19,23 +19,58 @@ const memories = [
   {
     id: 1,
     image: "/moment.jpg",
-    title: "İlk Kesişme Noktası",
-    description: "Milyonlarca insanın arasında, tam da o anda, tam da o yerde. Hayatımızın en güzel sayfasını açtığımız o ilk gün.",
-    date: "26 Ekim 2024",
+    title: "Aşkın Rengi",
+    description: "İlk kez bana sımsıcak gülümsediğinde, içimdeki tüm kışların eriyip sıcacık bir bahara dönüştüğü o eşsiz gün.",
+    date: "14 Şubat 2025",
   },
   {
     id: 2,
     image: "/moment2.jpg",
-    title: "Büyüyen Mutluluk",
-    description: "Her yeni güne seninle uyanmak, her anı seninle paylaşmak. Yan yanayken geçen her saniye paha biçilemez.",
-    date: "12 Kasım 2024",
+    title: "Kalp Atışlarımız",
+    description: "Sadece elini tutmak bile kalbimin ritmini hızlandırıp, tüm dünyadaki en mutlu ezgiyi çalıyormuş gibi hissettiriyor.",
+    date: "12 Mart 2025",
   },
   {
     id: 3,
+    image: "/moment7.jpg",
+    title: "Sonsuz Bağımız",
+    description: "Her saniye, her nefeste sana olan sevgimin daha da alevlendiğini, bizi ayıramayacak güçlü bir bağa dönüştüğünü biliyorum.",
+    date: "25 Nisan 2025",
+  },
+  {
+    id: 4,
     image: "/moment3.jpg",
-    title: "Geleceğe Doğru İlk Adım",
-    description: "Umut dolu yarınlara seninle el ele yürümek... Birlikte kurduğumuz hayallerin gerçekleşeceği o güzel geleceğe doğru.",
-    date: "14 Aralık 2024",
+    title: "Yıldızların Altında",
+    description: "Şehrin tüm gürültüsünden uzakta, tepede uzanıp gökyüzünü izlerken dilek tuttuğumuz o gece. Ben sadece senin gözlerine baktım ve içimden hep aynı şeyi diledim: Sonsuzluk.",
+    date: "18 Ocak 2025",
+  },
+  {
+    id: 5,
+    image: "/moment4.jpg",
+    title: "Maviye Açılan Sonsuzluk",
+    description: "Benim için dünyanın en huzurlu limanı burasıydı sevgilim, çünkü yanımda sen varsın.",
+    date: "22 Nisan 2025",
+  },
+  {
+    id: 6,
+    image: "/moment5.jpg",
+    title: "Birlikte Yeni Bir Başlangıç",
+    description: "Başardığımız, büyüdüğümüz ve geleceğe doğru ilk büyük adımı attığımız o gün; yanımda sen varsan her zorluğun üstesinden gelebileceğimi bir kez daha anladım.",
+    date: "12 Haziran 2025",
+  },
+  {
+    id: 7,
+    image: "/moment6.jpg", // moment6.jpg (Gelinlik ve buket)
+    title: "Beyazlar İçinde Bir Ömür",
+    description: "Ellerinin arasında tuttuğun o güller, senin zarafetinin yanında sadece ufak birer ayrıntıydı. Hayatımın en güzel, en berrak 'Evet'ini fısıldarken; kalbimi sonsuza dek sana emanet etmenin gururunu yaşıyordum.",
+    date: "18 Eylül 2025",
+  },
+  {
+    id: 8,
+    image: "/moment8.jpg", // moment8.jpg (Denizin içindeki çift)
+    title: "Sonsuzluğun Kıyısında",
+    description: "Şehrin, insanların ve zamanın fersah fersah uzağında... Sadece iki siluet olarak gökyüzünün ve denizin sonsuzluğuna karıştığımız o an. Biz artık iki ayrı insan değil, aynı denizde eriyen tek bir hikayeyiz.",
+    date: "02 Mayıs 2026",
   },
 ];
 
@@ -238,28 +273,10 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
-      className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${isEven ? "" : "md:flex-row-reverse"}`}
+      className="flex flex-col items-center gap-8"
       style={{ position: "relative" }}
     >
-      {/* Arka Plan Büyük Sayı */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          fontFamily: "'Inter', sans-serif",
-          fontSize: "clamp(6rem, 15vw, 12rem)",
-          fontWeight: 800,
-          color: "rgba(255,255,255,0.02)",
-          lineHeight: 1,
-          pointerEvents: "none",
-          whiteSpace: "nowrap",
-          zIndex: 0,
-        }}
-      >
-        {String(index + 1).padStart(2, "0")}
-      </div>
+
 
       {/* Fotoğraf Çerçevesi (Yatay & Dikey Tüm Resimleri Çözünürlük Fark Etmeksizin Tam Gösterir) */}
       <motion.div
@@ -286,8 +303,8 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       </motion.div>
 
       {/* Metin İçeriği */}
-      <div className="flex flex-col max-w-sm gap-4 relative z-10">
-        <motion.div variants={fadeIn} className="flex items-center gap-3">
+      <div className="flex flex-col items-center justify-center text-center max-w-sm gap-4 relative z-10">
+        <motion.div variants={fadeIn} className="flex items-center justify-center gap-3">
           <div className="w-8 h-px" style={{ background: config.accentColor, opacity: 0.4 }} />
           <span
             style={{
@@ -300,6 +317,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           >
             {memory.date}
           </span>
+          <div className="w-8 h-px" style={{ background: config.accentColor, opacity: 0.4 }} />
         </motion.div>
 
         <motion.h3
@@ -310,6 +328,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             fontWeight: 400,
             color: "#FFFFFF",
             lineHeight: 1.2,
+            textAlign: "center",
           }}
         >
           {memory.title}
@@ -323,6 +342,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             color: "rgba(255,255,255,0.55)",
             lineHeight: 1.8,
             fontWeight: 300,
+            textAlign: "center",
           }}
         >
           {memory.description}

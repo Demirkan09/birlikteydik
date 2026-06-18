@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     const res = await pool.query(
-      "SELECT id, name, email, password_hash, marketing_consent FROM users WHERE email = $1",
+      "SELECT id, name, email, password_hash, marketing_consent, role FROM users WHERE email = $1",
       [email.toLowerCase().trim()]
     );
 
@@ -51,6 +51,7 @@ export async function POST(request: Request) {
         name: user.name,
         email: user.email,
         marketingConsent: user.marketing_consent,
+        role: user.role,
       },
     });
   } catch (err) {

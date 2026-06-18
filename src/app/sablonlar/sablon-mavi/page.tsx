@@ -135,7 +135,7 @@ function CompassWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggleM
               key={label}
               style={{
                 position: "absolute",
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontSize: "6px",
                 fontWeight: 600,
                 color: label === "N" ? "#3EA094" : "rgba(232,244,242,0.3)",
@@ -206,22 +206,23 @@ function CompassWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggleM
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', sans-serif",
             fontSize: "12px",
-            fontWeight: 500,
-            color: isPlaying ? "#3EA094" : "rgba(232,244,242,0.7)",
-            letterSpacing: "0.04em",
+            fontWeight: 600,
+            color: "#E8F4F2",
+            lineHeight: 1,
+            letterSpacing: "0.05em",
           }}
         >
           {isPlaying ? "Çalıyor..." : "Müzik"}
         </span>
         <span
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: "9px",
-            fontWeight: 400,
-            color: "rgba(62,160,148,0.5)",
-            letterSpacing: "0.14em",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "8px",
+            color: isPlaying ? "#3EA094" : "rgba(232,244,242,0.3)",
+            fontWeight: 500,
+            letterSpacing: "0.1em",
             textTransform: "uppercase",
             marginTop: "2px",
           }}
@@ -267,7 +268,7 @@ function Marquee() {
           <span
             key={i}
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Cormorant Garamond', serif",
               fontSize: "11px",
               fontWeight: 600,
               letterSpacing: "0.18em",
@@ -291,7 +292,6 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [30, -30]);
-  const isEven = index % 2 === 0;
 
   return (
     <motion.div
@@ -300,7 +300,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
-      className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${isEven ? "" : "md:flex-row-reverse"}`}
+      className="flex flex-col items-center gap-8"
       style={{ position: "relative" }}
     >
       {/* Fon büyük numara */}
@@ -310,7 +310,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Cormorant Garamond', serif",
           fontSize: "clamp(6rem, 15vw, 12rem)",
           fontWeight: 700,
           color: "rgba(62,160,148,0.04)",
@@ -324,36 +324,38 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       </div>
 
       {/* Fotoğraf */}
-      <motion.div
-        variants={fadeIn}
-        className="relative flex-shrink-0 w-full max-w-[330px]"
-        style={{ position: "relative", overflow: "hidden", zIndex: 1 }}
-      >
-        <img
-          src={memory.image}
-          alt={memory.title}
-          style={{
-            width: "100%",
-            height: "auto",
-            display: "block",
-            filter: "saturate(0.9) contrast(1.05)",
-          }}
-        />
-        {/* Teal overlay */}
+      <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ width: "100%", maxWidth: "330px" }}>
+        {/* Glow arka planı */}
         <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(135deg, rgba(62,160,148,0.12) 0%, transparent 60%)",
-            pointerEvents: "none",
-          }}
+          className="absolute inset-0 rounded-lg pointer-events-none"
+          style={{ background: "#3EA094", filter: "blur(18px)", opacity: 0.08 }}
         />
+        {/* Kart */}
+        <div
+          className="relative overflow-hidden rounded-lg"
+          style={{
+            background: "#071020",
+            padding: "8px",
+            border: "1px solid rgba(62,160,148,0.20)",
+            boxShadow: "0 16px 48px rgba(0,0,0,0.65)",
+          }}
+        >
+          <div className="relative overflow-hidden rounded-sm">
+            <img
+              src={memory.image}
+              alt={memory.title}
+              className="w-full h-auto block"
+              style={{ filter: "saturate(0.9) contrast(1.05)" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#071020]/30 via-transparent to-transparent pointer-events-none" />
+          </div>
+        </div>
       </motion.div>
 
       {/* Metin */}
       <motion.div
         variants={stagger}
-        className="flex flex-col max-w-sm gap-4"
+        className="flex flex-col items-center justify-center text-center max-w-sm gap-4"
         style={{
           direction: "ltr",
           position: "relative",
@@ -367,17 +369,18 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             width: "40px",
             height: "2px",
             background: "#3EA094",
-            marginBottom: "12px",
+            margin: "0 auto 12px",
           }}
         />
         <motion.h3
           variants={fadeUp}
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Cormorant Garamond', serif",
             fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
             fontWeight: 600,
             color: "#E8F4F2",
             lineHeight: 1.2,
+            textAlign: "center",
           }}
         >
           {memory.title}
@@ -386,21 +389,22 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         <motion.p
           variants={fadeUp}
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Inter', sans-serif",
             fontSize: "0.875rem",
             fontWeight: 300,
             color: "rgba(232,244,242,0.55)",
             lineHeight: 1.8,
+            textAlign: "center",
           }}
         >
           {memory.description}
         </motion.p>
 
-        <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
+        <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px" }}>
           <div style={{ width: "24px", height: "1px", background: "rgba(62,160,148,0.4)" }} />
           <span
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Inter', sans-serif",
               fontSize: "10px",
               fontWeight: 500,
               letterSpacing: "0.2em",
@@ -410,6 +414,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           >
             {memory.date}
           </span>
+          <div style={{ width: "24px", height: "1px", background: "rgba(62,160,148,0.4)" }} />
         </motion.div>
       </motion.div>
     </motion.div>
@@ -456,7 +461,7 @@ export default function MaviTemplate() {
   return (
     <main
       className="min-h-screen overflow-x-hidden selection:bg-[#3EA094]/20"
-      style={{ background: "#0A1628", color: "#E8F4F2", fontFamily: "'Space Grotesk', sans-serif" }}
+      style={{ background: "#0A1628", color: "#E8F4F2", fontFamily: "'Inter', sans-serif" }}
     >
       {/* AMBIENT */}
       <div
@@ -495,7 +500,7 @@ export default function MaviTemplate() {
                   position: "absolute",
                   top: "-20px",
                   left: "50px",
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "clamp(8rem, 18vw, 18rem)",
                   fontWeight: 700,
                   color: "rgba(62,160,148,0.04)",
@@ -511,7 +516,7 @@ export default function MaviTemplate() {
                 <div style={{ width: "32px", height: "2px", background: "#3EA094" }} />
                 <span
                   style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Inter', sans-serif",
                     fontSize: "10px",
                     fontWeight: 500,
                     letterSpacing: "0.4em",
@@ -526,7 +531,7 @@ export default function MaviTemplate() {
               <motion.h1
                 variants={fadeUp}
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "clamp(3rem, 8vw, 7rem)",
                   fontWeight: 700,
                   lineHeight: 0.95,
@@ -543,7 +548,7 @@ export default function MaviTemplate() {
               <motion.p
                 variants={fadeUp}
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Inter', sans-serif",
                   fontSize: "0.9rem",
                   fontWeight: 300,
                   color: "rgba(232,244,242,0.5)",
@@ -562,7 +567,7 @@ export default function MaviTemplate() {
                   onClick={toggleMusic}
                   className="group"
                   style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Inter', sans-serif",
                     fontSize: "11px",
                     fontWeight: 500,
                     letterSpacing: "0.2em",
@@ -591,7 +596,7 @@ export default function MaviTemplate() {
                   animate={{ opacity: isPlaying ? 0 : 1 }}
                   transition={{ duration: 0.5 }}
                   style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Inter', sans-serif",
                     fontSize: "11px",
                     fontStyle: "italic",
                     color: "rgba(232,244,242,0.2)",
@@ -688,7 +693,7 @@ export default function MaviTemplate() {
             />
             <span
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontSize: "8px",
                 fontWeight: 500,
                 letterSpacing: "0.3em",
@@ -762,7 +767,7 @@ export default function MaviTemplate() {
           <motion.h2
             variants={fadeUp}
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Cormorant Garamond', serif",
               fontSize: "clamp(2rem, 5vw, 4rem)",
               fontWeight: 700,
               color: "#E8F4F2",
@@ -779,7 +784,7 @@ export default function MaviTemplate() {
             <div style={{ width: "32px", height: "1px", background: "rgba(62,160,148,0.4)" }} />
             <span
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontSize: "11px",
                 fontWeight: 500,
                 letterSpacing: "0.35em",
@@ -795,7 +800,7 @@ export default function MaviTemplate() {
           <motion.span
             variants={fadeIn}
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Inter', sans-serif",
               fontSize: "10px",
               fontWeight: 400,
               letterSpacing: "0.2em",
@@ -813,7 +818,7 @@ export default function MaviTemplate() {
         style={{
           padding: "40px 24px",
           textAlign: "center",
-          fontFamily: "'Space Grotesk', sans-serif",
+          fontFamily: "'Inter', sans-serif",
           fontSize: "9px",
           fontWeight: 500,
           letterSpacing: "0.4em",
@@ -827,7 +832,7 @@ export default function MaviTemplate() {
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap');
 
         @media (max-width: 1024px) {
           .flex-col.lg\\:grid {

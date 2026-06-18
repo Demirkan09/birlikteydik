@@ -196,7 +196,6 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [30, -30]);
-  const isEven = index % 2 === 0;
 
   return (
     <motion.div
@@ -205,7 +204,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
-      className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-24 ${isEven ? "" : "lg:flex-row-reverse"}`}
+      className="flex flex-col items-center gap-8"
     >
       {/* Fotoğraf - Premium altın çerçeve */}
       <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ width: "100%", maxWidth: "360px" }}>
@@ -256,8 +255,8 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       </motion.div>
 
       {/* Metin */}
-      <div className="flex flex-col max-w-md gap-5 px-4">
-        <motion.div variants={fadeIn} className="flex items-center gap-3">
+      <div className="flex flex-col items-center text-center max-w-md gap-4 px-4">
+        <motion.div variants={fadeIn} className="flex items-center justify-center gap-3">
           <div className="w-10 h-px" style={{ background: "rgba(212,175,55,0.35)" }} />
           <span
             style={{
@@ -270,6 +269,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           >
             {memory.date}
           </span>
+          <div className="w-10 h-px" style={{ background: "rgba(212,175,55,0.35)" }} />
         </motion.div>
 
         <motion.h3
@@ -281,6 +281,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             color: "#FAF5E6",
             letterSpacing: "0.02em",
             lineHeight: 1.2,
+            textAlign: "center",
           }}
         >
           {memory.title}
@@ -294,6 +295,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             color: "#A8BDB4",
             lineHeight: 1.8,
             fontWeight: 400,
+            textAlign: "center",
           }}
         >
           {memory.description}

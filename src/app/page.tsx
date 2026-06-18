@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FaWhatsapp, FaInstagram, FaHeart } from "react-icons/fa";
-import { HiOutlineShoppingCart } from "react-icons/hi";
+import { HiOutlineShoppingCart, HiOutlineEye } from "react-icons/hi";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sosyal medya sabitleri (yüzer butonlar için)
@@ -205,65 +205,47 @@ function OccasionCard({
   const [hovered, setHovered] = useState(false);
 
   return (
-<Link 
-  href={occasion.href ?? "/"} 
-  style={{ textDecoration: "none", display: "block" }}
->
-      <motion.article
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ delay: index * 0.08, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          position: "relative",
-          borderRadius: "18px",
-          padding: "32px 28px",
-          cursor: "pointer",
-          overflow: "hidden",
-          background: "rgba(255,255,255,0.035)",
-          border: `1px solid ${hovered ? occasion.accentColor + "66" : "rgba(255,255,255,0.07)"}`,
-          backdropFilter: "blur(18px)",
-          WebkitBackdropFilter: "blur(18px)",
-          boxShadow: hovered
-            ? `0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px ${occasion.accentColor}33`
-            : "0 4px 32px rgba(0,0,0,0.35)",
-          transition: "border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s ease",
-          transform: hovered ? "translateY(-5px)" : "translateY(0)",
-        }}
-      >
-        {/* Accent overlay */}
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at top left, ${occasion.accentColor}18 0%, transparent 65%)`, opacity: hovered ? 1 : 0.5, transition: "opacity 0.35s ease", pointerEvents: "none", borderRadius: "18px" }} />
+    <motion.article
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ delay: index * 0.08, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        borderRadius: "18px",
+        padding: "32px 28px",
+        overflow: "hidden",
+        background: "rgba(255,255,255,0.035)",
+        border: `1px solid ${hovered ? occasion.accentColor + "44" : "rgba(255,255,255,0.07)"}`,
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        boxShadow: hovered
+          ? `0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px ${occasion.accentColor}22`
+          : "0 4px 32px rgba(0,0,0,0.35)",
+        transition: "border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s ease",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+      }}
+    >
+      {/* Accent overlay */}
+      <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at top left, ${occasion.accentColor}18 0%, transparent 65%)`, opacity: hovered ? 1 : 0.5, transition: "opacity 0.35s ease", pointerEvents: "none", borderRadius: "18px" }} />
 
-        {/* Tag */}
-        {occasion.tag && (
-          <span style={{ position: "absolute", top: "18px", right: "18px", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Inter', sans-serif", fontWeight: 500, color: occasion.accentColor, background: occasion.accentColor + "18", border: `1px solid ${occasion.accentColor}44`, borderRadius: "20px", padding: "3px 10px" }}>
-            {occasion.tag}
-          </span>
-        )}
+      {/* Tag */}
+      {occasion.tag && (
+        <span style={{ position: "absolute", top: "18px", right: "18px", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Inter', sans-serif", fontWeight: 500, color: occasion.accentColor, background: occasion.accentColor + "18", border: `1px solid ${occasion.accentColor}44`, borderRadius: "20px", padding: "3px 10px" }}>
+          {occasion.tag}
+        </span>
+      )}
 
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: "2.6rem", lineHeight: 1, marginBottom: "18px" }}>{occasion.emoji}</div>
-          <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.35rem, 2.5vw, 1.7rem)", fontWeight: 600, color: "#F0EDE8", marginBottom: "4px", lineHeight: 1.15, letterSpacing: "-0.01em" }}>{occasion.title}</h3>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", color: occasion.accentColor + "bb", marginBottom: "16px", fontWeight: 400 }}>{occasion.subtitle}</p>
-          <div style={{ width: "36px", height: "1px", background: `linear-gradient(90deg, ${occasion.accentColor}, transparent)`, marginBottom: "16px" }} />
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", lineHeight: 1.8, color: "rgba(240,237,232,0.5)", fontWeight: 300 }}>{occasion.description}</p>
-
-          {/* CTA — sepet ikonu eklendi */}
-          <div style={{ marginTop: "22px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", transform: hovered ? "translateX(5px)" : "translateX(0)", transition: "transform 0.3s ease" }}>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: occasion.accentColor, fontWeight: 500 }}>Şablonları Gör</span>
-              <span style={{ color: occasion.accentColor, fontSize: "14px" }}>→</span>
-            </div>
-            {/* Sepet ikonu */}
-            <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: occasion.accentColor + "18", border: `1px solid ${occasion.accentColor}44`, display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.2s", ...(hovered ? { background: occasion.accentColor + "33" } : {}) }}>
-              <HiOutlineShoppingCart size={15} color={occasion.accentColor} />
-            </div>
-          </div>
-        </div>
-      </motion.article>
-    </Link>
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ fontSize: "2.6rem", lineHeight: 1, marginBottom: "18px" }}>{occasion.emoji}</div>
+        <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.35rem, 2.5vw, 1.7rem)", fontWeight: 600, color: "#F0EDE8", marginBottom: "4px", lineHeight: 1.15, letterSpacing: "-0.01em" }}>{occasion.title}</h3>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", color: occasion.accentColor + "bb", marginBottom: "16px", fontWeight: 400 }}>{occasion.subtitle}</p>
+        <div style={{ width: "36px", height: "1px", background: `linear-gradient(90deg, ${occasion.accentColor}, transparent)`, marginBottom: "16px" }} />
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", lineHeight: 1.8, color: "rgba(240,237,232,0.5)", fontWeight: 300 }}>{occasion.description}</p>
+      </div>
+    </motion.article>
   );
 }
 
@@ -793,6 +775,190 @@ function Hero() {
   );
 }
 
+function SmartphoneMockup({ accentColor, title }: { accentColor: string; title: string }) {
+  return (
+    <div style={{
+      width: "100%",
+      aspectRatio: "1.6/1",
+      background: "#080b13",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      position: "relative",
+      overflow: "hidden",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+    }}>
+      {/* Dynamic blurred background bubble */}
+      <div style={{
+        position: "absolute",
+        width: "140px",
+        height: "140px",
+        borderRadius: "50%",
+        background: `radial-gradient(circle, ${accentColor}25 0%, transparent 70%)`,
+        filter: "blur(15px)",
+        top: "10%",
+        left: "30%",
+      }} />
+
+      {/* Mock Phone Container */}
+      <div style={{
+        width: "140px",
+        height: "220px",
+        background: "#0d0e12",
+        border: "3px solid #1a1c24",
+        borderRadius: "20px",
+        position: "relative",
+        boxShadow: "0 12px 32px rgba(0,0,0,0.6)",
+        transform: "rotate(-5deg) translateY(10px)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}>
+        {/* Camera Notch */}
+        <div style={{
+          width: "40px",
+          height: "8px",
+          background: "#1a1c24",
+          borderRadius: "0 0 6px 6px",
+          position: "absolute",
+          top: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 5,
+        }} />
+
+        {/* Simulated Phone Screen Content */}
+        <div style={{
+          padding: "16px 8px 8px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          height: "100%",
+          justifyContent: "space-between",
+        }}>
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "6px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em" }}>birlikteydik.com</span>
+            <span style={{ fontSize: "6px", color: accentColor }}>❤️</span>
+          </div>
+
+          {/* Core Content Vibe */}
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            gap: "4px",
+            marginTop: "8px",
+          }}>
+            <h5 style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "9px",
+              color: "#F0EDE8",
+              fontWeight: 600,
+              lineHeight: 1,
+            }}>
+              Mutluluk Dolu Anlar
+            </h5>
+            <div style={{
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
+              border: `1px solid ${accentColor}44`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "6px",
+              color: accentColor,
+            }}>
+              💿
+            </div>
+            <p style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "4.5px",
+              color: "rgba(255,255,255,0.4)",
+              lineHeight: 1.2,
+            }}>
+              Bizim şarkımız çalıyor...
+            </p>
+          </div>
+
+          {/* Footer mockup controls */}
+          <div style={{ display: "flex", justifyContent: "center", gap: "6px", alignItems: "center" }}>
+            <div style={{ width: "8px", height: "8px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "3px" }}>⏮️</div>
+            <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: accentColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "4px", color: "#0B0F1A" }}>▶️</div>
+            <div style={{ width: "8px", height: "8px", borderRadius: "50%", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "3px" }}>⏭️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const featuredTemplates = [
+  {
+    id: "romantik-kirmizi",
+    title: "Romantik Kırmızı",
+    subtitle: "Aşkın ve Tutkunun Rengi",
+    accentColor: "#E63946",
+    tag: "Popüler",
+    description: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim... Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
+    demoUrl: "/sablonlar/sablon-kirmizi",
+    features: [
+      "Parıldayan Kalp Parçacıkları",
+      "Sıcak Kırmızı Geçiş Efektleri",
+      "Duygusal ve Romantik Arayüz",
+      "Kolay ve Hızlı Özelleştirme",
+    ],
+  },
+  {
+    id: "premium-emerald",
+    title: "Zümrüt Yeşili",
+    subtitle: "Lüks ve Derin Detaylar",
+    accentColor: "#D4AF37",
+    tag: "Özel Tasarım",
+    description: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki aşk hikayeniz... Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
+    demoUrl: "/sablonlar/sablon-emerald",
+    features: [
+      "Derin Orman Yeşili ve Altın Teması",
+      "Premium Arka Plan Melodisi",
+      "Lüks Zümrüt Efektli Geçişler",
+      "Sonsuza Kadar Aktif Link",
+    ],
+  },
+  {
+    id: "sablon-mavi",
+    title: "Premium Mavi",
+    subtitle: "Editoryal Dergi Estetiği ve Pusula",
+    accentColor: "#3EA094",
+    tag: "Yeni",
+    description: "İki hayatın kesiştiği noktada başlayan, sonsuzluğa uzanan bu hikaye... Modern Editoryal Dergi tipografisi, özel pusula müzik çaları ve dergi (magazine) tarzı sanatsal fotoğraf kartlarıyla hazırlanan elit bir tasarım.",
+    demoUrl: "/sablonlar/sablon-mavi",
+    features: [
+      "Pusula Temalı Müzik Oynatıcı",
+      "Modern Editoryal Dergi Tasarımı",
+      "Akıcı Kaydırma ve Dinamik Yazılar",
+      "Sonsuza Kadar Aktif Link",
+    ],
+  },
+  {
+    id: "sablon-amber",
+    title: "Günbatımı Amberi",
+    subtitle: "Sıcak ve Samimi",
+    accentColor: "#F59E0B",
+    tag: "Yeni",
+    description: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum... Sıcak amber tonlarında radial ışıltılar, altın esintili çerçeveler ve samimi anılarınızı en iyi yansıtan dikey albüm tasarımı.",
+    demoUrl: "/sablonlar/sablon-amber",
+    features: [
+      "Sıcak Altın Parçacıklar",
+      "Gelişmiş Ses Kontrolü",
+      "Didaktik Romantik Akış",
+      "Sonsuza Kadar Aktif Link",
+    ],
+  }
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA SAYFA
 // ─────────────────────────────────────────────────────────────────────────────
@@ -971,92 +1137,6 @@ export default function LandingPage() {
           }}
         />
 
-        {/* TESTİMONİALS */}
-        <Section>
-          <SectionLabel>Yorumlar</SectionLabel>
-          <SectionHeading>
-            Onlar <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Denedi</em>
-          </SectionHeading>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: "16px",
-            }}
-          >
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ delay: i * 0.1, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                style={{
-                  padding: "32px 28px",
-                  borderRadius: "16px",
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  backdropFilter: "blur(12px)",
-                }}
-              >
-                {/* Stars */}
-                <div style={{ marginBottom: "16px", display: "flex", gap: "3px" }}>
-                  {[...Array(5)].map((_, si) => (
-                    <span key={si} style={{ color: "#C9A84C", fontSize: "12px" }}>★</span>
-                  ))}
-                </div>
-                <p
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "1.1rem",
-                    fontStyle: "italic",
-                    color: "rgba(240,237,232,0.75)",
-                    lineHeight: 1.7,
-                    marginBottom: "20px",
-                  }}
-                >
-                  "{t.quote}"
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #C9A84C44, #E8A0A044)",
-                      border: "1px solid rgba(201,168,76,0.3)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "12px",
-                      color: "#C9A84C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#F0EDE8", fontWeight: 500 }}>{t.name}</p>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "#C9A84C", letterSpacing: "0.1em" }}>{t.occasion}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </Section>
-
-        {/* SEPARATOR */}
-        <div
-          style={{
-            maxWidth: "1100px",
-            margin: "0 auto",
-            padding: "0 24px",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-          }}
-        />
-
         {/* FİYATLAR */}
         <Section id="fiyatlar">
           <SectionLabel>Fiyatlar</SectionLabel>
@@ -1140,6 +1220,329 @@ export default function LandingPage() {
             ))}
           </div>
         </Section>
+
+        {/* SEPARATOR */}
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "0 24px",
+            borderTop: "1px solid rgba(255,255,255,0.05)",
+          }}
+        />
+
+        {/* ŞABLONLARIMIZ */}
+        <Section id="sablonlar">
+          <SectionLabel>Tasarımlar</SectionLabel>
+          <SectionHeading>
+            Şablonlarımızı <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Keşfedin</em>
+          </SectionHeading>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
+            gap: "24px",
+          }}>
+            {featuredTemplates.map((tpl, i) => {
+              const orderMessage = `Merhaba! "${tpl.title}" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.`;
+              const tplWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
+
+              return (
+                <motion.article
+                  key={tpl.id}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.08, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    position: "relative",
+                    borderRadius: "20px",
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    backdropFilter: "blur(18px)",
+                    WebkitBackdropFilter: "blur(18px)",
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                    boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
+                    transition: "border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s ease",
+                  }}
+                  whileHover={{
+                    borderColor: `${tpl.accentColor}55`,
+                    boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px ${tpl.accentColor}22`,
+                    y: -6,
+                  }}
+                >
+                  <div style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: `radial-gradient(ellipse at top left, ${tpl.accentColor}10 0%, transparent 60%)`,
+                    pointerEvents: "none",
+                  }} />
+
+                  {tpl.tag && (
+                    <span style={{
+                      position: "absolute",
+                      top: "16px",
+                      left: "16px",
+                      fontSize: "9px",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 600,
+                      color: tpl.accentColor,
+                      background: `${tpl.accentColor}18`,
+                      border: `1px solid ${tpl.accentColor}33`,
+                      borderRadius: "20px",
+                      padding: "4px 10px",
+                      zIndex: 10,
+                    }}>
+                      {tpl.tag}
+                    </span>
+                  )}
+
+                  <SmartphoneMockup accentColor={tpl.accentColor} title={tpl.title} />
+
+                  <div style={{ padding: "28px", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ marginBottom: "16px" }}>
+                      <h3 style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "1.65rem",
+                        fontWeight: 600,
+                        color: "#F0EDE8",
+                      }}>
+                        {tpl.title}
+                      </h3>
+                      <p style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "9px",
+                        letterSpacing: "0.22em",
+                        textTransform: "uppercase",
+                        color: `${tpl.accentColor}cc`,
+                        marginTop: "2px",
+                      }}>
+                        {tpl.subtitle}
+                      </p>
+                    </div>
+
+                    <div style={{ width: "40px", height: "1px", background: `linear-gradient(90deg, ${tpl.accentColor}, transparent)`, marginBottom: "16px" }} />
+
+                    <p style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: "13px",
+                      lineHeight: 1.8,
+                      color: "rgba(240,237,232,0.5)",
+                      fontWeight: 300,
+                      marginBottom: "24px",
+                    }}>
+                      {tpl.description}
+                    </p>
+
+                    <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px", marginTop: "auto" }}>
+                      {tpl.features.map((feat, idx) => (
+                        <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.65)", fontWeight: 300 }}>
+                          <span style={{ color: tpl.accentColor, fontWeight: "bold" }}>✓</span>
+                          {feat}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
+                      <Link href={tpl.demoUrl} style={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "12px",
+                        borderRadius: "30px",
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        color: "rgba(240,237,232,0.8)",
+                        textDecoration: "none",
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "11px",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        fontWeight: 500,
+                        transition: "all 0.2s",
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                          e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+                          e.currentTarget.style.color = "#F0EDE8";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                          e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                          e.currentTarget.style.color = "rgba(240,237,232,0.8)";
+                        }}
+                      >
+                        <HiOutlineEye size={14} />
+                        <span>Canlı Demoyu Aç</span>
+                      </Link>
+
+                      <a href={tplWhatsappUrl} target="_blank" rel="noopener noreferrer" style={{
+                        flex: 1.2,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        padding: "12px",
+                        borderRadius: "30px",
+                        background: tpl.accentColor,
+                        color: "#0B0F1A",
+                        textDecoration: "none",
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "11px",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        fontWeight: 600,
+                        transition: "all 0.2s",
+                      }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.filter = "brightness(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.filter = "none";
+                        }}
+                      >
+                        <FaWhatsapp size={14} />
+                        <span>Sipariş Ver</span>
+                      </a>
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "48px" }}>
+            <Link href="/sablonlar" style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "16px 36px",
+              borderRadius: "40px",
+              background: "linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05))",
+              border: "1px solid rgba(201,168,76,0.3)",
+              color: "#F0EDE8",
+              textDecoration: "none",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "12px",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              fontWeight: 600,
+              transition: "all 0.3s ease",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+            }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#C9A84C";
+                e.currentTarget.style.color = "#0B0F1A";
+                e.currentTarget.style.borderColor = "#C9A84C";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 8px 30px rgba(201,168,76,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05))";
+                e.currentTarget.style.color = "#F0EDE8";
+                e.currentTarget.style.borderColor = "rgba(201,168,76,0.3)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
+              }}
+            >
+              Tüm Şablonları Gör
+            </Link>
+          </div>
+        </Section>
+
+        {/* SEPARATOR */}
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "0 24px",
+            borderTop: "1px solid rgba(255,255,255,0.05)",
+          }}
+        />
+
+        {/* TESTİMONİALS */}
+        <Section>
+          <SectionLabel>Yorumlar</SectionLabel>
+          <SectionHeading>
+            Onlar <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Denedi</em>
+          </SectionHeading>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.1, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  padding: "32px 28px",
+                  borderRadius: "16px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                {/* Stars */}
+                <div style={{ marginBottom: "16px", display: "flex", gap: "3px" }}>
+                  {[...Array(5)].map((_, si) => (
+                    <span key={si} style={{ color: "#C9A84C", fontSize: "12px" }}>★</span>
+                  ))}
+                </div>
+                <p
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "1.1rem",
+                    fontStyle: "italic",
+                    color: "rgba(240,237,232,0.75)",
+                    lineHeight: 1.7,
+                    marginBottom: "20px",
+                  }}
+                >
+                  "{t.quote}"
+                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #C9A84C44, #E8A0A044)",
+                      border: "1px solid rgba(201,168,76,0.3)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "12px",
+                      color: "#C9A84C",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#F0EDE8", fontWeight: 500 }}>{t.name}</p>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "#C9A84C", letterSpacing: "0.1em" }}>{t.occasion}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Section>
+
+
 
         {/* SEPARATOR */}
         <div

@@ -10,6 +10,7 @@ import {
   VolumeX,
   Heart,
 } from "lucide-react";
+import PasswordGate from "@/components/PasswordGate";
 
 // ─────────────────────────────────────────────
 //  💾  MÜŞTERİ VERİLERİ
@@ -477,10 +478,11 @@ export default function PremiumDarkPage() {
   };
 
   return (
-    <main
-      className="bg-[#070707] min-h-screen text-white overflow-x-hidden"
-      style={{ ["--accent" as string]: config.accentColor }}
-    >
+    <PasswordGate slug="demirkanmelis">
+      <main
+        className="bg-[#070707] min-h-screen text-white overflow-x-hidden"
+        style={{ ["--accent" as string]: config.accentColor }}
+      >
       {/* ── MÜZİK BUTONU ─── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -821,6 +823,7 @@ export default function PremiumDarkPage() {
           </motion.p>
         </motion.div>
       </section>
-    </main>
+      </main>
+    </PasswordGate>
   );
 }

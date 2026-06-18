@@ -15,7 +15,11 @@ import {
   HiOutlineEyeOff,
   HiOutlineCheckCircle,
   HiOutlineChevronRight,
-  HiHeart
+  HiHeart,
+  HiOutlineKey,
+  HiOutlineCollection,
+  HiOutlineExternalLink,
+  HiOutlineTicket,
 } from "react-icons/hi";
 
 const C = {
@@ -120,11 +124,26 @@ export default function ProfilePage() {
   const router = useRouter();
   
   // Auth states
-  const [user, setUser] = useState<{ id?: string; name: string; email: string; marketingConsent?: boolean } | null>(null);
+  const [user, setUser] = useState<{ id?: string; name: string; email: string; role?: string; marketingConsent?: boolean } | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // Tab state: "info" | "notifications" | "details" | "danger"
-  const [activeTab, setActiveTab] = useState<"info" | "notifications" | "details" | "danger">("info");
+  // Tab state
+  const [activeTab, setActiveTab] = useState<"info" | "notifications" | "details" | "pages" | "danger">("info");
+
+  // Sayfalarım states
+  type UserPage = { id: string; pageSlug: string; packageName: string; createdAt: string };
+  const [userPages, setUserPages] = useState<UserPage[]>([]);
+  const [activationCode, setActivationCode] = useState("");
+  const [activationLoading, setActivationLoading] = useState(false);
+  const [activationMsg, setActivationMsg] = useState("");
+  const [activationError, setActivationError] = useState("");
+
+  // Per-page password states
+  const [pagePasswords, setPagePasswords] = useState<Record<string, string>>({});
+  const [pagePassErrors, setPagePassErrors] = useState<Record<string, string>>({});
+  const [pagePassSuccess, setPagePassSuccess] = useState<Record<string, string>>({});
+  const [pagePassLoading, setPagePassLoading] = useState<Record<string, boolean>>({});
+  const [showPagePass, setShowPagePass] = useState<Record<string, boolean>>({});
 
   // Form states - Kişisel Bilgiler
   const [name, setName] = useState("");
@@ -171,12 +190,16 @@ export default function ProfilePage() {
         if (res.ok) {
           const data = await res.json();
           if (data.user) {
-            setUser({
+            const freshUser = {
               id: data.user.id,
               name: data.user.name,
               email: data.user.email,
+              role: data.user.role,
               marketingConsent: data.user.marketingConsent,
-            });
+            };
+            setUser(freshUser);
+            // Sync role to localStorage
+            localStorage.setItem("birlikteydik_user", JSON.stringify(freshUser));
             setName(data.user.name);
             setEmail(data.user.email);
             setMarketingConsent(!!data.user.marketingConsent);
@@ -185,6 +208,11 @@ export default function ProfilePage() {
             if (data.user.createdAt) {
               const dateObj = new Date(data.user.createdAt);
               setCreatedAt(dateObj.toLocaleDateString("tr-TR", { year: "numeric", month: "long", day: "numeric" }));
+            }
+
+            // Load user pages
+            if (data.user.pages) {
+              setUserPages(data.user.pages);
             }
           }
         }
@@ -357,6 +385,99 @@ export default function ProfilePage() {
     }
   };
 
+  // ─── Aktivasyon Kodu Gönder ────────────────────────────────────────────────
+  const handleActivate = async () => {
+    if (!user?.id) return;
+    const code = activationCode.trim().toUpperCase();
+    if (!code) { setActivationError("Lütfen bir aktivasyon kodu girin."); return; }
+    setActivationLoading(true);
+    setActivationError("");
+    setActivationMsg("");
+    try {
+      const res = await fetch("/api/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, code }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setActivationError(data.error ?? "Kod geçersiz."); return; }
+      setActivationMsg("Sayfa başarıyla aktive edildi! 🎉");
+      setActivationCode("");
+      if (data.page) setUserPages((prev) => [data.page, ...prev]);
+    } catch { setActivationError("Bağlantı hatası oluştu."); }
+    finally { setActivationLoading(false); }
+  };
+
+  // ─── Sayfa Şifresi Ayarla ─────────────────────────────────────────────────
+  const handleSetPagePassword = async (pageSlug: string) => {
+    if (!user?.id) return;
+    const pwd = pagePasswords[pageSlug] || "";
+    if (pwd.length < 4) { setPagePassErrors((p) => ({ ...p, [pageSlug]: "Şifre en az 4 karakter olmalıdır." })); return; }
+    setPagePassLoading((p) => ({ ...p, [pageSlug]: true }));
+    setPagePassErrors((p) => ({ ...p, [pageSlug]: "" }));
+    try {
+      const res = await fetch("/api/page-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, pageSlug, newPassword: pwd }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setPagePassErrors((p) => ({ ...p, [pageSlug]: data.error ?? "Hata oluştu." })); return; }
+      setPagePassSuccess((p) => ({ ...p, [pageSlug]: "Şifre kaydedildi." }));
+      setPagePasswords((p) => ({ ...p, [pageSlug]: "" }));
+      setTimeout(() => setPagePassSuccess((p) => ({ ...p, [pageSlug]: "" })), 3000);
+    } catch { setPagePassErrors((p) => ({ ...p, [pageSlug]: "Bağlantı hatası." })); }
+    finally { setPagePassLoading((p) => ({ ...p, [pageSlug]: false })); }
+  };
+
+  // ─── Sayfa Şifresini Kaldır ───────────────────────────────────────────────
+  const handleRemovePagePassword = async (pageSlug: string) => {
+    if (!user?.id) return;
+    setPagePassLoading((p) => ({ ...p, [pageSlug]: true }));
+    try {
+      const res = await fetch("/api/page-password", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, pageSlug }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setPagePassErrors((p) => ({ ...p, [pageSlug]: data.error ?? "Hata oluştu." })); return; }
+      setPagePassSuccess((p) => ({ ...p, [pageSlug]: "Şifre kaldırıldı." }));
+      setTimeout(() => setPagePassSuccess((p) => ({ ...p, [pageSlug]: "" })), 3000);
+    } catch { setPagePassErrors((p) => ({ ...p, [pageSlug]: "Bağlantı hatası." })); }
+    finally { setPagePassLoading((p) => ({ ...p, [pageSlug]: false })); }
+  };
+
+  // ─── Sayfa Şifre Sıfırlama Maili Gönder ──────────────────────────────────
+  const handleRequestPagePasswordReset = async (pageSlug: string) => {
+    if (!user?.email) return;
+    setPagePassLoading((p) => ({ ...p, [`reset_${pageSlug}`]: true }));
+    try {
+      const res = await fetch("/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email, type: "page", pageSlug }),
+      });
+      const data = await res.json();
+      setPagePassSuccess((p) => ({ ...p, [`reset_${pageSlug}`]: data.message ?? "Mail gönderildi." }));
+      setTimeout(() => setPagePassSuccess((p) => ({ ...p, [`reset_${pageSlug}`]: "" })), 4000);
+    } catch { setPagePassErrors((p) => ({ ...p, [`reset_${pageSlug}`]: "Bağlantı hatası." })); }
+    finally { setPagePassLoading((p) => ({ ...p, [`reset_${pageSlug}`]: false })); }
+  };
+
+  // ─── Zaman Geçti Hesaplayıcı ──────────────────────────────────────────────
+  const timeAgo = (dateStr: string): string => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins} dakika önce`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs} saat önce`;
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return `${days} gün önce`;
+    const months = Math.floor(days / 30);
+    return `${months} ay önce`;
+  };
+
   if (authLoading) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: C.bg, color: C.text }}>
@@ -455,6 +576,7 @@ export default function ProfilePage() {
                 { id: "info", label: "Kişisel Bilgiler", icon: <HiOutlineUser size={16} /> },
                 { id: "notifications", label: "İletişim & Onaylar", icon: <HiOutlineShieldCheck size={16} /> },
                 { id: "details", label: "Hesap Bilgileri", icon: <HiOutlineCalendar size={16} /> },
+                { id: "pages", label: "Sayfalarım", icon: <HiOutlineCollection size={16} /> },
                 { id: "danger", label: "Hesabı Kalıcı Olarak Sil", icon: <HiOutlineTrash size={16} />, color: "#E8A0A0" },
               ].map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -676,6 +798,137 @@ export default function ProfilePage() {
                     >
                       Tasarımları Keşfet
                     </a>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab: Sayfalarım */}
+              {activeTab === "pages" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+                  <div>
+                    <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.6rem", fontWeight: 500, color: C.text, marginBottom: "8px" }}>
+                      Sayfalarım <em style={{ color: C.gold, fontStyle: "italic" }}>& Siparişlerim</em>
+                    </h2>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12.5px", color: C.muted, fontWeight: 300 }}>
+                      Siparişinizle birlikte gelen aktivasyon kodunu girerek sayfanızı yönetin.
+                    </p>
+                  </div>
+
+                  {/* Aktivasyon Kodu Girişi */}
+                  <div style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.15)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.2rem", color: C.gold, fontWeight: 500, display: "flex", alignItems: "center", gap: "8px" }}>
+                      <HiOutlineTicket size={18} /> Aktivasyon Kodu Gir
+                    </h3>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.muted, fontWeight: 300, lineHeight: 1.6 }}>
+                      Sipariş sonrası size iletilen kodu aşağıya girin (örn: <strong style={{ color: "rgba(240,237,232,0.6)", letterSpacing: "0.05em" }}>XK-T7M2-9P</strong>).
+                    </p>
+                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                      <div style={{ flex: 1, minWidth: "200px" }}>
+                        <ProfileInput
+                          label="Aktivasyon Kodu" value={activationCode}
+                          onChange={(v) => { setActivationCode(v.toUpperCase()); setActivationError(""); }}
+                          placeholder="XX-XXXX-XX" icon={<HiOutlineKey size={15} />}
+                          error={activationError}
+                        />
+                      </div>
+                      <button
+                        onClick={handleActivate} disabled={activationLoading}
+                        style={{
+                          padding: "12px 24px", borderRadius: "30px", border: "none", alignSelf: "flex-end", marginBottom: activationError ? "22px" : "0",
+                          background: activationLoading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
+                          fontFamily: "'Inter', sans-serif", fontSize: "12px", letterSpacing: "0.1em",
+                          textTransform: "uppercase", fontWeight: 600, cursor: activationLoading ? "not-allowed" : "pointer",
+                          transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap",
+                        }}
+                      >
+                        {activationLoading ? <span style={{ width: "13px", height: "13px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> : <HiOutlineTicket size={14} />}
+                        <span>Aktive Et</span>
+                      </button>
+                    </div>
+                    {activationMsg && (
+                      <div style={{ padding: "10px 14px", borderRadius: "8px", background: "rgba(134,239,172,0.08)", border: "1px solid rgba(134,239,172,0.2)", color: C.success, fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <HiOutlineCheckCircle size={16} />{activationMsg}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sayfa Listesi */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    {userPages.length === 0 ? (
+                      <div style={{ textAlign: "center", padding: "40px 20px", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: "16px" }}>
+                        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", color: C.muted, fontWeight: 400 }}>Henüz bir sayfanız yok.</p>
+                        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.25)", marginTop: "6px" }}>Sipariş verip aktivasyon kodunuzu girerek sayfanızı oluşturabilirsiniz.</p>
+                      </div>
+                    ) : userPages.map((page) => (
+                      <div key={page.id} style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "16px", padding: "20px 24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                        {/* Page header */}
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "13.5px", color: C.gold, fontWeight: 600, letterSpacing: "0.04em" }}>
+                                birlikteydik.com/{page.pageSlug}
+                              </span>
+                              <a href={`/${page.pageSlug}`} target="_blank" rel="noreferrer" style={{ color: C.muted, display: "flex" }}>
+                                <HiOutlineExternalLink size={13} />
+                              </a>
+                            </div>
+                            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.35)", background: "rgba(255,255,255,0.04)", padding: "2px 8px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                                {page.packageName}
+                              </span>
+                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.3)" }}>
+                                {new Date(page.createdAt).toLocaleDateString("tr-TR", { year: "numeric", month: "long", day: "numeric" })} · {timeAgo(page.createdAt)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Password management */}
+                        <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                          <h4 style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, fontWeight: 500, display: "flex", alignItems: "center", gap: "6px" }}>
+                            <HiOutlineLockClosed size={13} /> Sayfa Şifresi
+                          </h4>
+                          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                            <div style={{ flex: 1, minWidth: "180px" }}>
+                              <ProfileInput
+                                label="Yeni Şifre Belirle" type={showPagePass[page.pageSlug] ? "text" : "password"}
+                                value={pagePasswords[page.pageSlug] || ""}
+                                onChange={(v) => { setPagePasswords((p) => ({ ...p, [page.pageSlug]: v })); setPagePassErrors((p) => ({ ...p, [page.pageSlug]: "" })); }}
+                                placeholder="Min. 4 karakter" icon={<HiOutlineLockClosed size={14} />}
+                                error={pagePassErrors[page.pageSlug]}
+                                rightElement={<span onClick={() => setShowPagePass((p) => ({ ...p, [page.pageSlug]: !p[page.pageSlug] }))} style={{ cursor: "pointer", display: "flex" }}>{showPagePass[page.pageSlug] ? <HiOutlineEyeOff size={14} /> : <HiOutlineEye size={14} />}</span>}
+                              />
+                            </div>
+                            <div style={{ display: "flex", gap: "8px", alignSelf: "flex-end", marginBottom: pagePassErrors[page.pageSlug] ? "22px" : "0", flexWrap: "wrap" }}>
+                              <button
+                                onClick={() => handleSetPagePassword(page.pageSlug)}
+                                disabled={pagePassLoading[page.pageSlug]}
+                                style={{ padding: "11px 16px", borderRadius: "30px", border: "none", background: C.gold, color: "#0B0F1A", fontFamily: "'Inter', sans-serif", fontSize: "11.5px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "5px" }}
+                              >
+                                <HiOutlineKey size={13} /> Şifreyi Kaydet
+                              </button>
+                              <button
+                                onClick={() => handleRemovePagePassword(page.pageSlug)}
+                                disabled={pagePassLoading[page.pageSlug]}
+                                style={{ padding: "11px 16px", borderRadius: "30px", border: "1px solid rgba(232,160,160,0.25)", background: "rgba(232,160,160,0.05)", color: "#E8A0A0", fontFamily: "'Inter', sans-serif", fontSize: "11.5px", fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "5px" }}
+                              >
+                                <HiOutlineTrash size={13} /> Kaldır
+                              </button>
+                              <button
+                                onClick={() => handleRequestPagePasswordReset(page.pageSlug)}
+                                disabled={pagePassLoading[`reset_${page.pageSlug}`]}
+                                style={{ padding: "11px 16px", borderRadius: "30px", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: C.muted, fontFamily: "'Inter', sans-serif", fontSize: "11px", cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "5px" }}
+                              >
+                                Mail ile Sıfırla
+                              </button>
+                            </div>
+                          </div>
+                          {pagePassSuccess[page.pageSlug] && <div style={{ fontSize: "12px", color: C.success, fontFamily: "'Inter', sans-serif" }}>✓ {pagePassSuccess[page.pageSlug]}</div>}
+                          {pagePassSuccess[`reset_${page.pageSlug}`] && <div style={{ fontSize: "12px", color: C.success, fontFamily: "'Inter', sans-serif" }}>✓ {pagePassSuccess[`reset_${page.pageSlug}`]}</div>}
+                          {pagePassErrors[`reset_${page.pageSlug}`] && <div style={{ fontSize: "12px", color: C.error, fontFamily: "'Inter', sans-serif" }}>{pagePassErrors[`reset_${page.pageSlug}`]}</div>}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

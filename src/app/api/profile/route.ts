@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     }
 
     const res = await pool.query(
-      "SELECT id, name, email, marketing_consent, created_at FROM users WHERE email = $1",
+      "SELECT id, name, email, marketing_consent, created_at, role FROM users WHERE email = $1",
       [email.toLowerCase().trim()]
     );
 
@@ -22,6 +22,12 @@ export async function GET(request: Request) {
     }
 
     const user = res.rows[0];
+
+    const pagesRes = await pool.query(
+      "SELECT id, page_slug, package_name, created_at FROM user_pages WHERE user_id = $1 ORDER BY created_at DESC",
+      [user.id]
+    );
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -29,6 +35,13 @@ export async function GET(request: Request) {
         email: user.email,
         marketingConsent: user.marketing_consent,
         createdAt: user.created_at,
+        role: user.role,
+        pages: pagesRes.rows.map((row) => ({
+          id: row.id,
+          pageSlug: row.page_slug,
+          packageName: row.package_name,
+          createdAt: row.created_at,
+        })),
       },
     });
   } catch (err) {

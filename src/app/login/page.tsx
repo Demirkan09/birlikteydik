@@ -267,7 +267,7 @@ export default function LoginPage() {
                     Beni Hatırla
                   </span>
                 </label>
-                <a href="#" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>Şifremi Unuttum</a>
+                <Link href="/forgot-password" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>Şifremi Unuttum</Link>
               </div>
 
               {/* Submit */}

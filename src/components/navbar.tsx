@@ -19,6 +19,7 @@ const PAGES: string[] = [
   "/login",
   "/register",
   "/profil",
+  "/sablonlar",
 ];
 // ║                                                                  ║
 // ║  İletişim & sosyal medya bilgileri                              ║
@@ -32,9 +33,11 @@ export const INSTAGRAM_URL    = "https://instagram.com/birlikteydik";
 // ║  olarak otomatik ayarlanır — sadece label ve anchor'ı gir.      ║
 // ║                                                                  ║
 const NAV_LINKS = [
+  { label: "Ana Sayfa",     anchor: "#anasayfa"      },
   { label: "Nasıl Çalışır", anchor: "#nasil-calisir" },
   { label: "Özel Günler",   anchor: "#ozel-gunler"   },
   { label: "Fiyatlar",      anchor: "#fiyatlar"      },
+  { label: "Şablonlar",     anchor: "/sablonlar", isPage: true },
   { label: "SSS",           anchor: "#sss"           },
 ];
 // ║                                                                  ║
@@ -89,7 +92,7 @@ export default function Navbar() {
   // Menü linklerini pathname'e göre ayarla
   const navLinks = NAV_LINKS.map((l) => ({
     label: l.label,
-    href: isHome ? l.anchor : `/${l.anchor}`,
+    href: l.isPage ? l.anchor : (isHome ? l.anchor : `/${l.anchor}`),
   }));
 
   useEffect(() => {

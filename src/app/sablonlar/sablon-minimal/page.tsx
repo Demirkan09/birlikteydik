@@ -223,7 +223,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
-      className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-24 ${isEven ? "" : "lg:flex-row-reverse"}`}
+      className="flex flex-col items-center gap-8"
     >
       {/* Fotoğraf */}
       <motion.div
@@ -254,9 +254,9 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       {/* Metin */}
       <motion.div
         variants={fadeUp}
-        className="flex flex-col justify-center gap-6 w-full max-w-md"
+        className="flex flex-col items-center justify-center text-center gap-6 w-full max-w-md"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center gap-3">
           <div className="w-5 h-px" style={{ background: "#8C7E6C", opacity: 0.4 }} />
           <span
             style={{
@@ -269,6 +269,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           >
             {memory.date}
           </span>
+          <div className="w-5 h-px" style={{ background: "#8C7E6C", opacity: 0.4 }} />
         </div>
 
         <h3
@@ -279,6 +280,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             color: "#1C1A19",
             lineHeight: 1.2,
             letterSpacing: "0.01em",
+            textAlign: "center",
           }}
         >
           {memory.title}
@@ -291,6 +293,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
             color: "#736E6A",
             lineHeight: 1.85,
             fontWeight: 300,
+            textAlign: "center",
           }}
         >
           {memory.description}
@@ -366,11 +369,12 @@ export default function MinimalTemplate() {
       >
         <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
-          className="relative z-10 max-w-3xl"
+          className="relative z-10 w-full max-w-3xl flex flex-col items-center justify-center text-center"
         >
-          <motion.div variants={stagger} initial="hidden" animate="visible">
+          <motion.div variants={stagger} initial="hidden" animate="visible" className="flex flex-col items-center justify-center w-full">
             {/* Tarih */}
-            <motion.div variants={fadeIn} className="flex items-center gap-4 mb-10">
+            <motion.div variants={fadeIn} className="flex items-center justify-center gap-4 mb-10 w-full">
+              <div className="w-8 h-px" style={{ background: "rgba(140,126,108,0.35)" }} />
               <span
                 style={{
                   fontFamily: "'Source Sans 3', sans-serif",
@@ -395,6 +399,7 @@ export default function MinimalTemplate() {
                 lineHeight: 0.95,
                 letterSpacing: "-0.01em",
                 color: "#1C1A19",
+                textAlign: "center",
               }}
             >
               {config.coupleNames}
@@ -412,17 +417,19 @@ export default function MinimalTemplate() {
                 maxWidth: "24rem",
                 marginTop: "1.5rem",
                 fontWeight: 300,
+                textAlign: "center",
+                margin: "1.5rem auto 0",
               }}
             >
               {config.tagline}
             </motion.p>
 
             {/* Müzik butonu */}
-            <motion.div variants={fadeUp} className="mt-12 flex flex-col gap-3">
-              <div className="flex items-center gap-4">
+            <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center justify-center gap-3 w-full">
+              <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={toggleMusic}
-                  className="group flex items-center gap-3 transition-all duration-400"
+                  className="group flex items-center justify-center gap-3 transition-all duration-400"
                   style={{
                     fontFamily: "'Source Sans 3', sans-serif",
                     fontSize: "10px",
@@ -449,6 +456,7 @@ export default function MinimalTemplate() {
                   fontSize: "11px",
                   fontStyle: "italic",
                   color: "#8C7E6C",
+                  textAlign: "center",
                 }}
               >
                 ✨ bence tıklamalısın, böylesi çok daha güzel
