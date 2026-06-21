@@ -1,0 +1,14 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/src/app/sablonlar/sablon-kirmizi/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}

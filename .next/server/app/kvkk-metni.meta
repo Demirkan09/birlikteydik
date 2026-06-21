@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/kvkk-metni/layout,_N_T_/kvkk-metni/page,_N_T_/kvkk-metni"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/kvkk-metni/__PAGE__",
+    "/kvkk-metni",
+    "/_index",
+    "/_head"
+  ]
+}

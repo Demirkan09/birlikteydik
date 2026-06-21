@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/sablonlar/layout,_N_T_/sablonlar/sablon-kirmizi/layout,_N_T_/sablonlar/sablon-kirmizi/page,_N_T_/sablonlar/sablon-kirmizi"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/sablonlar/sablon-kirmizi/__PAGE__",
+    "/sablonlar/sablon-kirmizi",
+    "/sablonlar",
+    "/_index",
+    "/_head"
+  ]
+}

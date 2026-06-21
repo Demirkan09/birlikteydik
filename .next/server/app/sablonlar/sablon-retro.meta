@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/sablonlar/layout,_N_T_/sablonlar/sablon-retro/layout,_N_T_/sablonlar/sablon-retro/page,_N_T_/sablonlar/sablon-retro"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/sablonlar/sablon-retro/__PAGE__",
+    "/sablonlar/sablon-retro",
+    "/sablonlar",
+    "/_index",
+    "/_head"
+  ]
+}

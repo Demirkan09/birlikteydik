@@ -1,0 +1,175 @@
+{
+  "app": {
+    "[project]/src/app/_not-found/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/admin/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/demirkanmelis/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/forgot-password/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/kvkk-metni/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/login/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/profil/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/register/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/reset-password/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-amber/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-bos/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-emerald/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-indigo/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-kirmizi/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-lacivert/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-lavanta/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-mavi/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-minimal/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-oyun/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-retro/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-rose/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/src/app/sablonlar/sablon-sinematik/page": [
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/f30fd2e485acf1bc-s.p.35belnv3c2-b-.woff2",
+      "static/media/8e451580e5e95631-s.p.27vw08z6_vw0m.woff2",
+      "static/media/345c85a432359eed-s.p.0zem_9y19rte6.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}
