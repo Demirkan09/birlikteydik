@@ -46,5 +46,6 @@
   "/sablonlar/sablon-oyun/page": "app/sablonlar/sablon-oyun/page.js",
   "/sablonlar/sablon-retro/page": "app/sablonlar/sablon-retro/page.js",
   "/sablonlar/sablon-rose/page": "app/sablonlar/sablon-rose/page.js",
-  "/sablonlar/sablon-sinematik/page": "app/sablonlar/sablon-sinematik/page.js"
+  "/sablonlar/sablon-sinematik/page": "app/sablonlar/sablon-sinematik/page.js",
+  "/verify-email/page": "app/verify-email/page.js"
 }

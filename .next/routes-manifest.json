@@ -310,6 +310,12 @@
       "regex": "^/sablonlar/sablon\\-sinematik(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/sablonlar/sablon\\-sinematik(?:/)?$"
+    },
+    {
+      "page": "/verify-email",
+      "regex": "^/verify\\-email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/verify\\-email(?:/)?$"
     }
   ],
   "dataRoutes": [],
