@@ -28,6 +28,41 @@ export async function GET(request: Request) {
       [user.id]
     );
 
+    const settingsRes = await pool.query("SELECT value FROM site_settings WHERE key = 'package_durations'");
+    let packageDurations: Record<string, { old: number | null, new: number }> = {
+      "temel": { old: null, new: 6 },
+      "premium": { old: null, new: 18 },
+      "premium+": { old: null, new: 24 }
+    };
+    if ((settingsRes.rowCount ?? 0) > 0) {
+      packageDurations = settingsRes.rows[0].value;
+    }
+
+    function calculateRemainingTime(createdAt: string | Date, packageName: string) {
+      const p = packageName.toLowerCase();
+      const durationMonths = packageDurations[p]?.new || 12;
+      
+      const start = new Date(createdAt);
+      const end = new Date(start);
+      end.setMonth(start.getMonth() + durationMonths);
+      
+      const now = new Date();
+      const diffTime = end.getTime() - now.getTime();
+      
+      if (diffTime <= 0) {
+        return { text: "Süresi Doldu", expired: true };
+      }
+      
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const months = Math.floor(diffDays / 30);
+      const days = diffDays % 30;
+      
+      if (months > 0) {
+        return { text: `Kalan Süre: ${months} Ay ${days > 0 ? days + ' Gün' : ''}`, expired: false };
+      }
+      return { text: `Kalan Süre: ${days} Gün`, expired: false };
+    }
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -41,6 +76,7 @@ export async function GET(request: Request) {
           pageSlug: row.page_slug,
           packageName: row.package_name,
           createdAt: row.created_at,
+          remainingTime: calculateRemainingTime(row.created_at, row.package_name).text,
         })),
       },
     });

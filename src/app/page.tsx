@@ -1187,7 +1187,7 @@ export default function LandingPage() {
                 <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3rem", fontWeight: 700, color: "#F0EDE8", lineHeight: 1, marginBottom: "28px", letterSpacing: "-0.02em" }}>
                   {plan.price}
                 </div>
-                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px", marginBottom: "32px" }}>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px", marginBottom: "0" }}>
                   {plan.features.map((f, fi) => (
                     <li key={fi} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "rgba(240,237,232,0.6)", lineHeight: 1.5, fontWeight: 300 }}>
                       <span style={{ color: "#C9A84C", flexShrink: 0, marginTop: "1px" }}>✓</span>
@@ -1195,27 +1195,6 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  style={{
-                    width: "100%",
-                    padding: "13px",
-                    borderRadius: "30px",
-                    border: plan.highlighted ? "none" : "1px solid rgba(255,255,255,0.12)",
-                    background: plan.highlighted ? "#C9A84C" : "transparent",
-                    color: plan.highlighted ? "#0B0F1A" : "rgba(240,237,232,0.7)",
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "12px",
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    transition: "opacity 0.2s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                >
-                  {plan.cta}
-                </button>
               </motion.div>
             ))}
           </div>
@@ -1671,7 +1650,7 @@ export default function LandingPage() {
           birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
         </span>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
-          © {new Date().getFullYear()} — Sevgiyle yapıldı
+          © {new Date().getFullYear()} — Tüm Hakları Saklıdır
         </p>
       </footer>
     </>

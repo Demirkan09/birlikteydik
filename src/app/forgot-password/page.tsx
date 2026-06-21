@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   HiOutlineMail,
   HiOutlineCheckCircle,
-  HiOutlineGlobe,
-  HiOutlineUser,
 } from "react-icons/hi";
 import { FaHeart } from "react-icons/fa";
 
@@ -82,12 +80,12 @@ function Input({
   const prefixWidth = prefix ? prefix.length * 7.8 + 8 : 0;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-      <label style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: focused ? C.gold : C.muted, fontWeight: 500, transition: "color 0.2s" }}>{label}</label>
+      <label style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: focused ? C.gold : C.muted, fontWeight: 500, transition: "color 0.2s" }}>{label}</label>
       <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
         <span style={{ position: "absolute", left: "16px", color: focused ? C.gold : "rgba(240,237,232,0.3)", transition: "color 0.2s", pointerEvents: "none", display: "flex", zIndex: 1 }}>{icon}</span>
         {prefix && (
           <span style={{
-            position: "absolute", left: "44px", fontFamily: "'Inter', sans-serif", fontSize: "13px",
+            position: "absolute", left: "44px", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px",
             color: "rgba(240,237,232,0.3)", pointerEvents: "none", whiteSpace: "nowrap", zIndex: 1,
           }}>{prefix}</span>
         )}
@@ -100,32 +98,28 @@ function Input({
             padding: `14px 16px 14px ${prefix ? `${44 + prefixWidth}px` : "44px"}`,
             borderRadius: "12px", background: focused ? "rgba(201,168,76,0.05)" : C.card,
             border: `1px solid ${error ? C.error + "88" : focused ? C.gold + "55" : C.border}`,
-            color: C.text, fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 300,
+            color: C.text, fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", fontWeight: 300,
             outline: "none", transition: "all 0.25s", backdropFilter: "blur(8px)",
           }}
         />
       </div>
-      {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.error, fontWeight: 300 }}>{error}</p>}
+      {error && <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.error, fontWeight: 300 }}>{error}</p>}
     </div>
   );
 }
 
 // ─── Şifremi Unuttum Sayfası ─────────────────────────────────────────────────
-type Mode = "account" | "page";
-
+// ─── Şifremi Unuttum Sayfası ─────────────────────────────────────────────────
 export default function ForgotPasswordPage() {
-  const [mode, setMode] = useState<Mode>("account");
   const [email, setEmail] = useState("");
-  const [pageSlug, setPageSlug] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; pageSlug?: string; general?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; general?: string }>({});
 
   const validate = () => {
     const e: typeof errors = {};
     if (!email) e.email = "E-posta adresi gerekli";
     else if (!/\S+@\S+\.\S+/.test(email)) e.email = "Geçerli bir e-posta gir";
-    if (mode === "page" && !pageSlug.trim()) e.pageSlug = "Sayfa adresi gerekli";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -135,8 +129,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setErrors({});
     try {
-      const body: Record<string, string> = { email: email.toLowerCase().trim(), type: mode };
-      if (mode === "page") body.pageSlug = pageSlug.trim().toLowerCase();
+      const body = { email: email.toLowerCase().trim(), type: "account" };
       const res = await fetch("/api/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -158,16 +151,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { background: ${C.bg}; overflow-x: hidden; color: ${C.text}; }
-        ::selection { background: rgba(201,168,76,0.28); color: ${C.text}; }
-        input::placeholder { color: rgba(240,237,232,0.2); }
-        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px #0d1220 inset !important; -webkit-text-fill-color: #F0EDE8 !important; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
 
       {/* Arka plan */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 80% 60% at 30% 20%, rgba(201,168,76,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(232,160,160,0.05) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0d1220 60%, #0a0d18 100%)" }} />
@@ -203,17 +186,17 @@ export default function ForgotPasswordPage() {
                       <HiOutlineCheckCircle size={36} color={C.gold} />
                     </motion.div>
                   </div>
-                  <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.6rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
+                  <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.6rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
                     E-posta <em style={{ color: C.gold, fontStyle: "italic" }}>Gönderildi!</em>
                   </h2>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
+                  <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
                     Gelen kutunuzu kontrol edin. Şifre sıfırlama bağlantısı birkaç dakika içinde ulaşacak.
                   </p>
                   <Link
                     href="/login"
                     style={{
                       display: "inline-block", padding: "13px 36px", borderRadius: "30px",
-                      background: C.gold, color: "#0B0F1A", fontFamily: "'Inter', sans-serif",
+                      background: C.gold, color: "#0B0F1A", fontFamily: "var(--font-inter), sans-serif",
                       fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase",
                       fontWeight: 600, textDecoration: "none",
                     }}
@@ -232,46 +215,21 @@ export default function ForgotPasswordPage() {
                   <div style={{ textAlign: "center", marginBottom: "28px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
                       <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>Şifre Sıfırlama</span>
+                      <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>Şifre Sıfırlama</span>
                       <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
                     </div>
-                    <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.7rem, 5vw, 2.2rem)", fontWeight: 600, color: C.text, lineHeight: 1.15 }}>
+                    <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.7rem, 5vw, 2.2rem)", fontWeight: 600, color: C.text, lineHeight: 1.15 }}>
                       Şifremi <em style={{ color: C.gold, fontStyle: "italic" }}>Unuttum</em>
                     </h1>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300, marginTop: "8px", lineHeight: 1.6 }}>
-                      E-postanı gir, sana sıfırlama bağlantısı gönderelim.
+                    <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300, marginTop: "8px", lineHeight: 1.6 }}>
+                      Hesap e-postanı gir, sana sıfırlama bağlantısı gönderelim.
                     </p>
-                  </div>
-
-                  {/* Tab seçici */}
-                  <div style={{
-                    display: "flex", gap: "4px", padding: "4px", borderRadius: "14px",
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
-                    marginBottom: "24px",
-                  }}>
-                    {(["account", "page"] as Mode[]).map((m) => (
-                      <button
-                        key={m}
-                        onClick={() => { setMode(m); setErrors({}); }}
-                        style={{
-                          flex: 1, padding: "10px 8px", borderRadius: "10px", border: "none",
-                          background: mode === m ? C.gold : "transparent",
-                          color: mode === m ? "#0B0F1A" : C.muted,
-                          fontFamily: "'Inter', sans-serif", fontSize: "12px",
-                          fontWeight: mode === m ? 600 : 400, letterSpacing: "0.06em",
-                          cursor: "pointer", transition: "all 0.2s",
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                        }}
-                      >
-                        {m === "account" ? <><HiOutlineUser size={14} />Hesap Şifresi</> : <><HiOutlineGlobe size={14} />Sayfa Şifresi</>}
-                      </button>
-                    ))}
                   </div>
 
                   {/* Form alanları */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {errors.general && (
-                      <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
+                      <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
                         {errors.general}
                       </div>
                     )}
@@ -281,28 +239,12 @@ export default function ForgotPasswordPage() {
                       placeholder="ornek@mail.com" icon={<HiOutlineMail size={17} />} error={errors.email}
                     />
 
-                    <AnimatePresence>
-                      {mode === "page" && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
-                          style={{ overflow: "hidden" }}
-                        >
-                          <Input
-                            label="Sayfa Adresi" value={pageSlug} onChange={setPageSlug}
-                            placeholder="demirkanmelis" icon={<HiOutlineGlobe size={17} />}
-                            error={errors.pageSlug} prefix="birlikteydik.com/"
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
                     <button
                       onClick={handleSubmit} disabled={loading}
                       style={{
                         width: "100%", padding: "15px", borderRadius: "30px", border: "none",
                         background: loading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
-                        fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em",
+                        fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em",
                         textTransform: "uppercase", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
                         transition: "opacity 0.2s, background 0.2s", marginTop: "4px",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -319,10 +261,10 @@ export default function ForgotPasswordPage() {
                   {/* Divider + Giriş Yap linki */}
                   <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "24px 0 16px" }}>
                     <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
+                    <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
                     <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
                   </div>
-                  <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
+                  <p style={{ textAlign: "center", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
                     Şifreni hatırladın mı?{" "}
                     <Link href="/login" style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>Giriş Yap</Link>
                   </p>
@@ -332,7 +274,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Alt bilgi */}
-          <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
+          <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
             Yardıma mı ihtiyacın var?{" "}
             <a href="mailto:destek@birlikteydik.com" style={{ color: C.gold + "66", textDecoration: "none" }}>İletişime geç</a>
           </p>
@@ -342,7 +284,7 @@ export default function ForgotPasswordPage() {
       {/* Footer */}
       <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
         <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
+        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
       </footer>
     </>
   );

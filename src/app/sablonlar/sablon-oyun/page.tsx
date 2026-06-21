@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { Volume2, VolumeX, Heart } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎮 MÜŞTERİ VERİLERİ (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
-const config = {
-  coupleNames: "SEN\n&\nBen",
+const defaultConfig = {
+  coupleNames: "Ali\n&\nHatice",
   tagline: "SENİNLE EN İYİ MACERALARA",
   accentColor: "#cbff3e",
   specialDate: "26.10.2024",
   musicUrl: "/music/pixel.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   {
     id: 1,
     image: "/moment.jpg",
@@ -93,6 +95,19 @@ const memories = [
 // ─────────────────────────────────────────────────────────────────────────────
 // ANİMASYON VARİANTLARI
 // ─────────────────────────────────────────────────────────────────────────────
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
+
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
@@ -225,7 +240,8 @@ function GamepadWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggleM
 // ─────────────────────────────────────────────────────────────────────────────
 // MEMORY CARD - PIXEL STYLE
 // ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [15, -15]);
@@ -275,16 +291,24 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         variants={fadeUp}
         style={{ position: "relative", overflow: "hidden" }}
       >
-        <img
-          src={memory.image}
-          alt={memory.title}
-          style={{
-            width: "100%",
-            height: "auto",
-            display: "block",
-            filter: "saturate(1.1) contrast(1.05)",
-          }}
-        />
+        {memory.video ? (
+          <VideoPlayerPro src={memory.video} />
+        ) : (
+          <img
+            src={memory.image}
+            alt={memory.title}
+            draggable={false}
+            style={{
+              width: "100%",
+              height: "auto",
+              display: "block",
+              filter: "saturate(1.1) contrast(1.05)",
+              pointerEvents: "none",
+              userSelect: "none",
+              WebkitUserSelect: "none",
+            }}
+          />
+        )}
         {/* Scanlines */}
         <div
           style={{
@@ -339,7 +363,11 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-export default function GameTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function GameTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [blink, setBlink] = useState(true);
   const [countdown, setCountdown] = useState(4);
@@ -350,11 +378,21 @@ export default function GameTemplate() {
   const heroY = useTransform(heroScroll, [0, 1], [0, 80]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -379,6 +417,7 @@ export default function GameTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden"
       style={{ background: "#111111", color: "#CBFF3E", fontFamily: "'VT323', monospace" }}
@@ -389,6 +428,7 @@ export default function GameTemplate() {
         style={{
           backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px)",
           animation: "scanMove 8s linear infinite",
+          pointerEvents: "none",
         }}
       />
 
@@ -464,7 +504,7 @@ export default function GameTemplate() {
               variants={fadeUp}
               style={{
                 fontFamily: "'Press Start 2P', monospace",
-                fontSize: "clamp(1.4rem, 6vw, 4rem)",
+                fontSize: getDynamicFontSize(config.coupleNames, 1.2, 3.0, 5),
                 fontWeight: 400,
                 letterSpacing: "0.04em",
                 lineHeight: 1.3,
@@ -629,10 +669,12 @@ export default function GameTemplate() {
           gap: "40px",
         }}
       >
-        {memories.map((m, i) => (
+        {memories.map((m: any, i: number) => (
           <MemoryCard key={m.id} memory={m} index={i} />
         ))}
       </div>
+
+
 
       {/* ── GAME COMPLETE ── */}
       <section
@@ -727,5 +769,7 @@ export default function GameTemplate() {
         }
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

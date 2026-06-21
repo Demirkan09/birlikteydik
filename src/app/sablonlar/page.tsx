@@ -13,17 +13,17 @@ const INSTAGRAM_URL    = "https://instagram.com/birlikteydik";
 const templates = [
   {
     id: "klasik-retro",
-    title: "Klasik Retro",
-    subtitle: "Zamanı Durduran Nostalji",
-    accentColor: "#C9A84C",
-    tag: "En Çok Satan",
-    description: "Eski bir sinema makinesinin cızırtısında, sararmış sayfalar arasında saklanan en güzel hikayemiz... Polaroid çerçeveleri, nostaljik renk filtreleri ve mum ışığı geçişleriyle anılarınızı sıcak bir sinema şeridine dönüştürün.",
+    title: "Koyu Gül Kurusu",
+    subtitle: "Zarif Kadife ve Gül Yaprakları",
+    accentColor: "#C9897A",
+    tag: null,
+    description: "Karanlığın en zarif tonunda, aşkımızın en derin izleri... Koyu kadife gül kurusu rengi, yavaşça süzülen gül yaprakları ve karanlık lüks polaroid çerçeveleriyle hazırlanan derin ve son derece romantik bir hikaye.",
     demoUrl: "/sablonlar/sablon-retro",
     features: [
-      "Polaroid Tasarımlı Fotoğraf Akışı",
-      "Nostaljik Plak ve Müzik Desteği",
-      "Sıcak Mum Işığı Renk Filtreleri",
-      "Klasik Daktilo Yazı Estetiği",
+      "Koyu Lüks Polaroid Çerçeveleri",
+      "Süzülen Canlı Gül Yaprakları",
+      "Premium Koyu Kadife Plak Çalar",
+      "Zarif El Yazısı ve Serif Tipografisi",
     ],
   },
   {
@@ -31,7 +31,7 @@ const templates = [
     title: "Modern Minimal",
     subtitle: "Sade, Şık ve Estetik",
     accentColor: "#8C7E6C",
-    tag: "Yeni",
+    tag: null,
     description: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben. Sadelikten yana olanlar için modern yazı tipleri, geniş boştımaklar ve pürüzsüz geçişlerle tasarlanmış minimalist bir aşk hikayesi.",
     demoUrl: "/sablonlar/sablon-minimal",
     features: [
@@ -46,7 +46,7 @@ const templates = [
     title: "Sinematik Aşk",
     subtitle: "Kendi Filminizin Başrolü",
     accentColor: "#B8A9D4",
-    tag: "Premium",
+    tag: null,
     description: "Bir sevgi belgeseli, başrollerde sadece bizim olduğumuz... Girişte video/fotoğraf perdesi, arkada çalan duygusal piyano melodisi ve adeta film jeneriği gibi akan büyüleyici anılarınız.",
     demoUrl: "/sablonlar/sablon-sinematik",
     features: [
@@ -60,7 +60,7 @@ const templates = [
     id: "premium-emerald",
     title: "Zümrüt Yeşili",
     subtitle: "Lüks ve Derin Detaylar",
-    accentColor: "#D4AF37",
+    accentColor: "#50c878",
     tag: "Özel Tasarım",
     description: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki aşk hikayeniz... Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
     demoUrl: "/sablonlar/sablon-emerald",
@@ -76,7 +76,7 @@ const templates = [
     title: "Romantik Kırmızı",
     subtitle: "Aşkın ve Tutkunun Rengi",
     accentColor: "#E63946",
-    tag: "Popüler",
+    tag: "En Çok Satan",
     description: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim... Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
     demoUrl: "/sablonlar/sablon-kirmizi",
     features: [
@@ -87,26 +87,11 @@ const templates = [
     ],
   },
   {
-    id: "sablon-mavi",
-    title: "Premium Mavi",
-    subtitle: "Editoryal Dergi Estetiği ve Pusula",
-    accentColor: "#3EA094",
-    tag: "Yeni",
-    description: "İki hayatın kesiştiği noktada başlayan, sonsuzluğa uzanan bu hikaye... Modern Editoryal Dergi tipografisi, özel pusula müzik çaları ve dergi (magazine) tarzı sanatsal fotoğraf kartlarıyla hazırlanan elit bir tasarım.",
-    demoUrl: "/sablonlar/sablon-mavi",
-    features: [
-      "Pusula Temalı Müzik Oynatıcı",
-      "Modern Editoryal Dergi Tasarımı",
-      "Akıcı Kaydırma ve Dinamik Yazılar",
-      "Sanatsal Dergi Kartı Görünümü",
-    ],
-  },
-  {
     id: "sablon-oyun",
     title: "Oyuncu Şablonu",
     subtitle: "Gamer Çiftler İçin Tasarım",
     accentColor: "#CBFF3E",
-    tag: "Yeni",
+    tag: null,
     description: "Seninle en iyi maceralara! Retro oyun konsolu tasarımlı müzik kontrolü, neon yeşili çizgiler, Space Grotesk yazı tipi ve piksel sanat detaylarıyla oyun sever çiftlerin dijital macerası.",
     demoUrl: "/sablonlar/sablon-oyun",
     features: [
@@ -121,7 +106,7 @@ const templates = [
     title: "Lavanta Rüyası",
     subtitle: "Düşsel ve Romantik",
     accentColor: "#D8B4FE",
-    tag: "Popüler",
+    tag: null,
     description: "Lavanta kokulu rüzgarların arasında, seninle geçen her saniye ömre bedel... Düşsel mor radial arka plan ışıltıları, zarif kalpler ve akıcı yumuşak geçişlerle tasarlanmış büyüleyici bir aşk albümü.",
     demoUrl: "/sablonlar/sablon-lavanta",
     features: [
@@ -136,7 +121,7 @@ const templates = [
     title: "Günbatımı Amberi",
     subtitle: "Sıcak ve Samimi",
     accentColor: "#F59E0B",
-    tag: "Yeni",
+    tag: null,
     description: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum... Sıcak amber tonlarında radial ışıltılar, altın esintili çerçeveler ve samimi anılarınızı en iyi yansıtan dikey albüm tasarımı.",
     demoUrl: "/sablonlar/sablon-amber",
     features: [
@@ -151,7 +136,7 @@ const templates = [
     title: "Gül Kurusu",
     subtitle: "Zarif ve Derin Aşk",
     accentColor: "#FCA5A5",
-    tag: "Özel Tasarım",
+    tag: null,
     description: "Güllerin pembe yapraklarında yazılı olan en zarif aşk şiirim sensin... Rose gold renk tonlarının eşsiz zarafeti, loş arka plan aydınlatması ve fotoğraflarınızı öne çıkaran pürüzsüz kart tasarımı.",
     demoUrl: "/sablonlar/sablon-rose",
     features: [
@@ -166,7 +151,7 @@ const templates = [
     title: "Gece Yarısı İndigo",
     subtitle: "Gizemli ve Büyüleyici",
     accentColor: "#818CF8",
-    tag: "Premium",
+    tag: null,
     description: "Sonsuz gece gökyüzünün altında, seninle parıldayan iki yıldız gibi... Derin gece mavisi arka plan üzerinde parıldayan indigo tonları, mistik dikey akış ve modern estetiğin sınırlarını zorlayan tasarım.",
     demoUrl: "/sablonlar/sablon-indigo",
     features: [
@@ -250,7 +235,7 @@ function SmartphoneMockup({ accentColor, title }: { accentColor: string; title: 
             marginTop: "8px",
           }}>
             <h5 style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "var(--font-cormorant), serif",
               fontSize: "9px",
               color: "#F0EDE8",
               fontWeight: 600,
@@ -272,7 +257,7 @@ function SmartphoneMockup({ accentColor, title }: { accentColor: string; title: 
               💿
             </div>
             <p style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-inter), sans-serif",
               fontSize: "4.5px",
               color: "rgba(255,255,255,0.4)",
               lineHeight: 1.2,
@@ -375,10 +360,6 @@ function HeartsCanvas() {
 export default function TemplatesPage() {
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
-        body { background: #0B0F1A; color: #F0EDE8; }
-      `}</style>
 
       {/* Background gradients */}
       <div style={{
@@ -413,13 +394,13 @@ export default function TemplatesPage() {
         <header style={{ textAlign: "center", marginBottom: "64px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px", justifyContent: "center" }}>
             <div style={{ height: "1px", width: "32px", background: "#C9A84C88" }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: "#C9A84C", fontWeight: 500 }}>
+            <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: "#C9A84C", fontWeight: 500 }}>
               Koleksiyonumuz
             </span>
             <div style={{ height: "1px", width: "32px", background: "#C9A84C88" }} />
           </div>
           <h1 style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "clamp(2.5rem, 5.5vw, 4rem)",
             fontWeight: 600,
             color: "#F0EDE8",
@@ -430,7 +411,7 @@ export default function TemplatesPage() {
             Tüm Tasarımlarımız
           </h1>
           <p style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter), sans-serif",
             fontSize: "14px",
             color: "rgba(240,237,232,0.45)",
             lineHeight: 1.8,
@@ -493,7 +474,7 @@ export default function TemplatesPage() {
                     fontSize: "9px",
                     letterSpacing: "0.12em",
                     textTransform: "uppercase",
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "var(--font-inter), sans-serif",
                     fontWeight: 600,
                     color: tpl.accentColor,
                     background: `${tpl.accentColor}18`,
@@ -511,7 +492,7 @@ export default function TemplatesPage() {
                 <div style={{ padding: "28px", display: "flex", flexDirection: "column", flex: 1 }}>
                   <div style={{ marginBottom: "16px" }}>
                     <h3 style={{
-                      fontFamily: "'Cormorant Garamond', serif",
+                      fontFamily: "var(--font-cormorant), serif",
                       fontSize: "1.65rem",
                       fontWeight: 600,
                       color: "#F0EDE8",
@@ -519,7 +500,7 @@ export default function TemplatesPage() {
                       {tpl.title}
                     </h3>
                     <p style={{
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "var(--font-inter), sans-serif",
                       fontSize: "9px",
                       letterSpacing: "0.22em",
                       textTransform: "uppercase",
@@ -533,7 +514,7 @@ export default function TemplatesPage() {
                   <div style={{ width: "40px", height: "1px", background: `linear-gradient(90deg, ${tpl.accentColor}, transparent)`, marginBottom: "16px" }} />
 
                   <p style={{
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "var(--font-inter), sans-serif",
                     fontSize: "13px",
                     lineHeight: 1.8,
                     color: "rgba(240,237,232,0.5)",
@@ -545,7 +526,7 @@ export default function TemplatesPage() {
 
                   <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px", marginTop: "auto" }}>
                     {tpl.features.map((feat, idx) => (
-                      <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.65)", fontWeight: 300 }}>
+                      <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.65)", fontWeight: 300 }}>
                         <span style={{ color: tpl.accentColor, fontWeight: "bold" }}>✓</span>
                         {feat}
                       </li>
@@ -565,7 +546,7 @@ export default function TemplatesPage() {
                       border: "1px solid rgba(255,255,255,0.08)",
                       color: "rgba(240,237,232,0.8)",
                       textDecoration: "none",
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "var(--font-inter), sans-serif",
                       fontSize: "11px",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
@@ -598,7 +579,7 @@ export default function TemplatesPage() {
                       background: tpl.accentColor,
                       color: "#0B0F1A",
                       textDecoration: "none",
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "var(--font-inter), sans-serif",
                       fontSize: "11px",
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
@@ -632,7 +613,7 @@ export default function TemplatesPage() {
             border: "1px solid rgba(255,255,255,0.15)",
             color: "rgba(240,237,232,0.75)",
             textDecoration: "none",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter), sans-serif",
             fontSize: "12px",
             letterSpacing: "0.08em",
             textTransform: "uppercase",
@@ -659,10 +640,10 @@ export default function TemplatesPage() {
         maxWidth: "1100px",
         margin: "0 auto",
       }}>
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.1rem", color: "rgba(240,237,232,0.5)" }}>
+        <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.1rem", color: "rgba(240,237,232,0.5)" }}>
           birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
         </span>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
+        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
           © {new Date().getFullYear()} — Sevgiyle yapıldı
         </p>
       </footer>

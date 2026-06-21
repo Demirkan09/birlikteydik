@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { Music, VolumeX, VolumeOff } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─── MÜŞTERİ VERİLERİ ───────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Sen & Ben",
+const defaultConfig = {
+  coupleNames: "Mehmet\n&\nEmine",
   tagline: "Eski bir fotoğraf gibi sararmış zamanlarda bile, seninle geçen her anı hâlâ canlı hissediyorum.",
   specialDate: "14 Şubat 2025",
   musicUrl: "/music/romantic.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   { id: 1, image: "/moment.jpg", title: "İlk Gün", caption: "ne güzel bir başlangıçtı...", date: "Şub '25", rotate: -2.5 },
   { id: 2, image: "/moment2.jpg", title: "El Ele", caption: "ellerini hiç bırakmak istemiyorum", date: "Mar '25", rotate: 1.8 },
   { id: 3, image: "/moment7.jpg", title: "Sonsuzluk", caption: "sanki zaman durdu o anda", date: "Nis '25", rotate: -1.2 },
@@ -30,6 +32,19 @@ const fadeUp: Variants = {
 const stagger: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12 } },
+};
+
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
 };
 
 // ─── PETAL PARTİKÜLLERİ ──────────────────────────────────────────────────────
@@ -111,7 +126,7 @@ function RecordWidget({ isPlaying, toggle }: { isPlaying: boolean; toggle: () =>
         <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "14px", color: "#7a3d2b", lineHeight: 1 }}>
           {isPlaying ? "çalıyor..." : "müzik"}
         </div>
-        <div style={{ fontFamily: "'Lato', sans-serif", fontSize: "8px", color: "rgba(122,61,43,0.5)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+        <div style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "8px", color: "rgba(122,61,43,0.5)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
           {isPlaying ? "durdur" : "dinle"}
         </div>
       </div>
@@ -121,7 +136,7 @@ function RecordWidget({ isPlaying, toggle }: { isPlaying: boolean; toggle: () =>
 }
 
 // ─── POLAROİD KART ────────────────────────────────────────────────────────────
-function PolaroidCard({ memory, index }: { memory: typeof memories[0]; index: number }) {
+function PolaroidCard({ memory, index }: { memory: any[0]; index: number }) {
   return (
     <motion.div
       initial="hidden"
@@ -145,7 +160,11 @@ function PolaroidCard({ memory, index }: { memory: typeof memories[0]; index: nu
       >
         {/* Foto */}
         <div style={{ overflow: "hidden", position: "relative" }}>
-          <img src={memory.image} alt={memory.title} style={{ width: "100%", display: "block", filter: "sepia(15%) brightness(0.97) contrast(1.02)" }} />
+          {memory.video ? (
+            <VideoPlayerPro src={memory.video} />
+          ) : (
+            <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "sepia(15%) brightness(0.97) contrast(1.02)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          )}
           {/* Vintage overlay */}
           <div style={{
             position: "absolute", inset: 0,
@@ -158,7 +177,7 @@ function PolaroidCard({ memory, index }: { memory: typeof memories[0]; index: nu
           <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "16px", color: "#5c3325", lineHeight: 1.2 }}>
             {memory.caption}
           </div>
-          <div style={{ fontFamily: "'Lato', sans-serif", fontSize: "8px", color: "rgba(150,100,80,0.5)", letterSpacing: "0.2em", marginTop: "4px", textTransform: "uppercase" }}>
+          <div style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "8px", color: "rgba(150,100,80,0.5)", letterSpacing: "0.2em", marginTop: "4px", textTransform: "uppercase" }}>
             {memory.date}
           </div>
         </div>
@@ -190,7 +209,11 @@ function PolaroidCard({ memory, index }: { memory: typeof memories[0]; index: nu
 }
 
 // ─── ANA ─────────────────────────────────────────────────────────────────────
-export default function DustyRoseTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function DustyRoseTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -198,11 +221,21 @@ export default function DustyRoseTemplate() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   const toggle = () => {
     if (!audioRef.current) return;
@@ -211,7 +244,8 @@ export default function DustyRoseTemplate() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", overflowX: "hidden", background: "#F8F0EA", color: "#4a2518", fontFamily: "'Lato', sans-serif" }}>
+    <TemplateContext.Provider value={{ config, memories }}>
+    <main style={{ minHeight: "100vh", overflowX: "hidden", background: "#F8F0EA", color: "#4a2518", fontFamily: "var(--font-lato), sans-serif" }}>
       {/* Vintage grain texture overlay */}
       <div style={{
         position: "fixed", inset: 0, pointerEvents: "none", zIndex: 1,
@@ -220,24 +254,25 @@ export default function DustyRoseTemplate() {
       }} />
       <FallingPetals />
 
-      {/* Music widget */}
-      <div style={{ position: "fixed", bottom: "24px", left: "24px", zIndex: 40 }}>
-        <RecordWidget isPlaying={isPlaying} toggle={toggle} />
-      </div>
-
-      <div style={{ position: "relative", width: "100%", maxWidth: "480px", margin: "0 auto", minHeight: "100vh", zIndex: 10, background: "#F8F0EA", boxShadow: "0 0 60px rgba(120,70,55,0.1)" }}>
+      <div style={{
+        position: "relative",
+        width: "100%",
+        maxWidth: "480px",
+        margin: "0 auto",
+        minHeight: "100vh",
+        zIndex: 10,
+        background: "rgba(248, 240, 234, 0.85)",
+        boxShadow: "0 0 60px rgba(120,70,55,0.1)",
+        borderLeft: "1px solid rgba(180,130,100,0.12)",
+        borderRight: "1px solid rgba(180,130,100,0.12)"
+      }}>
+        {/* Music widget */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <RecordWidget isPlaying={isPlaying} toggle={toggle} />
+        </div>
 
         {/* HERO */}
         <section ref={heroRef} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100svh", textAlign: "center", padding: "0 40px", overflow: "hidden" }}>
-
-          {/* Dekoratif daire */}
-          <div style={{
-            position: "absolute", width: "320px", height: "320px",
-            borderRadius: "50%",
-            border: "1px solid rgba(180,130,100,0.15)",
-            top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-            pointerEvents: "none",
-          }} />
           <div style={{
             position: "absolute", width: "420px", height: "420px",
             borderRadius: "50%",
@@ -249,17 +284,19 @@ export default function DustyRoseTemplate() {
           <motion.div style={{ y: heroY, opacity: heroOpacity }} initial="hidden" animate="visible">
             <motion.div variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
 
-              <motion.span variants={fadeUp} style={{ fontFamily: "'Lato', sans-serif", fontSize: "9px", letterSpacing: "0.5em", textTransform: "uppercase", color: "rgba(150,100,80,0.6)" }}>
+              <motion.span variants={fadeUp} style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "9px", letterSpacing: "0.5em", textTransform: "uppercase", color: "rgba(150,100,80,0.6)" }}>
                 {config.specialDate}
               </motion.span>
 
               <motion.h1 variants={fadeUp} style={{
                 fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(3.5rem, 15vw, 9rem)",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 400,
-                lineHeight: 0.9,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 color: "#4a2518",
                 letterSpacing: "0.04em",
+                whiteSpace: "pre-line",
               }}>
                 {config.coupleNames}
               </motion.h1>
@@ -280,22 +317,47 @@ export default function DustyRoseTemplate() {
                 {config.tagline}
               </motion.p>
 
-              <motion.button variants={fadeUp} onClick={toggle} style={{
-                marginTop: "12px",
-                fontFamily: "'Lato', sans-serif",
-                fontSize: "9px",
-                letterSpacing: "0.4em",
-                textTransform: "uppercase",
-                padding: "12px 30px",
-                border: "1px solid rgba(180,130,100,0.35)",
-                color: "rgba(120,70,50,0.75)",
-                background: "rgba(255,255,255,0.5)",
-                borderRadius: "2px",
-                cursor: "pointer",
-                backdropFilter: "blur(8px)",
-              }}>
-                {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
-              </motion.button>
+              <motion.div
+                variants={fadeUp}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginTop: "12px",
+                }}
+              >
+                <button
+                  onClick={toggle}
+                  style={{
+                    fontFamily: "var(--font-lato), sans-serif",
+                    fontSize: "9px",
+                    letterSpacing: "0.4em",
+                    textTransform: "uppercase",
+                    padding: "12px 30px",
+                    border: "1px solid rgba(180,130,100,0.35)",
+                    color: "rgba(120,70,50,0.75)",
+                    background: "rgba(255,255,255,0.5)",
+                    borderRadius: "2px",
+                    cursor: "pointer",
+                    backdropFilter: "blur(8px)",
+                  }}
+                >
+                  {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
+                </button>
+                <motion.span
+                  animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
+                  transition={{ duration: 0.6 }}
+                  style={{
+                    fontFamily: "'Dancing Script', cursive",
+                    fontSize: "13px",
+                    color: "rgba(120,70,50,0.7)",
+                    textAlign: "center",
+                  }}
+                >
+                  ✨ bence tıklamalısın, böylesi çok daha güzel
+                </motion.span>
+              </motion.div>
             </motion.div>
           </motion.div>
 
@@ -305,7 +367,7 @@ export default function DustyRoseTemplate() {
             <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 2.5, repeat: Infinity }}>
               <div style={{ width: "1px", height: "32px", background: "linear-gradient(to bottom, rgba(150,100,80,0.5), transparent)" }} />
             </motion.div>
-            <span style={{ fontFamily: "'Lato', sans-serif", fontSize: "7px", letterSpacing: "0.4em", color: "rgba(150,100,80,0.5)", textTransform: "uppercase" }}>Kaydır</span>
+            <span style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "7px", letterSpacing: "0.4em", color: "rgba(150,100,80,0.5)", textTransform: "uppercase" }}>Kaydır</span>
           </motion.div>
         </section>
 
@@ -323,8 +385,10 @@ export default function DustyRoseTemplate() {
 
         {/* KARTLAR */}
         <div style={{ padding: "0 24px 80px", display: "flex", flexDirection: "column", gap: "80px" }}>
-          {memories.map((m, i) => <PolaroidCard key={m.id} memory={m} index={i} />)}
+          {memories.map((m: any, i: number) => <PolaroidCard key={m.id} memory={m} index={i} />)}
         </div>
+
+
 
         {/* FİNAL */}
         <section style={{ padding: "80px 32px 60px", textAlign: "center", borderTop: "1px solid rgba(180,130,100,0.15)", background: "#F4E8E1" }}>
@@ -334,23 +398,36 @@ export default function DustyRoseTemplate() {
               Her Anın<br />Tam Ortasında Sen
             </motion.h2>
             <motion.div variants={fadeUp} style={{ width: "32px", height: "1px", background: "rgba(180,130,100,0.4)" }} />
-            <motion.span variants={fadeUp} style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1.1rem", color: "rgba(120,70,50,0.6)" }}>
+            <motion.div
+              variants={fadeUp}
+              style={{
+                fontFamily: "'Dancing Script', cursive",
+                fontSize: "1.1rem",
+                color: "rgba(120,70,50,0.6)",
+                display: "block",
+                whiteSpace: "pre-line",
+                lineHeight: 1.4,
+                paddingBottom: "4px"
+              }}
+            >
               {config.coupleNames}
-            </motion.span>
-            <motion.span variants={fadeUp} style={{ fontFamily: "'Lato', sans-serif", fontSize: "8px", letterSpacing: "0.35em", color: "rgba(150,100,80,0.4)", textTransform: "uppercase" }}>
+            </motion.div>
+            <motion.span variants={fadeUp} style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "8px", letterSpacing: "0.35em", color: "rgba(150,100,80,0.4)", textTransform: "uppercase" }}>
               {config.specialDate}
             </motion.span>
           </motion.div>
         </section>
 
-        <footer style={{ padding: "28px", textAlign: "center", fontFamily: "'Lato', sans-serif", fontSize: "8px", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(150,100,80,0.4)" }}>
+        <footer style={{ padding: "28px", textAlign: "center", fontFamily: "var(--font-lato), sans-serif", fontSize: "8px", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(150,100,80,0.4)" }}>
           Dusty Rose — birlikteydik.com
         </footer>
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@400;600&family=Lato:wght@300;400&display=swap');
+        
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

@@ -1,19 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { Play, Pause, Star } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─── MÜŞTERİ VERİLERİ ───────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Sen & Ben",
+const defaultConfig = {
+  coupleNames: "Melek\n&\nÖmer",
   partnerName: "Sana",
   tagline: "Gecenin en derin mavisinde, yıldızlar bile bizim hikayemizi fısıldıyor.",
   specialDate: "14 Şubat 2025",
   musicUrl: "/music/romantic.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   { id: 1, image: "/moment.jpg", title: "İlk Bakış", description: "Gözlerin ilk kez benimkilerle buluştuğunda, tüm evren bir an için sessizleşti.", date: "14 Şubat 2025", frame: "01" },
   { id: 2, image: "/moment2.jpg", title: "Gece Yürüyüşü", description: "Sokak lambalarının altında, ellerimiz birbirine kenetlenmiş, dünya sadece bizden ibaretti.", date: "12 Mart 2025", frame: "02" },
   { id: 3, image: "/moment7.jpg", title: "Sonsuz An", description: "Zamanın durduğu o saniyelerde, seni ne kadar sevdiğimi kelimeler anlatamaz.", date: "25 Nisan 2025", frame: "03" },
@@ -73,8 +75,22 @@ function StarField() {
   return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
 }
 
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
+
 // ─── MÜZİK OYNATICI ──────────────────────────────────────────────────────────
 function VinylPlayer({ isPlaying, toggle }: { isPlaying: boolean; toggle: () => void }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   return (
     <div
       onClick={toggle}
@@ -124,7 +140,7 @@ function VinylPlayer({ isPlaying, toggle }: { isPlaying: boolean; toggle: () => 
 }
 
 // ─── FİLM ŞERİDİ KART ────────────────────────────────────────────────────────
-function FilmCard({ memory, index }: { memory: typeof memories[0]; index: number }) {
+function FilmCard({ memory, index }: { memory: any[0]; index: number }) {
   const isEven = index % 2 === 0;
   return (
     <motion.div
@@ -135,30 +151,22 @@ function FilmCard({ memory, index }: { memory: typeof memories[0]; index: number
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}
     >
       {/* Film şeridi çerçeve */}
-      <motion.div variants={fadeUp} style={{ width: "100%", maxWidth: "340px", position: "relative" }}>
-        {/* Üst delik şeridi */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "4px", paddingLeft: "8px" }}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} style={{ width: "16px", height: "10px", borderRadius: "2px", background: "rgba(30,60,120,0.8)", border: "1px solid rgba(60,100,180,0.3)" }} />
-          ))}
-        </div>
+      <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
         {/* Fotoğraf */}
         <div style={{
           position: "relative", overflow: "hidden",
-          border: "3px solid rgba(30,60,120,0.9)",
+          border: "1px solid rgba(30,60,120,0.5)",
           background: "#040d24",
         }}>
           <div style={{ position: "absolute", top: "8px", left: "8px", zIndex: 2, fontFamily: "monospace", fontSize: "9px", color: "rgba(100,160,255,0.5)", letterSpacing: "0.2em" }}>
             {memory.frame}
           </div>
-          <img src={memory.image} alt={memory.title} style={{ width: "100%", display: "block", filter: "brightness(0.9) contrast(1.05)" }} />
+          {memory.video ? (
+            <VideoPlayerPro src={memory.video} />
+          ) : (
+            <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "brightness(0.9) contrast(1.05)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          )}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(4,13,36,0.6) 100%)", pointerEvents: "none" }} />
-        </div>
-        {/* Alt delik şeridi */}
-        <div style={{ display: "flex", gap: "6px", marginTop: "4px", paddingLeft: "8px" }}>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} style={{ width: "16px", height: "10px", borderRadius: "2px", background: "rgba(30,60,120,0.8)", border: "1px solid rgba(60,100,180,0.3)" }} />
-          ))}
         </div>
       </motion.div>
 
@@ -186,7 +194,11 @@ function FilmCard({ memory, index }: { memory: typeof memories[0]; index: number
 }
 
 // ─── ANA COMPONENT ────────────────────────────────────────────────────────────
-export default function MidnightVelvetTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function MidnightVelvetTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -194,11 +206,21 @@ export default function MidnightVelvetTemplate() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   const toggle = () => {
     if (!audioRef.current) return;
@@ -207,6 +229,7 @@ export default function MidnightVelvetTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main style={{ minHeight: "100vh", overflowX: "hidden", background: "#04091a", color: "#c8e1ff", fontFamily: "'Space Grotesk', sans-serif" }}>
       {/* Ambient */}
       <div style={{
@@ -219,13 +242,12 @@ export default function MidnightVelvetTemplate() {
       }} />
       <StarField />
 
-      {/* Music widget */}
-      <div style={{ position: "fixed", bottom: "24px", left: "24px", zIndex: 40 }}>
-        <VinylPlayer isPlaying={isPlaying} toggle={toggle} />
-      </div>
-
       {/* Centered container */}
       <div style={{ position: "relative", width: "100%", maxWidth: "480px", margin: "0 auto", minHeight: "100vh", zIndex: 10, borderLeft: "1px solid rgba(30,60,120,0.15)", borderRight: "1px solid rgba(30,60,120,0.15)" }}>
+        {/* Music widget */}
+        <div className="fixed lg:absolute bottom-6 left-6 z-40">
+          <VinylPlayer isPlaying={isPlaying} toggle={toggle} />
+        </div>
 
         {/* HERO */}
         <section ref={heroRef} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100svh", overflow: "hidden" }}>
@@ -243,14 +265,16 @@ export default function MidnightVelvetTemplate() {
 
               <motion.h1 variants={fadeUp} style={{
                 fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(3.5rem, 14vw, 9rem)",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 400,
-                lineHeight: 0.95,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 letterSpacing: "0.03em",
                 background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(100,160,255,0.6) 50%, rgba(50,100,220,0.5) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                whiteSpace: "pre-line",
               }}>
                 {config.coupleNames}
               </motion.h1>
@@ -274,25 +298,46 @@ export default function MidnightVelvetTemplate() {
                 {config.tagline}
               </motion.p>
 
-              <motion.button
+              <motion.div
                 variants={fadeUp}
-                onClick={toggle}
                 style={{
-                  fontFamily: "monospace",
-                  fontSize: "9px",
-                  letterSpacing: "0.45em",
-                  textTransform: "uppercase",
-                  padding: "13px 32px",
-                  border: "1px solid rgba(60,100,200,0.35)",
-                  color: "rgba(130,170,230,0.8)",
-                  background: "rgba(10,30,80,0.3)",
-                  borderRadius: "3px",
-                  cursor: "pointer",
-                  backdropFilter: "blur(10px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "10px",
                 }}
               >
-                {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
-              </motion.button>
+                <button
+                  onClick={toggle}
+                  style={{
+                    fontFamily: "monospace",
+                    fontSize: "9px",
+                    letterSpacing: "0.45em",
+                    textTransform: "uppercase",
+                    padding: "13px 32px",
+                    border: "1px solid rgba(60,100,200,0.35)",
+                    color: "rgba(130,170,230,0.8)",
+                    background: "rgba(10,30,80,0.3)",
+                    borderRadius: "3px",
+                    cursor: "pointer",
+                    backdropFilter: "blur(10px)",
+                  }}
+                >
+                  {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
+                </button>
+                <motion.span
+                  animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
+                  transition={{ duration: 0.6 }}
+                  style={{
+                    fontFamily: "monospace",
+                    fontSize: "10px",
+                    color: "rgba(130,170,230,0.6)",
+                    textAlign: "center",
+                  }}
+                >
+                  ✨ bence tıklamalısın, böylesi çok daha güzel
+                </motion.span>
+              </motion.div>
 
             </motion.div>
           </motion.div>
@@ -322,8 +367,10 @@ export default function MidnightVelvetTemplate() {
 
         {/* KARTLAR */}
         <div style={{ padding: "0 24px 80px", display: "flex", flexDirection: "column", gap: "80px" }}>
-          {memories.map((m, i) => <FilmCard key={m.id} memory={m} index={i} />)}
+          {memories.map((m: any, i: number) => <FilmCard key={m.id} memory={m} index={i} />)}
         </div>
+
+
 
         {/* FİNAL */}
         <section style={{ padding: "80px 32px", textAlign: "center", borderTop: "1px solid rgba(30,60,120,0.2)", background: "#04091a" }}>
@@ -336,9 +383,22 @@ export default function MidnightVelvetTemplate() {
             <motion.h2 variants={fadeUp} style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 6vw, 3.5rem)", fontWeight: 400, color: "rgba(200,225,255,0.9)", lineHeight: 1.15, letterSpacing: "0.03em" }}>
               Sonsuza Kadar<br />Seninle
             </motion.h2>
-            <motion.span variants={fadeUp} style={{ fontFamily: "monospace", fontSize: "9px", color: "rgba(60,100,180,0.6)", letterSpacing: "0.45em", textTransform: "uppercase" }}>
+            <motion.div
+              variants={fadeUp}
+              style={{
+                fontFamily: "monospace",
+                fontSize: "9px",
+                color: "rgba(60,100,180,0.6)",
+                letterSpacing: "0.45em",
+                textTransform: "uppercase",
+                display: "block",
+                whiteSpace: "pre-line",
+                lineHeight: 1.4,
+                paddingBottom: "4px"
+              }}
+            >
               {config.coupleNames}
-            </motion.span>
+            </motion.div>
             <motion.span variants={fadeUp} style={{ fontFamily: "monospace", fontSize: "8px", color: "rgba(30,60,120,0.8)", letterSpacing: "0.3em" }}>
               {config.specialDate}
             </motion.span>
@@ -355,5 +415,7 @@ export default function MidnightVelvetTemplate() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@300;400;500&display=swap');
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

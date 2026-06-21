@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { ChevronDown, Volume2, VolumeX, Heart, Play } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎬 MÜŞTERİ VERİLERİ (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Sen & Ben",
+const defaultConfig = {
+  coupleNames: "Kaan\n&\nYağmur",
   tagline: "Bir sevgi belgeseli, başrollerde sadece bizim olduğumuz...",
   accentColor: "#B8A9D4",
   specialDate: "2024 - 2025",
   musicUrl: "/music/cinematic.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   {
     id: 1,
     image: "/moment.jpg",
@@ -89,6 +91,19 @@ const memories = [
     note: "Dünya dönmeyi bıraksa bile, biz bu denizde sonsuza dek kalacağız.",
   },
 ];
+
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ANİMASYON VARİANTLARI
@@ -258,7 +273,8 @@ function ProjectorWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggl
 // ─────────────────────────────────────────────────────────────────────────────
 // FOTOĞRAF KART - SİNEMATİK LETTERBOX
 // ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [20, -20]);
@@ -323,29 +339,36 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         </div>
 
         {/* Fotoğraf */}
-        <img
-          src={memory.image}
-          alt={memory.title}
-          style={{ width: "100%", height: "auto", display: "block", opacity: 0.88, filter: "contrast(1.05) saturate(0.85)" }}
-        />
+        {memory.video ? (
+          <VideoPlayerPro src={memory.video} />
+        ) : (
+          <>
+            <img
+              src={memory.image}
+              alt={memory.title}
+              draggable={false}
+              style={{ width: "100%", height: "auto", display: "block", opacity: 0.88, filter: "contrast(1.05) saturate(0.85)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }}
+            />
 
-        {/* Film grain overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E")`,
-            pointerEvents: "none",
-            opacity: 0.4,
-          }}
-        />
+            {/* Film grain overlay */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E")`,
+                pointerEvents: "none",
+                opacity: 0.4,
+              }}
+            />
 
-        {/* Üst ve alt letterbox bantları */}
-        <div style={{ position: "absolute", inset: "0 0 auto 0", height: "12px", background: "rgba(0,0,0,0.5)", zIndex: 10 }} />
-        <div style={{ position: "absolute", inset: "auto 0 0 0", height: "12px", background: "rgba(0,0,0,0.5)", zIndex: 10 }} />
+            {/* Üst ve alt letterbox bantları */}
+            <div style={{ position: "absolute", inset: "0 0 auto 0", height: "12px", background: "rgba(0,0,0,0.5)", zIndex: 10 }} />
+            <div style={{ position: "absolute", inset: "auto 0 0 0", height: "12px", background: "rgba(0,0,0,0.5)", zIndex: 10 }} />
 
-        {/* Vinyete */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)", pointerEvents: "none" }} />
+            {/* Vinyete */}
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)", pointerEvents: "none" }} />
+          </>
+        )}
       </motion.div>
 
       {/* Film altyazı stili açıklama */}
@@ -399,7 +422,11 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-export default function CinematicTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function CinematicTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [showCurtain, setShowCurtain] = useState(true);
   const [countdown, setCountdown] = useState(4);
@@ -410,11 +437,21 @@ export default function CinematicTemplate() {
   const heroY = useTransform(heroScroll, [0, 1], [0, 110]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   // Perde kapandıktan sonra geri sayım başlar
   useEffect(() => {
@@ -439,9 +476,10 @@ export default function CinematicTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden selection:bg-[#B8A9D4]/20"
-      style={{ background: "#050505", color: "#ECE9E6" }}
+      style={{ background: "#050505", color: "#E0DCD8" }}
     >
       {/* Film grain fixed overlay */}
       <div
@@ -450,11 +488,18 @@ export default function CinematicTemplate() {
           width: "200%", height: "200%", top: "-50%", left: "-50%",
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
           animation: "filmNoise 0.18s infinite steps(5)",
+          pointerEvents: "none",
         }}
       />
 
       {/* Centered mobile-framed container for content */}
-      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#050505] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+      <div
+        className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#050505] shadow-[0_0_80px_rgba(0,0,0,0.85)] z-10 flex flex-col"
+        style={{
+          borderLeft: "1px solid rgba(184,169,212,0.08)",
+          borderRight: "1px solid rgba(184,169,212,0.08)"
+        }}
+      >
         {/* PROJEKTÖR WİDGET */}
         <div className="fixed lg:absolute bottom-6 left-6 z-40">
           <ProjectorWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
@@ -507,14 +552,16 @@ export default function CinematicTemplate() {
               variants={fadeUp}
               style={{
                 fontFamily: "'Cinzel', serif",
-                fontSize: "clamp(3rem, 13vw, 9rem)",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 400,
                 letterSpacing: "0.1em",
-                lineHeight: 1,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 background: "linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(184,169,212,0.7) 55%, rgba(255,255,255,0.45) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                whiteSpace: "pre-line",
               }}
             >
               {config.coupleNames}
@@ -612,7 +659,7 @@ export default function CinematicTemplate() {
       {/* ── FOTOĞRAF SAHNELERİ ── */}
       <section className="relative py-24 px-6 max-w-5xl mx-auto z-10">
         <div className="flex flex-col gap-28">
-          {memories.map((m, i) => (
+          {memories.map((m: any, i: number) => (
             <MemoryCard key={m.id} memory={m} index={i} />
           ))}
         </div>
@@ -676,6 +723,9 @@ export default function CinematicTemplate() {
                     fontSize: "0.95rem",
                     color: "#F0EDE8",
                     letterSpacing: "0.06em",
+                    whiteSpace: "pre-line",
+                    lineHeight: 1.4,
+                    paddingBottom: "4px"
                   }}
                 >
                   {value}
@@ -722,5 +772,7 @@ export default function CinematicTemplate() {
         }
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

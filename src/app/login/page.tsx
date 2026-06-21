@@ -78,7 +78,7 @@ function Input({
   const [focused, setFocused] = useState(false);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-      <label style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: focused ? C.gold : C.muted, fontWeight: 500, transition: "color 0.2s" }}>{label}</label>
+      <label style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: focused ? C.gold : C.muted, fontWeight: 500, transition: "color 0.2s" }}>{label}</label>
       <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
         <span style={{ position: "absolute", left: "16px", color: focused ? C.gold : "rgba(240,237,232,0.3)", transition: "color 0.2s", pointerEvents: "none", display: "flex" }}>{icon}</span>
         <input
@@ -89,13 +89,13 @@ function Input({
             width: "100%", padding: "14px 16px 14px 44px", paddingRight: rightElement ? "48px" : "16px",
             borderRadius: "12px", background: focused ? "rgba(201,168,76,0.05)" : C.card,
             border: `1px solid ${error ? C.error + "88" : focused ? C.gold + "55" : C.border}`,
-            color: C.text, fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 300,
+            color: C.text, fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", fontWeight: 300,
             outline: "none", transition: "all 0.25s", backdropFilter: "blur(8px)",
           }}
         />
         {rightElement && <span style={{ position: "absolute", right: "14px", display: "flex", cursor: "pointer", color: "rgba(240,237,232,0.35)" }}>{rightElement}</span>}
       </div>
-      {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.error, fontWeight: 300 }}>{error}</p>}
+      {error && <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.error, fontWeight: 300 }}>{error}</p>}
     </div>
   );
 }
@@ -153,6 +153,10 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (data.unverified) {
+          router.push(`/verify-email?email=${encodeURIComponent(email.toLowerCase().trim())}`);
+          return;
+        }
         setErrors({ general: data.error ?? "E-posta veya şifre hatalı." });
         setLoading(false);
         return;
@@ -186,16 +190,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { background: ${C.bg}; overflow-x: hidden; color: ${C.text}; }
-        ::selection { background: rgba(201,168,76,0.28); color: ${C.text}; }
-        input::placeholder { color: rgba(240,237,232,0.2); }
-        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px #0d1220 inset !important; -webkit-text-fill-color: #F0EDE8 !important; }
-      `}</style>
-
       {/* Arka plan */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 80% 60% at 30% 20%, rgba(201,168,76,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(232,160,160,0.05) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0d1220 60%, #0a0d18 100%)" }} />
       <HeartsCanvas />
@@ -214,10 +208,10 @@ export default function LoginPage() {
             <div style={{ textAlign: "center", marginBottom: "36px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
                 <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>Hoş Geldin</span>
+                <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>Hoş Geldin</span>
                 <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
               </div>
-              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.8rem, 5vw, 2.4rem)", fontWeight: 600, color: C.text, lineHeight: 1.15, letterSpacing: "-0.01em" }}>
+              <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.8rem, 5vw, 2.4rem)", fontWeight: 600, color: C.text, lineHeight: 1.15, letterSpacing: "-0.01em" }}>
                 Hesabına <em style={{ color: C.gold, fontStyle: "italic" }}>Giriş Yap</em>
               </h1>
             </div>
@@ -225,7 +219,7 @@ export default function LoginPage() {
             {/* Form */}
             <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
               {errors.general && (
-                <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
+                <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
                   {errors.general}
                 </div>
               )}
@@ -263,11 +257,11 @@ export default function LoginPage() {
                       </svg>
                     )}
                   </div>
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: rememberMe ? "rgba(240,237,232,0.7)" : "rgba(240,237,232,0.38)", fontWeight: 300, transition: "color 0.2s" }}>
+                  <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: rememberMe ? "rgba(240,237,232,0.7)" : "rgba(240,237,232,0.38)", fontWeight: 300, transition: "color 0.2s" }}>
                     Beni Hatırla
                   </span>
                 </label>
-                <Link href="/forgot-password" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>Şifremi Unuttum</Link>
+                <Link href="/forgot-password" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>Şifremi Unuttum</Link>
               </div>
 
               {/* Submit */}
@@ -276,7 +270,7 @@ export default function LoginPage() {
                 style={{
                   width: "100%", padding: "15px", borderRadius: "30px", border: "none",
                   background: loading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
-                  fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em",
+                  fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em",
                   textTransform: "uppercase", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
                   transition: "opacity 0.2s, background 0.2s", marginTop: "4px",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -293,19 +287,19 @@ export default function LoginPage() {
             {/* Divider */}
             <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "24px 0" }}>
               <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
+              <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
               <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
             </div>
 
             {/* Register link */}
-            <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
+            <p style={{ textAlign: "center", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
               Hesabın yok mu?{" "}
               <Link href="/register" style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>Kayıt Ol</Link>
             </p>
           </div>
 
           {/* Alt bilgi */}
-          <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
+          <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
             Giriş yaparak{" "}
             <a href="/kvkk-metni" target="_blank" style={{ color: C.gold + "66", textDecoration: "none" }}>Kullanım Koşulları</a>'nı kabul etmiş olursun.
           </p>
@@ -315,12 +309,8 @@ export default function LoginPage() {
       {/* Footer mini */}
       <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
         <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
+        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
       </footer>
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
     </>
   );
 }

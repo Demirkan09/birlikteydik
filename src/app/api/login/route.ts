@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     const res = await pool.query(
-      "SELECT id, name, email, password_hash, marketing_consent, role FROM users WHERE email = $1",
+      "SELECT id, name, email, password_hash, marketing_consent, role, is_verified FROM users WHERE email = $1",
       [email.toLowerCase().trim()]
     );
 
@@ -40,6 +40,17 @@ export async function POST(request: Request) {
     if (!match) {
       return NextResponse.json(
         { error: "Hatalı e-posta adresi veya şifre." },
+        { status: 401 }
+      );
+    }
+
+    if (!user.is_verified) {
+      return NextResponse.json(
+        {
+          error: "Lütfen e-posta adresinizi doğrulayın.",
+          unverified: true,
+          email: user.email,
+        },
         { status: 401 }
       );
     }

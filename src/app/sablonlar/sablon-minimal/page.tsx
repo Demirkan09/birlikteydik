@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { ChevronRight, Volume2, VolumeX, Heart } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🤍 MÜŞTERİ VERİLERİ (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Sen & Ben",
+const defaultConfig = {
+  coupleNames: "Osman\n&\nSeda",
   tagline: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben.",
   accentColor: "#8C7E6C",
   specialDate: "26.10.2024",
   musicUrl: "/music/minimal.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   {
     id: 1,
     image: "/moment.jpg",
@@ -89,6 +91,19 @@ const memories = [
     note: "Dünya dönmeyi bıraksa bile, biz bu denizde sonsuza dek kalacağız.",
   },
 ];
+
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ANİMASYON VARİANTLARI
@@ -210,7 +225,8 @@ function MinimalNoteWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; tog
 // ─────────────────────────────────────────────────────────────────────────────
 // FOTOĞRAF KART KOMPONENTI (Asimetrik, minimalist)
 // ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [25, -25]);
@@ -229,24 +245,29 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       <motion.div
         variants={fadeUp}
         className="relative flex-shrink-0 w-full"
-        style={{ maxWidth: "350px" }}
+        
       >
         <div
           className="overflow-hidden"
           style={{
             background: "#FAF8F5",
-            padding: "10px",
+            padding: "2px",
             border: "1px solid #E9E4DF",
             boxShadow: "0 5px 20px rgba(0,0,0,0.04)",
           }}
         >
           <div className="relative overflow-hidden" style={{ background: "#F0ECE8" }}>
-            <img
-              src={memory.image}
-              alt={memory.title}
-              className="w-full h-auto block"
-              style={{ filter: "saturate(0.88) contrast(1.02)" }}
-            />
+            {memory.video ? (
+              <VideoPlayerPro src={memory.video} />
+            ) : (
+              <img
+                src={memory.image}
+                alt={memory.title}
+                className="w-full h-auto block"
+                draggable={false}
+                style={{ filter: "saturate(0.88) contrast(1.02)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }}
+              />
+            )}
           </div>
         </div>
       </motion.div>
@@ -306,7 +327,11 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-export default function MinimalTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function MinimalTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [countdown, setCountdown] = useState(4);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -316,11 +341,21 @@ export default function MinimalTemplate() {
   const heroY = useTransform(heroScroll, [0, 1], [0, 80]);
   const heroOpacity = useTransform(heroScroll, [0, 0.8], [1, 0]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -340,6 +375,7 @@ export default function MinimalTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden selection:bg-[#E4DDD3]"
       style={{ background: "#F6F3F0", color: "#2C2927", fontFamily: "'Source Sans 3', sans-serif" }}
@@ -352,11 +388,18 @@ export default function MinimalTemplate() {
             radial-gradient(ellipse 60% 40% at 100% 0%, rgba(140,126,108,0.06) 0%, transparent 60%),
             radial-gradient(ellipse 60% 40% at 0% 100%, rgba(140,126,108,0.04) 0%, transparent 60%)
           `,
+          pointerEvents: "none",
         }}
       />
 
       {/* Centered mobile-framed container for content */}
-      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#F6F3F0] shadow-[0_0_80px_rgba(0,0,0,0.08)] border-x border-[#EAE3DC] z-10 flex flex-col">
+      <div
+        className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#F6F3F0] shadow-[0_0_80px_rgba(0,0,0,0.08)] z-10 flex flex-col"
+        style={{
+          borderLeft: "1px solid rgba(140,126,108,0.12)",
+          borderRight: "1px solid rgba(140,126,108,0.12)"
+        }}
+      >
         {/* MINIMAL NOTE WIDGET */}
         <div className="fixed lg:absolute bottom-6 left-6 z-40">
           <MinimalNoteWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
@@ -394,12 +437,14 @@ export default function MinimalTemplate() {
               variants={fadeUp}
               style={{
                 fontFamily: "'EB Garamond', serif",
-                fontSize: "clamp(3.2rem, 12vw, 8rem)",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 400,
-                lineHeight: 0.95,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 letterSpacing: "-0.01em",
                 color: "#1C1A19",
                 textAlign: "center",
+                whiteSpace: "pre-line",
               }}
             >
               {config.coupleNames}
@@ -521,7 +566,7 @@ export default function MinimalTemplate() {
       {/* ── FOTOĞRAF KARTLARI ── */}
       <div className="relative z-10 py-8 px-8 md:px-24 max-w-5xl mx-auto">
         <div className="flex flex-col gap-36">
-          {memories.map((m, i) => (
+          {memories.map((m: any, i: number) => (
             <MemoryCard key={m.id} memory={m} index={i} />
           ))}
         </div>
@@ -558,17 +603,21 @@ export default function MinimalTemplate() {
             <Heart size={12} style={{ color: "#8C7E6C", opacity: 0.65 }} />
           </motion.div>
           <motion.div variants={fadeIn} className="mt-10 flex flex-col items-center gap-2">
-            <span
+            <div
               style={{
                 fontFamily: "'Source Sans 3', sans-serif",
                 fontSize: "10px",
                 letterSpacing: "0.42em",
                 textTransform: "uppercase",
                 color: "#736E6A",
+                display: "block",
+                whiteSpace: "pre-line",
+                lineHeight: 1.4,
+                paddingBottom: "4px"
               }}
             >
               {config.coupleNames}
-            </span>
+            </div>
             <span
               style={{
                 fontFamily: "'Source Sans 3', sans-serif",
@@ -604,5 +653,7 @@ export default function MinimalTemplate() {
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Source+Sans+3:wght@300;400;600&display=swap');
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

@@ -83,7 +83,7 @@ function PasswordInput({
   const [focused, setFocused] = useState(false);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-      <label style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: focused ? C.gold : C.muted, fontWeight: 500, transition: "color 0.2s" }}>{label}</label>
+      <label style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: focused ? C.gold : C.muted, fontWeight: 500, transition: "color 0.2s" }}>{label}</label>
       <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
         <span style={{ position: "absolute", left: "16px", color: focused ? C.gold : "rgba(240,237,232,0.3)", transition: "color 0.2s", pointerEvents: "none", display: "flex" }}>
           <HiOutlineLockClosed size={17} />
@@ -96,7 +96,7 @@ function PasswordInput({
             width: "100%", padding: "14px 48px 14px 44px",
             borderRadius: "12px", background: focused ? "rgba(201,168,76,0.05)" : C.card,
             border: `1px solid ${error ? C.error + "88" : focused ? C.gold + "55" : C.border}`,
-            color: C.text, fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 300,
+            color: C.text, fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", fontWeight: 300,
             outline: "none", transition: "all 0.25s", backdropFilter: "blur(8px)",
           }}
         />
@@ -107,7 +107,7 @@ function PasswordInput({
           {show ? <HiOutlineEyeOff size={17} /> : <HiOutlineEye size={17} />}
         </span>
       </div>
-      {error && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: C.error, fontWeight: 300 }}>{error}</p>}
+      {error && <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.error, fontWeight: 300 }}>{error}</p>}
     </div>
   );
 }
@@ -186,16 +186,6 @@ export default function ResetPasswordPage({
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { background: ${C.bg}; overflow-x: hidden; color: ${C.text}; }
-        ::selection { background: rgba(201,168,76,0.28); color: ${C.text}; }
-        input::placeholder { color: rgba(240,237,232,0.2); }
-        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px #0d1220 inset !important; -webkit-text-fill-color: #F0EDE8 !important; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-      `}</style>
 
       {/* Arka plan */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 80% 60% at 70% 20%, rgba(201,168,76,0.06) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 20% 80%, rgba(184,169,212,0.05) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0d1220 60%, #0a0d18 100%)" }} />
@@ -227,10 +217,10 @@ export default function ResetPasswordPage({
                       <HiOutlineCheckCircle size={36} color={C.success} />
                     </motion.div>
                   </div>
-                  <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.6rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
+                  <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.6rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
                     Şifren <em style={{ color: C.gold, fontStyle: "italic" }}>Güncellendi!</em>
                   </h2>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
+                  <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
                     {isPageReset
                       ? "Sayfa şifresi başarıyla sıfırlandı. Artık yeni şifrenle sayfaya erişebilirsin."
                       : "Hesap şifresi başarıyla güncellendi. Şimdi giriş yapabilirsin."}
@@ -238,14 +228,14 @@ export default function ResetPasswordPage({
                   <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
                     <Link
                       href="/login"
-                      style={{ display: "inline-block", padding: "13px 28px", borderRadius: "30px", background: C.gold, color: "#0B0F1A", fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, textDecoration: "none" }}
+                      style={{ display: "inline-block", padding: "13px 28px", borderRadius: "30px", background: C.gold, color: "#0B0F1A", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, textDecoration: "none" }}
                     >
                       Giriş Yap
                     </Link>
                     {isPageReset && slug && (
                       <button
                         onClick={() => router.push(`/${slug}`)}
-                        style={{ padding: "13px 28px", borderRadius: "30px", border: `1px solid ${C.border}`, background: "transparent", color: C.text, fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, cursor: "pointer" }}
+                        style={{ padding: "13px 28px", borderRadius: "30px", border: `1px solid ${C.border}`, background: "transparent", color: C.text, fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, cursor: "pointer" }}
                       >
                         Sayfaya Git
                       </button>
@@ -253,7 +243,7 @@ export default function ResetPasswordPage({
                     {!isPageReset && (
                       <button
                         onClick={() => router.push("/profil")}
-                        style={{ padding: "13px 28px", borderRadius: "30px", border: `1px solid ${C.border}`, background: "transparent", color: C.text, fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, cursor: "pointer" }}
+                        style={{ padding: "13px 28px", borderRadius: "30px", border: `1px solid ${C.border}`, background: "transparent", color: C.text, fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, cursor: "pointer" }}
                       >
                         Profilim
                       </button>
@@ -279,15 +269,15 @@ export default function ResetPasswordPage({
                       <HiOutlineExclamationCircle size={36} color={C.error} />
                     </motion.div>
                   </div>
-                  <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
+                  <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
                     Bağlantı <em style={{ color: C.error, fontStyle: "italic" }}>Geçersiz</em>
                   </h2>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
+                  <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
                     {errors.general ?? "Bu şifre sıfırlama bağlantısı süresi dolmuş veya zaten kullanılmış. Lütfen yeni bir bağlantı talep et."}
                   </p>
                   <Link
                     href="/forgot-password"
-                    style={{ display: "inline-block", padding: "13px 32px", borderRadius: "30px", background: C.gold, color: "#0B0F1A", fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, textDecoration: "none" }}
+                    style={{ display: "inline-block", padding: "13px 32px", borderRadius: "30px", background: C.gold, color: "#0B0F1A", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, textDecoration: "none" }}
                   >
                     Yeni Bağlantı İste
                   </Link>
@@ -305,17 +295,17 @@ export default function ResetPasswordPage({
                   <div style={{ textAlign: "center", marginBottom: "32px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
                       <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
-                      <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>
+                      <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>
                         {isPageReset ? "Sayfa Şifresi" : "Hesap Şifresi"}
                       </span>
                       <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
                     </div>
-                    <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: C.text, lineHeight: 1.15 }}>
+                    <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.6rem, 5vw, 2.2rem)", fontWeight: 600, color: C.text, lineHeight: 1.15 }}>
                       {isPageReset
                         ? <><em style={{ color: C.gold, fontStyle: "italic" }}>Sayfa</em> Şifreni Sıfırla</>
                         : <><em style={{ color: C.gold, fontStyle: "italic" }}>Hesap</em> Şifreni Sıfırla</>}
                     </h1>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300, marginTop: "8px", lineHeight: 1.6 }}>
+                    <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300, marginTop: "8px", lineHeight: 1.6 }}>
                       Yeni şifreni belirle.
                     </p>
                   </div>
@@ -323,7 +313,7 @@ export default function ResetPasswordPage({
                   {/* Form */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
                     {errors.general && (
-                      <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
+                      <div style={{ padding: "12px 16px", borderRadius: "10px", background: C.error + "12", border: `1px solid ${C.error}44`, fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.error, fontWeight: 300 }}>
                         {errors.general}
                       </div>
                     )}
@@ -344,7 +334,7 @@ export default function ResetPasswordPage({
                             background: newPassword.length < 8 ? C.error : newPassword.length < 12 ? C.gold : C.success,
                           }} />
                         </div>
-                        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", fontWeight: 300, color: newPassword.length < 8 ? C.error : newPassword.length < 12 ? C.gold : C.success }}>
+                        <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", fontWeight: 300, color: newPassword.length < 8 ? C.error : newPassword.length < 12 ? C.gold : C.success }}>
                           {newPassword.length < 8 ? `Çok kısa (${newPassword.length}/8)` : newPassword.length < 12 ? "Yeterli" : "Güçlü ✓"}
                         </span>
                       </div>
@@ -361,7 +351,7 @@ export default function ResetPasswordPage({
                       style={{
                         width: "100%", padding: "15px", borderRadius: "30px", border: "none",
                         background: loading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
-                        fontFamily: "'Inter', sans-serif", fontSize: "13px", letterSpacing: "0.12em",
+                        fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", letterSpacing: "0.12em",
                         textTransform: "uppercase", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
                         transition: "opacity 0.2s, background 0.2s", marginTop: "4px",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -377,10 +367,10 @@ export default function ResetPasswordPage({
 
                   <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "24px 0 16px" }}>
                     <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                    <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
+                    <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
                     <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
                   </div>
-                  <p style={{ textAlign: "center", fontFamily: "'Inter', sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
+                  <p style={{ textAlign: "center", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
                     <Link href="/forgot-password" style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>Yeni sıfırlama bağlantısı iste</Link>
                   </p>
                 </motion.div>
@@ -388,7 +378,7 @@ export default function ResetPasswordPage({
             </AnimatePresence>
           </div>
 
-          <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
+          <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
             {title}
           </p>
         </motion.div>
@@ -397,7 +387,7 @@ export default function ResetPasswordPage({
       {/* Footer */}
       <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
         <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
+        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
       </footer>
     </>
   );

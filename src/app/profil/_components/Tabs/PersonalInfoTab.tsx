@@ -1,0 +1,107 @@
+"use client";
+
+import { useState } from "react";
+import { HiOutlineUser, HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { C } from "../../_utils/constants";
+import { ProfileInput } from "../ProfileInput";
+import { User } from "../../types";
+
+export function PersonalInfoTab({
+  user,
+  name,
+  setName,
+  email,
+  setEmail,
+  currentPassword,
+  setCurrentPassword,
+  newPassword,
+  setNewPassword,
+  newPasswordConfirm,
+  setNewPasswordConfirm,
+  handleUpdateProfile,
+  loading,
+  errors,
+}: {
+  user: User;
+  name: string;
+  setName: (v: string) => void;
+  email: string;
+  setEmail: (v: string) => void;
+  currentPassword: string;
+  setCurrentPassword: (v: string) => void;
+  newPassword: string;
+  setNewPassword: (v: string) => void;
+  newPasswordConfirm: string;
+  setNewPasswordConfirm: (v: string) => void;
+  handleUpdateProfile: () => void;
+  loading: boolean;
+  errors: Record<string, string>;
+}) {
+  const [showPass1, setShowPass1] = useState(false);
+  const [showPass2, setShowPass2] = useState(false);
+  const [showPass3, setShowPass3] = useState(false);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+      <div>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "1.6rem", fontWeight: 500, color: C.text, marginBottom: "8px" }}>
+          Kişisel <em style={{ color: C.gold, fontStyle: "italic" }}>Bilgiler</em>
+        </h2>
+        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12.5px", color: C.muted, fontWeight: 300 }}>
+          Hesap bilgilerinizi güncelleyebilir ve şifrenizi değiştirebilirsiniz.
+        </p>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="form-row">
+          <ProfileInput label="Adınız Soyadınız" value={name} onChange={setName} icon={<HiOutlineUser size={15} />} error={errors.name} />
+          <ProfileInput label="E-posta Adresiniz" type="email" value={email} onChange={setEmail} icon={<HiOutlineMail size={15} />} error={errors.email} />
+        </div>
+
+        <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "8px 0" }} />
+
+        <div>
+          <h3 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "1.25rem", color: C.gold, fontWeight: 500, marginBottom: "14px" }}>
+            Şifre Güncelleme <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10.5px", color: "rgba(240,237,232,0.22)", fontWeight: 300, marginLeft: "4px" }}>(İsteğe Bağlı)</span>
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <ProfileInput
+              label="Mevcut Şifreniz" type={showPass1 ? "text" : "password"} value={currentPassword} onChange={setCurrentPassword}
+              icon={<HiOutlineLockClosed size={15} />} placeholder="••••••••" error={errors.currentPassword}
+              rightElement={<span onClick={() => setShowPass1(!showPass1)}>{showPass1 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
+            />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="form-row">
+              <ProfileInput
+                label="Yeni Şifre" type={showPass2 ? "text" : "password"} value={newPassword} onChange={setNewPassword}
+                icon={<HiOutlineLockClosed size={15} />} placeholder="En az 8 karakter" error={errors.newPassword}
+                rightElement={<span onClick={() => setShowPass2(!showPass2)}>{showPass2 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
+              />
+              <ProfileInput
+                label="Yeni Şifre Tekrarı" type={showPass3 ? "text" : "password"} value={newPasswordConfirm} onChange={setNewPasswordConfirm}
+                icon={<HiOutlineLockClosed size={15} />} placeholder="••••••••" error={errors.newPasswordConfirm}
+                rightElement={<span onClick={() => setShowPass3(!showPass3)}>{showPass3 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={handleUpdateProfile} disabled={loading}
+          style={{
+            padding: "13px 28px", borderRadius: "30px", border: "none",
+            background: loading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
+            fontFamily: "var(--font-inter), sans-serif", fontSize: "12.5px", letterSpacing: "0.1em",
+            textTransform: "uppercase", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
+            transition: "all 0.2s", alignSelf: "flex-start", marginTop: "10px",
+            display: "flex", alignItems: "center", gap: "8px",
+          }}
+          onMouseEnter={(e) => { if (!loading) e.currentTarget.style.opacity = "0.85"; }}
+          onMouseLeave={(e) => { if (!loading) e.currentTarget.style.opacity = "1"; }}
+        >
+          {loading ? <span style={{ width: "14px", height: "14px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} /> : null}
+          <span>{loading ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}</span>
+        </button>
+      </div>
+    </div>
+  );
+}

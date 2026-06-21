@@ -95,6 +95,15 @@ export default function Navbar() {
     href: l.isPage ? l.anchor : (isHome ? l.anchor : `/${l.anchor}`),
   }));
 
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href === "#anasayfa" || href === "/#anasayfa") {
+      if (isHome) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handler, { passive: true });
@@ -155,6 +164,7 @@ export default function Navbar() {
         <div className="nb-desktop" style={{ alignItems: "center", gap: "24px" }}>
           {navLinks.map((l) => (
             <a key={l.href} href={l.href}
+              onClick={(e) => handleAnchorClick(e, l.href)}
               style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(240,237,232,0.5)", textDecoration: "none", fontWeight: 400, transition: "color 0.2s" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#F0EDE8")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(240,237,232,0.5)")}
@@ -222,7 +232,10 @@ export default function Navbar() {
             style={{ position: "fixed", top: "64px", left: 0, right: 0, zIndex: 49, background: "rgba(11,15,26,0.98)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "20px 24px 32px", display: "flex", flexDirection: "column", gap: "4px", fontFamily: "'Inter', sans-serif" }}>
 
             {navLinks.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)}
+              <a key={l.href} href={l.href} onClick={(e) => {
+                setMobileOpen(false);
+                handleAnchorClick(e, l.href);
+              }}
                 style={{ fontSize: "13px", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(240,237,232,0.6)", textDecoration: "none", padding: "13px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >{l.label}</a>
             ))}

@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Volume2, VolumeX, Heart } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ❤️ MÜŞTERİ VERİLERİ (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Sen & Ben",
+const defaultConfig = {
+  coupleNames: "Ahmet\n&\nMerve",
   tagline: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim...",
   accentColor: "#E63946",
   specialDate: "14 Şubat 2025",
   musicUrl: "/music/romantic.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   {
     id: 1,
     image: "/moment.jpg",
@@ -77,6 +79,19 @@ const memories = [
 // ─────────────────────────────────────────────────────────────────────────────
 // ANİMASYON VARİANTLARI
 // ─────────────────────────────────────────────────────────────────────────────
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
+
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 45, filter: "blur(6px)" },
   visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] } },
@@ -226,7 +241,7 @@ function LoveBookWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggle
       <div className="flex flex-col">
         <span
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "13px",
             fontStyle: "italic",
             color: isPlaying ? "#FFB3B8" : "rgba(255,180,185,0.75)",
@@ -237,7 +252,7 @@ function LoveBookWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggle
         </span>
         <span
           style={{
-            fontFamily: "'Lato', sans-serif",
+            fontFamily: "var(--font-lato), sans-serif",
             fontSize: "9px",
             color: "rgba(230,57,70,0.5)",
             letterSpacing: "0.18em",
@@ -264,7 +279,8 @@ function LoveBookWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggle
 // ─────────────────────────────────────────────────────────────────────────────
 // FOTOĞRAF KART KOMPONENTI
 // ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [30, -30]);
@@ -279,7 +295,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       className="flex flex-col items-center gap-8"
     >
       {/* Fotoğraf */}
-      <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ width: "100%", maxWidth: "330px" }}>
+      <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ width: "100%" }}>
         {/* Glow arka planı */}
         <div
           className="absolute inset-0 rounded-lg pointer-events-none"
@@ -287,21 +303,29 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         />
         {/* Kart */}
         <div
-          className="relative overflow-hidden rounded-lg"
+          className="relative overflow-hidden"
           style={{
             background: "#160408",
-            padding: "8px",
+            padding: "2px",
             border: "1px solid rgba(230,57,70,0.18)",
             boxShadow: "0 16px 48px rgba(0,0,0,0.65)",
           }}
         >
-          <div className="relative overflow-hidden rounded-sm">
-            <img
-              src={memory.image}
-              alt={memory.title}
-              className="w-full h-auto block"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#160408]/30 via-transparent to-transparent pointer-events-none" />
+          <div className="relative overflow-hidden">
+            {memory.video ? (
+              <VideoPlayerPro src={memory.video} />
+            ) : (
+              <>
+                <img
+                  src={memory.image}
+                  alt={memory.title}
+                  className="w-full h-auto block"
+                  draggable={false}
+                  style={{ pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#160408]/30 via-transparent to-transparent pointer-events-none" />
+              </>
+            )}
           </div>
         </div>
       </motion.div>
@@ -312,7 +336,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           <div className="w-8 h-px" style={{ background: "rgba(230,57,70,0.35)" }} />
           <span
             style={{
-              fontFamily: "'Lato', sans-serif",
+              fontFamily: "var(--font-lato), sans-serif",
               fontSize: "9px",
               color: "rgba(230,57,70,0.6)",
               letterSpacing: "0.28em",
@@ -327,7 +351,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         <motion.h3
           variants={fadeUp}
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
             fontWeight: 400,
             color: "#FFE8EA",
@@ -342,7 +366,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         <motion.p
           variants={fadeUp}
           style={{
-            fontFamily: "'Lato', sans-serif",
+            fontFamily: "var(--font-lato), sans-serif",
             fontSize: "0.875rem",
             color: "rgba(249,236,239,0.55)",
             lineHeight: 1.8,
@@ -360,7 +384,11 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-export default function RomanticRedTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function RomanticRedTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [countdown, setCountdown] = useState(4);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -370,11 +398,21 @@ export default function RomanticRedTemplate() {
   const heroY = useTransform(heroScroll, [0, 1], [0, 110]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -394,9 +432,10 @@ export default function RomanticRedTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden selection:bg-[#E63946]/30"
-      style={{ background: "#0B0204", color: "#F9ECEF", fontFamily: "'Lato', sans-serif" }}
+      style={{ background: "#0B0204", color: "#F9ECEF", fontFamily: "var(--font-lato), sans-serif" }}
     >
       {/* AMBIENT LIGHTS */}
       <div className="fixed inset-0 pointer-events-none z-0" style={{
@@ -404,14 +443,21 @@ export default function RomanticRedTemplate() {
           radial-gradient(ellipse 80% 50% at 50% -10%, rgba(230,57,70,0.16) 0%, transparent 60%),
           radial-gradient(ellipse 70% 60% at 85% 75%, rgba(155,34,38,0.09) 0%, transparent 65%),
           linear-gradient(to bottom, #0B0204 0%, #160408 100%)
-        `
+        `,
+        pointerEvents: "none"
       }} />
 
       {/* FLOATING HEARTS CANVAS */}
       <FloatingRedHearts />
 
       {/* Centered mobile-framed container for content */}
-      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#0B0204] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+      <div
+        className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#0B0204]/85 shadow-[0_0_80px_rgba(0,0,0,0.85)] z-10 flex flex-col"
+        style={{
+          borderLeft: "1px solid rgba(230,57,70,0.08)",
+          borderRight: "1px solid rgba(230,57,70,0.08)"
+        }}
+      >
         {/* LOVE BOOK WIDGET */}
         <div className="fixed lg:absolute bottom-6 left-6 z-40">
           <LoveBookWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
@@ -432,7 +478,7 @@ export default function RomanticRedTemplate() {
               <Heart size={10} fill="#E63946" stroke="none" className="animate-pulse" style={{ opacity: 0.7 }} />
               <span
                 style={{
-                  fontFamily: "'Lato', sans-serif",
+                  fontFamily: "var(--font-lato), sans-serif",
                   fontSize: "9px",
                   letterSpacing: "0.48em",
                   textTransform: "uppercase",
@@ -448,15 +494,17 @@ export default function RomanticRedTemplate() {
             <motion.h1
               variants={fadeUp}
               style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3rem, 13vw, 8.5rem)",
+                fontFamily: "var(--font-cormorant), serif",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 400,
-                lineHeight: 1,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 letterSpacing: "0.04em",
                 background: "linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(230,57,70,0.65) 55%, rgba(255,200,200,0.55) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                whiteSpace: "pre-line",
               }}
             >
               {config.coupleNames}
@@ -471,7 +519,7 @@ export default function RomanticRedTemplate() {
             <motion.p
               variants={fadeUp}
               style={{
-                fontFamily: "'Lato', sans-serif",
+                fontFamily: "var(--font-lato), sans-serif",
                 fontSize: "0.75rem",
                 color: "rgba(249,200,207,0.6)",
                 letterSpacing: "0.15em",
@@ -489,7 +537,7 @@ export default function RomanticRedTemplate() {
                 onClick={toggleMusic}
                 className="relative overflow-hidden group transition-all duration-700"
                 style={{
-                  fontFamily: "'Lato', sans-serif",
+                  fontFamily: "var(--font-lato), sans-serif",
                   fontSize: "10px",
                   letterSpacing: "0.38em",
                   textTransform: "uppercase",
@@ -510,7 +558,7 @@ export default function RomanticRedTemplate() {
                 animate={{ opacity: isPlaying ? 0 : 1, y: isPlaying ? -4 : 0 }}
                 transition={{ duration: 0.6 }}
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "var(--font-cormorant), serif",
                   fontSize: "11px",
                   fontStyle: "italic",
                   color: "rgba(255,255,255,0.22)",
@@ -536,7 +584,7 @@ export default function RomanticRedTemplate() {
             </motion.div>
             <span
               style={{
-                fontFamily: "'Lato', sans-serif",
+                fontFamily: "var(--font-lato), sans-serif",
                 fontSize: "8px",
                 letterSpacing: "0.38em",
                 textTransform: "uppercase",
@@ -561,7 +609,7 @@ export default function RomanticRedTemplate() {
         <motion.span
           variants={fadeIn}
           style={{
-            fontFamily: "'Lato', sans-serif",
+            fontFamily: "var(--font-lato), sans-serif",
             fontSize: "9px",
             letterSpacing: "0.45em",
             textTransform: "uppercase",
@@ -574,7 +622,7 @@ export default function RomanticRedTemplate() {
         <motion.h2
           variants={fadeUp}
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "clamp(1.8rem, 4vw, 3rem)",
             fontWeight: 400,
             color: "#F9ECEF",
@@ -589,7 +637,7 @@ export default function RomanticRedTemplate() {
       {/* ── FOTOĞRAF KARTLARI ── */}
       <div className="relative z-10 py-16 px-6 max-w-4xl mx-auto">
         <div className="flex flex-col gap-32">
-          {memories.map((m, i) => (
+          {memories.map((m: any, i: number) => (
             <MemoryCard key={m.id} memory={m} index={i} />
           ))}
         </div>
@@ -623,7 +671,7 @@ export default function RomanticRedTemplate() {
           <motion.h2
             variants={fadeUp}
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "var(--font-cormorant), serif",
               fontSize: "clamp(1.8rem, 4vw, 3.5rem)",
               fontWeight: 400,
               color: "#FFE8EA",
@@ -641,18 +689,22 @@ export default function RomanticRedTemplate() {
             <Heart size={6} fill="#E63946" stroke="none" style={{ opacity: 0.4 }} />
           </motion.div>
 
-          <motion.span
+          <motion.div
             variants={fadeUp}
             style={{
-              fontFamily: "'Lato', sans-serif",
+              fontFamily: "var(--font-lato), sans-serif",
               fontSize: "11px",
               letterSpacing: "0.42em",
               textTransform: "uppercase",
               color: "rgba(230,57,70,0.6)",
+              display: "block",
+              whiteSpace: "pre-line",
+              lineHeight: 1.4,
+              paddingBottom: "4px"
             }}
           >
             {config.coupleNames}
-          </motion.span>
+          </motion.div>
           <motion.span
             variants={fadeIn}
             style={{
@@ -673,7 +725,7 @@ export default function RomanticRedTemplate() {
       <footer
         className="py-12 text-center relative z-10"
         style={{
-          fontFamily: "'Lato', sans-serif",
+          fontFamily: "var(--font-lato), sans-serif",
           fontSize: "9px",
           letterSpacing: "0.45em",
           textTransform: "uppercase",
@@ -685,8 +737,10 @@ export default function RomanticRedTemplate() {
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700&display=swap');
+        
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

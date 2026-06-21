@@ -134,3 +134,54 @@ export async function sendPagePasswordReset(opts: {
     html,
   });
 }
+
+// ─── 3. E-posta Doğrulama Maili ──────────────────────────────────────────
+export async function sendVerificationCodeEmail(opts: {
+  to: string;
+  name: string;
+  code: string;
+}) {
+  const html = baseTemplate(`
+    <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Merhaba, <strong style="color:#F0EDE8;">${opts.name}</strong></p>
+    <h2 style="margin:0 0 20px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Hesabını<br/><em style="color:#C9A84C;">Doğrula</em></h2>
+    <p style="margin:0 0 28px;font-size:14px;color:rgba(240,237,232,0.55);line-height:1.7;font-weight:300;">
+      Aramıza katılmak için son adım! Aşağıdaki 6 haneli onay kodunu kullanarak hesabını doğrulayabilirsin.
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center">
+          <div style="display:inline-block;padding:18px 40px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.3);border-radius:12px;font-size:32px;font-weight:700;letter-spacing:0.2em;color:#C9A84C;text-align:center;">
+            ${opts.code}
+          </div>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:24px 0 0;font-size:11px;color:rgba(240,237,232,0.25);text-align:center;">
+      Bu kodu kimseyle paylaşmayın. birlikteydik.com ekibi sizden asla şifre veya kod talep etmez.
+    </p>
+  `);
+
+  await transporter.sendMail({
+    from: FROM,
+    to: opts.to,
+    subject: "E-posta Doğrulama Kodu — birlikteydik.com",
+    html,
+  });
+}
+
+// ─── 4. Özel / Toplu E-posta Gönderimi ──────────────────────────────────────
+export async function sendCustomEmail(opts: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  const formattedHtml = baseTemplate(opts.html);
+
+  await transporter.sendMail({
+    from: FROM,
+    to: opts.to,
+    subject: opts.subject,
+    html: formattedHtml,
+  });
+}
+

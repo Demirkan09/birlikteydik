@@ -3,15 +3,15 @@ import pool from "@/lib/db";
 import { generateSecureToken } from "@/lib/tokens";
 import { sendAccountPasswordReset, sendPagePasswordReset } from "@/lib/email";
 
-// ─── Helper: verify caller is admin ─────────────────────────────────────────
-async function verifyAdmin(adminEmail: string) {
+// ─── Helper: verify caller is admin or staff ─────────────────────────────────────────
+async function verifyAdminOrStaff(adminEmail: string) {
   const res = await pool.query(
     "SELECT id, name, email, role FROM users WHERE email = $1",
     [adminEmail.toLowerCase().trim()]
   );
   if ((res.rowCount ?? 0) === 0) return null;
   const user = res.rows[0];
-  if (user.role !== "admin") return null;
+  if (user.role !== "admin" && user.role !== "staff") return null;
   return user as { id: string; name: string; email: string; role: string };
 }
 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const admin = await verifyAdmin(adminEmail);
+    const admin = await verifyAdminOrStaff(adminEmail);
     if (!admin) {
       return NextResponse.json(
         { error: "Bu işlem için yetkiniz yok." },

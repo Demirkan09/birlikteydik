@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants } from "framer-motion";
 import { ChevronDown, Volume2, VolumeX, Heart, Sparkles } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ⚙️ ŞABLON AYARLARI (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Selin & Murat",
+const defaultConfig = {
+  coupleNames: "Selin\n&\nMurat",
   tagline: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum...",
   accentColor: "#F59E0B",
   specialDate: "26 Ekim 2024",
   musicUrl: "/music/default.mp3", // Müzik dosyası yolu
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   {
     id: 1,
     image: "/moment.jpg",
@@ -77,6 +79,19 @@ const memories = [
 // ─────────────────────────────────────────────────────────────────────────────
 // ANİMASYON VARİANTLARI
 // ─────────────────────────────────────────────────────────────────────────────
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
+
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
@@ -107,6 +122,7 @@ type Particle = {
 };
 
 function HeartsCanvas() {
+  const { config, memories } = useContext(TemplateContext) || {};
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
@@ -198,6 +214,7 @@ function HeartsCanvas() {
 // 🎵 PREMIUM PLAK MÜZİK WİDGET'I
 // ─────────────────────────────────────────────────────────────────────────────
 function MusicVinylWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggleMusic: () => void }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   return (
     <div
       className="flex items-center gap-4 rounded-xl p-3 cursor-pointer transition-transform hover:scale-[1.02] backdrop-blur-xl"
@@ -247,7 +264,7 @@ function MusicVinylWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; togg
       <div className="flex flex-col">
         <span
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "13px",
             fontStyle: "italic",
             color: isPlaying ? config.accentColor : "rgba(255,255,255,0.75)",
@@ -258,7 +275,7 @@ function MusicVinylWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; togg
         </span>
         <span
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter), sans-serif",
             fontSize: "9px",
             color: "rgba(255,255,255,0.4)",
             letterSpacing: "0.18em",
@@ -285,7 +302,8 @@ function MusicVinylWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; togg
 // ─────────────────────────────────────────────────────────────────────────────
 // 📸 FOTOĞRAF KART KOMPONENTI (Tamamen Uyumlu ve Hizalı)
 // ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   const isEven = index % 2 === 0;
 
   return (
@@ -302,24 +320,29 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       {/* Fotoğraf Çerçevesi (Yatay & Dikey Tüm Resimleri Çözünürlük Fark Etmeksizin Tam Gösterir) */}
       <motion.div
         variants={fadeUp}
-        className="relative flex-shrink-0 w-full max-w-[330px]"
+        className="relative flex-shrink-0 w-full"
         style={{ zIndex: 1 }}
       >
         <div
-          className="relative overflow-hidden rounded-lg"
+          className="relative overflow-hidden"
           style={{
             background: "#190F05",
-            padding: "8px",
+            padding: "2px",
             border: "1px solid rgba(251,191,36,0.15)",
             boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
           }}
         >
-          {/* Görselin tam olarak kesilmeden gözükmesi için w-full h-auto block kullanılmıştır */}
-          <img
-            src={memory.image}
-            alt={memory.title}
-            className="w-full h-auto block rounded-sm"
-          />
+          {memory.video ? (
+            <VideoPlayerPro src={memory.video} />
+          ) : (
+            <img
+              src={memory.image}
+              alt={memory.title}
+              className="w-full h-auto block"
+              draggable={false}
+              style={{ pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }}
+            />
+          )}
         </div>
       </motion.div>
 
@@ -329,7 +352,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           <div className="w-8 h-px" style={{ background: config.accentColor, opacity: 0.4 }} />
           <span
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-inter), sans-serif",
               fontSize: "9px",
               color: "rgba(255,255,255,0.5)",
               letterSpacing: "0.28em",
@@ -344,7 +367,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         <motion.h3
           variants={fadeUp}
           style={{
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
             fontWeight: 400,
             color: "#FFFFFF",
@@ -358,7 +381,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
         <motion.p
           variants={fadeUp}
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter), sans-serif",
             fontSize: "0.875rem",
             color: "rgba(255,255,255,0.55)",
             lineHeight: 1.8,
@@ -376,18 +399,30 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
 // ─────────────────────────────────────────────────────────────────────────────
 // 👑 ANA SAYFA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-export default function AmberTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function AmberTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [countdown, setCountdown] = useState(4);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
     return () => {
       audioRef.current?.pause();
     };
-  }, []);
+  }, [config.musicUrl]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -417,6 +452,7 @@ export default function AmberTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden selection:bg-white/10"
       style={{
@@ -431,10 +467,10 @@ export default function AmberTemplate() {
       <div
         className="relative w-full max-w-[480px] mx-auto min-h-screen z-10 flex flex-col"
         style={{
-          background: "linear-gradient(180deg, #0A0400 0%, #1A0A02 30%, #2A1002 60%, #140700 90%, #0A0400 100%)",
+          background: "linear-gradient(180deg, rgba(10, 4, 0, 0.85) 0%, rgba(26, 10, 2, 0.85) 30%, rgba(42, 16, 2, 0.85) 60%, rgba(20, 7, 0, 0.85) 90%, rgba(10, 4, 0, 0.85) 100%)",
           boxShadow: "0 0 80px rgba(0,0,0,0.85)",
-          borderLeft: "1px solid rgba(245,158,11,0.18)",
-          borderRight: "1px solid rgba(245,158,11,0.18)",
+          borderLeft: "1px solid rgba(245,158,11,0.08)",
+          borderRight: "1px solid rgba(245,158,11,0.08)",
         }}
       >
         {/* Müzik Widget'ı */}
@@ -478,7 +514,7 @@ export default function AmberTemplate() {
               <Sparkles size={12} style={{ color: config.accentColor }} className="animate-pulse" />
               <span
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-inter), sans-serif",
                   fontSize: "9px",
                   color: config.accentColor,
                   letterSpacing: "0.4em",
@@ -492,12 +528,14 @@ export default function AmberTemplate() {
             <motion.h1
               variants={fadeUp}
               style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
+                fontFamily: "var(--font-cormorant), serif",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 300,
-                lineHeight: 1.15,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 color: "#FFFFFF",
                 marginBottom: "1.5rem",
+                whiteSpace: "pre-line",
               }}
             >
               {config.coupleNames}
@@ -506,7 +544,7 @@ export default function AmberTemplate() {
             <motion.p
               variants={fadeUp}
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-inter), sans-serif",
                 fontSize: "12px",
                 color: "rgba(255,255,255,0.5)",
                 maxWidth: "280px",
@@ -538,7 +576,7 @@ export default function AmberTemplate() {
                   border: `1px solid ${config.accentColor}`,
                   background: isPlaying ? "rgba(201,168,76,0.1)" : "transparent",
                   color: isPlaying ? "#FFFFFF" : config.accentColor,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-inter), sans-serif",
                   fontSize: "11px",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
@@ -561,7 +599,7 @@ export default function AmberTemplate() {
                 animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
                 transition={{ duration: 0.6 }}
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
+                  fontFamily: "var(--font-cormorant), serif",
                   fontSize: "13px",
                   fontStyle: "italic",
                   color: "rgba(255, 255, 255, 0.6)",
@@ -584,7 +622,7 @@ export default function AmberTemplate() {
               />
               <span
                 style={{
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-inter), sans-serif",
                   fontSize: "8px",
                   letterSpacing: "0.3em",
                   textTransform: "uppercase",
@@ -601,11 +639,13 @@ export default function AmberTemplate() {
         {/* ── FOTOĞRAF KARTLARI (BELLEKLER BÖLÜMÜ) ── */}
         <div className="relative z-10 py-16 px-6 max-w-4xl mx-auto">
           <div className="flex flex-col gap-32">
-            {memories.map((m, i) => (
+            {memories.map((m: any, i: number) => (
               <MemoryCard key={m.id} memory={m} index={i} />
             ))}
           </div>
         </div>
+
+
 
         {/* ── BİTİŞ EPİLOG BÖLÜMÜ ── */}
         <section
@@ -636,7 +676,7 @@ export default function AmberTemplate() {
             <motion.h2
               variants={fadeUp}
               style={{
-                fontFamily: "'Cormorant Garamond', serif",
+                fontFamily: "var(--font-cormorant), serif",
                 fontSize: "clamp(1.8rem, 4vw, 3.5rem)",
                 fontWeight: 400,
                 color: "#FFFFFF",
@@ -648,18 +688,22 @@ export default function AmberTemplate() {
               Sonsuza Dek Birlikte
             </motion.h2>
 
-            <motion.span
+            <motion.div
               variants={fadeUp}
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-inter), sans-serif",
                 fontSize: "11px",
                 letterSpacing: "0.42em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.6)",
+                display: "block",
+                whiteSpace: "pre-line",
+                lineHeight: 1.4,
+                paddingBottom: "4px"
               }}
             >
               {config.coupleNames}
-            </motion.span>
+            </motion.div>
             <motion.span
               variants={fadeIn}
               style={{
@@ -680,7 +724,7 @@ export default function AmberTemplate() {
         <footer
           className="py-12 text-center relative z-10"
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter), sans-serif",
             fontSize: "9px",
             letterSpacing: "0.45em",
             textTransform: "uppercase",
@@ -692,8 +736,10 @@ export default function AmberTemplate() {
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+        
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }

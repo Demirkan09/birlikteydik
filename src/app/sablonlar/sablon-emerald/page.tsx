@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {  useState, useEffect, useRef , createContext, useContext } from "react";
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Volume2, VolumeX, Heart, Gem } from "lucide-react";
+import VideoPlayerPro from "@/components/ui/video-player-pro";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 💎 MÜŞTERİ VERİLERİ (Kolayca Düzenlenebilir)
 // ─────────────────────────────────────────────────────────────────────────────
-const config = {
-  coupleNames: "Sen & Ben",
+const defaultConfig = {
+  coupleNames: "Yasin\n&\nArzu",
   tagline: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki birlikteydik...",
   accentColor: "#D4AF37",
   specialDate: "2024",
   musicUrl: "/music/emerald.mp3",
+  videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
-const memories = [
+const defaultMemories = [
   {
     id: 1,
     image: "/moment.jpg",
@@ -64,6 +66,15 @@ const stagger: Variants = {
 // ALTIN TOZ PARTİKÜLLERİ
 // ─────────────────────────────────────────────────────────────────────────────
 function GoldStardust() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" />;
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {Array.from({ length: 28 }).map((_, i) => (
@@ -95,6 +106,19 @@ function GoldStardust() {
     </div>
   );
 }
+
+const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, baseVw: number = 8) => {
+  if (!names) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const lines = names.split('\n');
+  const nameLines = lines.map(l => l.trim()).filter(l => l !== "&" && l !== "");
+  if (nameLines.length === 0) return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+  const longest = Math.max(...nameLines.map(l => l.length));
+  if (longest > 6) {
+    const factor = Math.max(6 / longest, 0.5);
+    return `clamp(${baseMin * factor}rem, ${baseVw * factor}vw, ${baseMax * factor}rem)`;
+  }
+  return `clamp(${baseMin}rem, ${baseVw}vw, ${baseMax}rem)`;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 💎 EMERALD MÜCEVHER WİDGET'I (Kaset yerine özgün tasarım)
@@ -192,7 +216,8 @@ function EmeraldJewelWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; to
 // ─────────────────────────────────────────────────────────────────────────────
 // FOTOĞRAF KART KOMPONENTI (Polaroid efekti YOK - premium çerçeve)
 // ─────────────────────────────────────────────────────────────────────────────
-function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: number }) {
+function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
+  const { config, memories } = useContext(TemplateContext) || {};
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [30, -30]);
@@ -207,7 +232,7 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
       className="flex flex-col items-center gap-8"
     >
       {/* Fotoğraf - Premium altın çerçeve */}
-      <motion.div variants={fadeUp} className="relative flex-shrink-0" style={{ width: "100%", maxWidth: "360px" }}>
+      <motion.div variants={fadeUp} className="relative flex-shrink-0 w-full">
         {/* Arka dekoratif çerçeve */}
         <div
           className="absolute pointer-events-none"
@@ -223,20 +248,27 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
           className="relative overflow-hidden"
           style={{
             background: "#061C16",
-            padding: "8px",
+            padding: "2px",
             border: "1px solid rgba(212,175,55,0.22)",
             boxShadow: "0 20px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(212,175,55,0.1)",
             borderRadius: "2px",
           }}
         >
           <div className="relative overflow-hidden">
-            <img
-              src={memory.image}
-              alt={memory.title}
-              className="w-full h-auto block"
-              style={{ filter: "contrast(1.05) saturate(0.9)" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#061C16]/30 via-transparent to-transparent pointer-events-none" />
+            {memory.video ? (
+              <VideoPlayerPro src={memory.video} />
+            ) : (
+              <>
+                <img
+                  src={memory.image}
+                  alt={memory.title}
+                  className="w-full h-auto block"
+                  draggable={false}
+                  style={{ filter: "contrast(1.05) saturate(0.9)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#061C16]/30 via-transparent to-transparent pointer-events-none" />
+              </>
+            )}
           </div>
           {/* Altın köşe süslemeleri */}
           {["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"].map((pos, i) => (
@@ -308,7 +340,11 @@ function MemoryCard({ memory, index }: { memory: (typeof memories)[0]; index: nu
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-export default function EmeraldTemplate() {
+
+const TemplateContext = createContext<any>(null);
+export default function EmeraldTemplate({ config: propConfig, memories: propMemories }: { config?: any, memories?: any[] } = {}) {
+  const config = propConfig ?? defaultConfig;
+  const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [countdown, setCountdown] = useState(4);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -318,11 +354,21 @@ export default function EmeraldTemplate() {
   const heroY = useTransform(heroScroll, [0, 1], [0, 100]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
 
-  useEffect(() => {
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [config.musicUrl]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -346,6 +392,7 @@ export default function EmeraldTemplate() {
   };
 
   return (
+    <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden selection:bg-[#D4AF37]/20"
       style={{
@@ -364,11 +411,18 @@ export default function EmeraldTemplate() {
             radial-gradient(ellipse 40% 40% at 15% 60%, rgba(3,50,30,0.4) 0%, transparent 60%),
             linear-gradient(to bottom, #03120E 0%, #061914 100%)
           `,
+          pointerEvents: "none",
         }}
       />
 
       {/* Centered mobile-framed container for content */}
-      <div className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#03120E] shadow-[0_0_80px_rgba(0,0,0,0.85)] border-x border-white/5 z-10 flex flex-col">
+      <div
+        className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#03120E] shadow-[0_0_80px_rgba(0,0,0,0.85)] z-10 flex flex-col"
+        style={{
+          borderLeft: "1px solid rgba(212,175,55,0.08)",
+          borderRight: "1px solid rgba(212,175,55,0.08)"
+        }}
+      >
         {/* FLOATING JEWEL WIDGET */}
         <div className="fixed lg:absolute bottom-6 left-6 z-40">
           <EmeraldJewelWidget isPlaying={isPlaying} toggleMusic={toggleMusic} />
@@ -417,14 +471,16 @@ export default function EmeraldTemplate() {
               variants={fadeUp}
               style={{
                 fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(3rem, 13vw, 8.5rem)",
+                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                 fontWeight: 400,
-                lineHeight: 1,
+                lineHeight: 1.2,
+                paddingBottom: "0.1em",
                 letterSpacing: "0.04em",
                 background: "linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(212,175,55,0.65) 55%, rgba(180,230,200,0.5) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                whiteSpace: "pre-line",
               }}
             >
               {config.coupleNames}
@@ -560,7 +616,7 @@ export default function EmeraldTemplate() {
       {/* ── FOTOĞRAF KARTLARI ── */}
       <div className="relative z-10 py-16 px-6 max-w-5xl mx-auto">
         <div className="flex flex-col gap-36">
-          {memories.map((m, i) => (
+          {memories.map((m: any, i: number) => (
             <MemoryCard key={m.id} memory={m} index={i} />
           ))}
         </div>
@@ -608,7 +664,7 @@ export default function EmeraldTemplate() {
             <Heart size={6} fill="#D4AF37" stroke="none" style={{ opacity: 0.5 }} />
           </motion.div>
 
-          <motion.span
+          <motion.div
             variants={fadeUp}
             style={{
               fontFamily: "'Didact Gothic', sans-serif",
@@ -616,10 +672,14 @@ export default function EmeraldTemplate() {
               letterSpacing: "0.4em",
               textTransform: "uppercase",
               color: "rgba(212,175,55,0.6)",
+              display: "block",
+              whiteSpace: "pre-line",
+              lineHeight: 1.4,
+              paddingBottom: "4px"
             }}
           >
             {config.coupleNames}
-          </motion.span>
+          </motion.div>
           <motion.span
             variants={fadeIn}
             style={{
@@ -655,5 +715,7 @@ export default function EmeraldTemplate() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Didact+Gothic&display=swap');
       `}</style>
     </main>
+  
+    </TemplateContext.Provider>
   );
 }
