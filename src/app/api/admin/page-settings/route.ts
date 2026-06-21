@@ -400,4 +400,3 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
   }
 }
-
