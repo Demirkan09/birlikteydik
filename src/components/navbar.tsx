@@ -86,8 +86,33 @@ export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const { user, logout } = useAuthState();
 
+  const [siteSettings, setSiteSettings] = useState<any>({
+    whatsapp_number: WHATSAPP_NUMBER,
+    announcement_banner: { active: false, text: "" },
+  });
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/site-settings");
+        const data = await res.json();
+        if (res.ok && data.settings) {
+          setSiteSettings((prev: any) => ({
+            ...prev,
+            ...data.settings,
+            whatsapp_number: data.settings.whatsapp_number || prev.whatsapp_number,
+            announcement_banner: data.settings.announcement_banner || prev.announcement_banner,
+          }));
+        }
+      } catch (err) {
+        console.error("Navbar load settings error:", err);
+      }
+    }
+    loadSettings();
+  }, []);
+
   const isHome = pathname === "/";
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+  const whatsappUrl = `https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
   // Menü linklerini pathname'e göre ayarla
   const navLinks = NAV_LINKS.map((l) => ({
@@ -143,20 +168,44 @@ export default function Navbar() {
         }
       `}</style>
 
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        padding: "0 24px", height: "64px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: navBg ? "rgba(11,15,26,0.95)" : "transparent",
-        backdropFilter: navBg ? "blur(20px)" : "none",
-        WebkitBackdropFilter: navBg ? "blur(20px)" : "none",
-        borderBottom: navBg ? "1px solid rgba(255,255,255,0.06)" : "none",
-        transition: "background 0.4s ease, border-color 0.4s ease",
-        fontFamily: "'Inter', sans-serif",
-      }}>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}>
+        {siteSettings.announcement_banner?.active && siteSettings.announcement_banner?.text && (
+          <div style={{
+            background: "linear-gradient(90deg, #C9A84C, #E8A0A0)",
+            color: "#0B0F1A",
+            padding: "8px 16px",
+            textAlign: "center",
+            fontSize: "11px",
+            fontWeight: 600,
+            letterSpacing: "0.03em",
+            fontFamily: "'Inter', sans-serif"
+          }}>
+            {siteSettings.announcement_banner.text}
+          </div>
+        )}
+        <nav style={{
+          position: "relative",
+          padding: "0 24px", height: "64px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: navBg ? "rgba(11,15,26,0.95)" : "transparent",
+          backdropFilter: navBg ? "blur(20px)" : "none",
+          WebkitBackdropFilter: navBg ? "blur(20px)" : "none",
+          borderBottom: navBg ? "1px solid rgba(255,255,255,0.06)" : "none",
+          transition: "background 0.4s ease, border-color 0.4s ease",
+          fontFamily: "'Inter', sans-serif",
+        }}>
 
         {/* Logo */}
-        <Link href="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: "#F0EDE8", letterSpacing: "0.04em", textDecoration: "none" }}>
+        <Link
+          href="/"
+          onClick={(e) => {
+            if (isHome) {
+              e.preventDefault();
+              window.location.href = "/";
+            }
+          }}
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: "#F0EDE8", letterSpacing: "0.04em", textDecoration: "none" }}
+        >
           birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
         </Link>
 
@@ -224,12 +273,13 @@ export default function Navbar() {
           {mobileOpen ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
         </button>
       </nav>
+      </div>
 
       {/* Mobile drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}
-            style={{ position: "fixed", top: "64px", left: 0, right: 0, zIndex: 49, background: "rgba(11,15,26,0.98)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "20px 24px 32px", display: "flex", flexDirection: "column", gap: "4px", fontFamily: "'Inter', sans-serif" }}>
+            style={{ position: "fixed", top: siteSettings.announcement_banner?.active && siteSettings.announcement_banner?.text ? "96px" : "64px", left: 0, right: 0, zIndex: 49, background: "rgba(11,15,26,0.98)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "20px 24px 32px", display: "flex", flexDirection: "column", gap: "4px", fontFamily: "'Inter', sans-serif" }}>
 
             {navLinks.map((l) => (
               <a key={l.href} href={l.href} onClick={(e) => {

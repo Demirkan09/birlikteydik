@@ -455,6 +455,7 @@ const plans = [
   },
 ];
 
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION WRAPPER (tekrar eden layout)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -536,7 +537,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // HERO
 // ─────────────────────────────────────────────────────────────────────────────
-function Hero() {
+function Hero({ settings }: { settings: any }) {
   return (
     <div
       style={{
@@ -595,13 +596,7 @@ function Hero() {
           marginBottom: "16px",
         }}
       >
-        Anılarınız
-        <br />
-        <em style={{ color: "#C9A84C", fontStyle: "italic" }}>
-          Bir Linke
-        </em>
-        <br />
-        Sığıyor
+        <span dangerouslySetInnerHTML={{ __html: settings?.hero_texts?.title || `Anılarınız<br /><em style="color: #C9A84C; font-style: italic">Bir Linke</em><br />Sığıyor` }} />
       </motion.h1>
 
       {/* Sub */}
@@ -620,8 +615,7 @@ function Hero() {
           letterSpacing: "0.02em",
         }}
       >
-        Fotoğraflarınızı, müziğinizi ve mesajınızı bir araya getiriyoruz.
-        Sevgilinize özel bir link gönder — açsın ve şaşırsın.
+        {settings?.hero_texts?.subtitle || "Fotoğraflarınızı, müziğinizi ve mesajınızı bir araya getiriyoruz. Sevgilinize özel bir link gönder — açsın ve şaşırsın."}
       </motion.p>
 
       {/* CTAs */}
@@ -963,6 +957,63 @@ const featuredTemplates = [
 // ANA SAYFA
 // ─────────────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const [siteSettings, setSiteSettings] = useState<any>({
+    faqs: faqs,
+    faq_texts: {
+      label: "Sıkça Sorulan",
+      heading: `Aklında <em style="color: #C9A84C; font-style: italic">Soru mu Var?</em>`
+    },
+    hero_texts: {
+      title: `Anılarınız<br /><em style="color: #C9A84C; font-style: italic">Bir Linke</em><br />Sığıyor`,
+      subtitle: "Birlikte geçirdiğiniz anıları ölümsüzleştiren, sadece size özel tasarlanmış bir web sitesi hediye et."
+    },
+    whatsapp_number: "905349829940",
+    announcement_banner: {
+      active: false,
+      text: ""
+    },
+    maintenance_mode: false
+  });
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/site-settings");
+        const data = await res.json();
+        if (res.ok && data.settings) {
+          setSiteSettings((prev: any) => ({
+            ...prev,
+            ...data.settings,
+            faq_texts: data.settings.faq_texts || prev.faq_texts,
+            hero_texts: data.settings.hero_texts || prev.hero_texts,
+            faqs: data.settings.faqs || prev.faqs,
+            whatsapp_number: data.settings.whatsapp_number || prev.whatsapp_number,
+            announcement_banner: data.settings.announcement_banner || prev.announcement_banner,
+            maintenance_mode: data.settings.maintenance_mode !== undefined ? data.settings.maintenance_mode : prev.maintenance_mode,
+          }));
+        }
+      } catch (err) {
+        console.error("Load settings error:", err);
+      }
+    }
+    loadSettings();
+  }, []);
+
+  if (siteSettings.maintenance_mode) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0B0F1A", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center", fontFamily: "'Inter', sans-serif", color: "#F0EDE8" }}>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>Bakım Modundayız</h1>
+        <p style={{ maxWidth: "460px", color: "rgba(240,237,232,0.6)", fontSize: "14px", lineHeight: 1.6, marginBottom: "32px" }}>
+          Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.
+        </p>
+        <a href={`https://wa.me/${siteSettings.whatsapp_number || "905349829940"}`}
+           style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          WhatsApp ile İletişim
+        </a>
+      </div>
+    );
+  }
+
   return (
     <>
       <style>{`
@@ -999,7 +1050,7 @@ export default function LandingPage() {
       <HeartsCanvas />
 {/* Sabit sağ alt köşe butonları */}
 <div style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 40, display: "flex", flexDirection: "column", gap: "10px" }}>
-  <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`} target="_blank" rel="noopener noreferrer" title="WhatsApp"
+  <a href={`https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`} target="_blank" rel="noopener noreferrer" title="WhatsApp"
     style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(11,15,26,0.9)", border: "1px solid rgba(37,211,102,0.35)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", color: "#25D366", textDecoration: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.4)", transition: "transform 0.2s" }}
     onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.1)"; }}
     onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
@@ -1012,7 +1063,7 @@ export default function LandingPage() {
 </div>
       <main>
         {/* HERO */}
-        <Hero />
+        <Hero settings={siteSettings} />
 
         {/* NASIL ÇALIŞIR */}
         <Section id="nasil-calisir">
@@ -1224,7 +1275,7 @@ export default function LandingPage() {
           }}>
             {featuredTemplates.map((tpl, i) => {
               const orderMessage = `Merhaba! "${tpl.title}" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.`;
-              const tplWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
+              const tplWhatsappUrl = `https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
 
               return (
                 <motion.article
@@ -1535,13 +1586,13 @@ export default function LandingPage() {
 
         {/* SSS */}
         <Section id="sss">
-          <SectionLabel>Sıkça Sorulan</SectionLabel>
+          <SectionLabel>{siteSettings.faq_texts?.label || "Sıkça Sorulan"}</SectionLabel>
           <SectionHeading>
-            Aklında <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Soru mu Var?</em>
+            <span dangerouslySetInnerHTML={{ __html: siteSettings.faq_texts?.heading || `Aklında <em style="color: #C9A84C; font-style: italic">Soru mu Var?</em>` }} />
           </SectionHeading>
 
           <div style={{ maxWidth: "680px", margin: "0 auto" }}>
-            {faqs.map((faq, i) => (
+            {(siteSettings.faqs || faqs).map((faq: any, i: number) => (
               <FaqItem key={i} faq={faq} />
             ))}
           </div>
