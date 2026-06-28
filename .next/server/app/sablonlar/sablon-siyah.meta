@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/sablonlar/layout,_N_T_/sablonlar/sablon-siyah/layout,_N_T_/sablonlar/sablon-siyah/page,_N_T_/sablonlar/sablon-siyah"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/sablonlar/sablon-siyah/__PAGE__",
+    "/sablonlar/sablon-siyah",
+    "/sablonlar",
+    "/_index",
+    "/_head"
+  ]
+}

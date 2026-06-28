@@ -90,7 +90,6 @@ const getDynamicFontSize = (names: string, baseMin: number, baseMax: number, bas
 
 // ─── MÜZİK OYNATICI ──────────────────────────────────────────────────────────
 function VinylPlayer({ isPlaying, toggle }: { isPlaying: boolean; toggle: () => void }) {
-  const { config, memories } = useContext(TemplateContext) || {};
   return (
     <div
       onClick={toggle}

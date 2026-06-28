@@ -24,8 +24,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "birlikteydik",
-  description: "Birlikte geçen her güzel anı.",
+  title: "birlikteydik.com | Sevdiklerinize Özel Sürpriz Web Sitesi",
+  description:
+    "Fotoğraflarınızı, müziğinizi ve mesajınızı bir araya getirerek sevgilinize özel bir sürpriz link hazırlıyoruz. Doğum günü, yıldönümü ve tüm özel günler için.",
 };
 
 export default function RootLayout({

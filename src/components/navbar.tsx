@@ -26,7 +26,7 @@ const PAGES: string[] = [
 // ║                                                                  ║
 export const WHATSAPP_NUMBER  = "905349829940";
 export const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
-export const INSTAGRAM_URL    = "https://instagram.com/birlikteydik";
+export const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
 // ║                                                                  ║
 // ║  Menü linkleri (desktop + mobile'da gösterilir)                 ║
 // ║  "href" ana sayfada anchor (#), diğer sayfalardan ise tam yol  ║

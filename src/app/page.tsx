@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { FaWhatsapp, FaInstagram, FaHeart } from "react-icons/fa";
-import { HiOutlineShoppingCart, HiOutlineEye } from "react-icons/hi";
+import { FaWhatsapp, FaInstagram } from "react-icons/fa";
+import { HiOutlineEye } from "react-icons/hi";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sosyal medya sabitleri (yüzer butonlar için)
 // ─────────────────────────────────────────────────────────────────────────────
 const WHATSAPP_NUMBER  = "905349829940";
 const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
-const INSTAGRAM_URL    = "https://instagram.com/birlikteydik";
+const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
 
 // VERİ — Yeni bir özel gün eklemek için sadece bu diziye bir obje ekle.
 // Kart otomatik olarak grid'e eklenir, başka bir şey yapman gerekmez.
@@ -103,6 +103,10 @@ function HeartsCanvas() {
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
+    // Reduced-motion: kullanıcı animasyonları azalt diyorsa canvas'ı durdur
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -214,17 +218,15 @@ function OccasionCard({
       onMouseLeave={() => setHovered(false)}
       style={{
         position: "relative",
-        borderRadius: "18px",
+        borderRadius: "14px",
         padding: "32px 28px",
         overflow: "hidden",
         background: "rgba(255,255,255,0.035)",
-        border: `1px solid ${hovered ? occasion.accentColor + "44" : "rgba(255,255,255,0.07)"}`,
+        border: `1px solid ${hovered ? occasion.accentColor + "55" : "rgba(255,255,255,0.07)"}`,
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
-        boxShadow: hovered
-          ? `0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px ${occasion.accentColor}22`
-          : "0 4px 32px rgba(0,0,0,0.35)",
-        transition: "border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s ease",
+        boxShadow: hovered ? `0 0 0 1px ${occasion.accentColor}33` : "none",
+        transition: "border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
       }}
     >
@@ -243,7 +245,7 @@ function OccasionCard({
         <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.35rem, 2.5vw, 1.7rem)", fontWeight: 600, color: "#F0EDE8", marginBottom: "4px", lineHeight: 1.15, letterSpacing: "-0.01em" }}>{occasion.title}</h3>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.22em", textTransform: "uppercase", color: occasion.accentColor + "bb", marginBottom: "16px", fontWeight: 400 }}>{occasion.subtitle}</p>
         <div style={{ width: "36px", height: "1px", background: `linear-gradient(90deg, ${occasion.accentColor}, transparent)`, marginBottom: "16px" }} />
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", lineHeight: 1.8, color: "rgba(240,237,232,0.5)", fontWeight: 300 }}>{occasion.description}</p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", lineHeight: 1.8, color: "rgba(240,237,232,0.65)", fontWeight: 300 }}>{occasion.description}</p>
       </div>
     </motion.article>
   );
@@ -278,16 +280,19 @@ const testimonials = [
     quote: "Melis linke tıkladığında ağladı. Hayatımda verdiğim en iyi hediye buydu.",
     name: "Demirkan D.",
     occasion: "Sebepsiz Sevgi",
+    featured: true,
   },
   {
-    quote: "3 yıllık birlikteydikı böyle güzel bir sayfada görmek inanılmazdı.",
+    quote: "3 yıllık birlikteliğimizi böyle güzel bir sayfada görmek inanılmazdı.",
     name: "Selin T.",
     occasion: "Yıldönümü",
+    featured: false,
   },
   {
     quote: "14 Şubat'ta sıradan çiçek almak yerine bunu yaptım. Farkı muazzamdı.",
     name: "Kerem Y.",
     occasion: "Sevgililer Günü",
+    featured: false,
   },
 ];
 
@@ -328,6 +333,7 @@ function FaqItem({ faq }: { faq: (typeof faqs)[0] }) {
     >
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
         style={{
           width: "100%",
           background: "none",
@@ -361,6 +367,7 @@ function FaqItem({ faq }: { faq: (typeof faqs)[0] }) {
             display: "inline-block",
             transform: open ? "rotate(45deg)" : "rotate(0deg)",
           }}
+          aria-hidden="true"
         >
           +
         </span>
@@ -379,7 +386,7 @@ function FaqItem({ faq }: { faq: (typeof faqs)[0] }) {
                 fontFamily: "'Inter', sans-serif",
                 fontSize: "14px",
                 lineHeight: 1.85,
-                color: "rgba(240,237,232,0.5)",
+                color: "rgba(240,237,232,0.65)",
                 fontWeight: 300,
                 marginTop: "12px",
                 paddingRight: "32px",
@@ -910,7 +917,7 @@ const featuredTemplates = [
     id: "premium-emerald",
     title: "Zümrüt Yeşili",
     subtitle: "Lüks ve Derin Detaylar",
-    accentColor: "#D4AF37",
+    accentColor: "#50c878",
     tag: "Özel Tasarım",
     description: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki aşk hikayeniz... Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
     demoUrl: "/sablonlar/sablon-emerald",
@@ -922,19 +929,19 @@ const featuredTemplates = [
     ],
   },
   {
-    id: "sablon-mavi",
-    title: "Premium Mavi",
-    subtitle: "Editoryal Dergi Estetiği ve Pusula",
-    accentColor: "#3EA094",
-    tag: "Yeni",
-    description: "İki hayatın kesiştiği noktada başlayan, sonsuzluğa uzanan bu hikaye... Modern Editoryal Dergi tipografisi, özel pusula müzik çaları ve dergi (magazine) tarzı sanatsal fotoğraf kartlarıyla hazırlanan elit bir tasarım.",
-    demoUrl: "/sablonlar/sablon-mavi",
+    id: "sablon-indigo",
+    title: "Gece Yarısı İndigo",
+    subtitle: "Gizemli ve Büyüleyici",
+    accentColor: "#818CF8",
+    tag: null,
+    description: "Sonsuz gece gökyüzünün altında, seninle parıldayan iki yıldız gibi... Derin gece mavisi arka plan üzerinde parıldayan indigo tonları, mistik dikey akış ve modern estetiğin sınırlarını zorlayan tasarım.",
+    demoUrl: "/sablonlar/sablon-indigo",
     features: [
-      "Pusula Temalı Müzik Oynatıcı",
-      "Modern Editoryal Dergi Tasarımı",
-      "Akıcı Kaydırma ve Dinamik Yazılar",
-      "Sanatsal Dergi Kartı Görünümü",
-    ],
+      "Gece Mavisi Kalp Parçacıkları",
+      "Yıldızlı Gökyüzü Işıltısı",
+      "Minimalist Gece Yarısı Tasarım Dili",
+      "Pürüzsüz Dikey Akış Efektleri",
+    ]
   },
   {
     id: "sablon-amber",
@@ -1133,38 +1140,10 @@ export default function LandingPage() {
           </div>
         </Section>
 
-        {/* SEPARATOR */}
-        <div
-          style={{
-            maxWidth: "1100px",
-            margin: "0 auto",
-            padding: "0 24px",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
-          }}
-        />
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 24px", borderTop: "1px solid rgba(255,255,255,0.05)" }} />
 
-        {/* ÖZEL GÜNLER */}
         <Section id="ozel-gunler">
           <SectionLabel>Özel Günler</SectionLabel>
-          <SectionHeading>
-            Hangi An İçin <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Hazırlıyoruz?</em>
-          </SectionHeading>
-
-          {/*
-            ─── BURAYA YENİ KART EKLEMEK İÇİN ───
-            Yukarıdaki `occasions` dizisine yeni bir obje ekle.
-            Şablon:
-            {
-              id: 7,
-              emoji: "🎉",
-              title: "Başlık",
-              subtitle: "Alt Başlık",
-              description: "Kısa açıklama metni.",
-              accentColor: "#C9A84C",   ← istediğin rengi yaz
-              tag: null,                ← "En Popüler" veya null
-            },
-            Grid otomatik olarak yeni kartı ekler, başka bir şey yapman gerekmez.
-          */}
           <div
             style={{
               display: "grid",
@@ -1286,7 +1265,7 @@ export default function LandingPage() {
                   transition={{ delay: i * 0.08, duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
                   style={{
                     position: "relative",
-                    borderRadius: "20px",
+                    borderRadius: "16px",
                     background: "rgba(255,255,255,0.03)",
                     border: "1px solid rgba(255,255,255,0.06)",
                     backdropFilter: "blur(18px)",
@@ -1294,13 +1273,12 @@ export default function LandingPage() {
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
-                    boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
-                    transition: "border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s ease",
+                    transition: "border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease",
                   }}
                   whileHover={{
                     borderColor: `${tpl.accentColor}55`,
-                    boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px ${tpl.accentColor}22`,
-                    y: -6,
+                    boxShadow: `0 0 0 1px ${tpl.accentColor}33`,
+                    y: -4,
                   }}
                 >
                   <div style={{
@@ -1496,75 +1474,105 @@ export default function LandingPage() {
           }}
         />
 
-        {/* TESTİMONİALS */}
+        {/* TESTİMONİALS — Quote-first büyük format: featured quote öne çıkar, diğerleri yan yana */}
         <Section>
-          <SectionLabel>Yorumlar</SectionLabel>
           <SectionHeading>
-            Onlar <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Denedi</em>
+            Onlar <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Anlattı</em>
           </SectionHeading>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: "16px",
-            }}
-          >
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ delay: i * 0.1, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+          {/* Öne çıkan büyük alıntı */}
+          {testimonials.filter(t => t.featured).map((t, i) => (
+            <motion.div
+              key={"feat-" + i}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                textAlign: "center",
+                padding: "0 0 52px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                marginBottom: "40px",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "center", gap: "3px", marginBottom: "20px" }}>
+                {[...Array(5)].map((_, si) => (
+                  <span key={si} style={{ color: "#C9A84C", fontSize: "14px" }}>★</span>
+                ))}
+              </div>
+              <p
                 style={{
-                  padding: "32px 28px",
-                  borderRadius: "16px",
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  backdropFilter: "blur(12px)",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(1.4rem, 3vw, 2rem)",
+                  fontStyle: "italic",
+                  color: "rgba(240,237,232,0.88)",
+                  lineHeight: 1.55,
+                  maxWidth: "600px",
+                  margin: "0 auto 24px",
                 }}
               >
-                {/* Stars */}
-                <div style={{ marginBottom: "16px", display: "flex", gap: "3px" }}>
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+                <div style={{
+                  width: "36px", height: "36px", borderRadius: "50%",
+                  background: "linear-gradient(135deg, #C9A84C44, #E8A0A044)",
+                  border: "1px solid rgba(201,168,76,0.3)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "14px", color: "#C9A84C",
+                  fontFamily: "'Inter', sans-serif", fontWeight: 600,
+                }}>{t.name[0]}</div>
+                <div style={{ textAlign: "left" }}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "13px", color: "#F0EDE8", fontWeight: 500 }}>{t.name}</p>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(201,168,76,0.8)", letterSpacing: "0.12em", textTransform: "uppercase" }}>{t.occasion}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+
+          {/* Diğer yorumlar — daha küçük yan yana */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px" }}>
+            {testimonials.filter(t => !t.featured).map((t, i) => (
+              <motion.div
+                key={"side-" + i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.12, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  padding: "28px 24px",
+                  borderRadius: "14px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <div style={{ display: "flex", gap: "2px", marginBottom: "14px" }}>
                   {[...Array(5)].map((_, si) => (
-                    <span key={si} style={{ color: "#C9A84C", fontSize: "12px" }}>★</span>
+                    <span key={si} style={{ color: "#C9A84C", fontSize: "11px" }}>★</span>
                   ))}
                 </div>
-                <p
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "1.1rem",
-                    fontStyle: "italic",
-                    color: "rgba(240,237,232,0.75)",
-                    lineHeight: 1.7,
-                    marginBottom: "20px",
-                  }}
-                >
-                  "{t.quote}"
+                <p style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "1.05rem",
+                  fontStyle: "italic",
+                  color: "rgba(240,237,232,0.75)",
+                  lineHeight: 1.65,
+                  marginBottom: "18px",
+                }}>
+                  &ldquo;{t.quote}&rdquo;
                 </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #C9A84C44, #E8A0A044)",
-                      border: "1px solid rgba(201,168,76,0.3)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "12px",
-                      color: "#C9A84C",
-                      fontFamily: "'Inter', sans-serif",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {t.name[0]}
-                  </div>
+                  <div style={{
+                    width: "30px", height: "30px", borderRadius: "50%",
+                    background: "linear-gradient(135deg, #C9A84C33, #E8A0A033)",
+                    border: "1px solid rgba(201,168,76,0.25)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "12px", color: "#C9A84C",
+                    fontFamily: "'Inter', sans-serif", fontWeight: 500,
+                  }}>{t.name[0]}</div>
                   <div>
                     <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "#F0EDE8", fontWeight: 500 }}>{t.name}</p>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "#C9A84C", letterSpacing: "0.1em" }}>{t.occasion}</p>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", color: "rgba(201,168,76,0.75)", letterSpacing: "0.1em", textTransform: "uppercase" }}>{t.occasion}</p>
                   </div>
                 </div>
               </motion.div>
@@ -1687,22 +1695,43 @@ export default function LandingPage() {
           position: "relative",
           zIndex: 1,
           borderTop: "1px solid rgba(255,255,255,0.05)",
-          padding: "36px 24px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "16px",
+          padding: "48px 24px",
           maxWidth: "1100px",
           margin: "0 auto",
         }}
       >
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.1rem", color: "rgba(240,237,232,0.5)" }}>
-          birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
-        </span>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
-          © {new Date().getFullYear()} — Tüm Hakları Saklıdır
-        </p>
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "24px",
+          marginBottom: "28px",
+        }}>
+          <div>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.2rem", color: "rgba(240,237,232,0.6)" }}>
+              birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
+            </span>
+            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.35)", marginTop: "6px", maxWidth: "280px", lineHeight: 1.6 }}>
+              Sevdiklerinize özel, unutulmaz bir dijital sürpriz.
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            <Link href="/kvkk-metni" style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >KVKK Aydınlatma Metni</Link>
+            <a href={`https://wa.me/${"905349829940"}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >İletişim</a>
+          </div>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
+            © {new Date().getFullYear()} birlikteydik.com — Tüm Hakları Saklıdır
+          </p>
+        </div>
       </footer>
     </>
   );

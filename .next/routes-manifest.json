@@ -321,6 +321,12 @@
       "namedRegex": "^/sablonlar/sablon\\-sinematik(?:/)?$"
     },
     {
+      "page": "/sablonlar/sablon-siyah",
+      "regex": "^/sablonlar/sablon\\-siyah(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sablonlar/sablon\\-siyah(?:/)?$"
+    },
+    {
       "page": "/verify-email",
       "regex": "^/verify\\-email(?:/)?$",
       "routeKeys": {},

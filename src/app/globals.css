@@ -13,3 +13,18 @@ body {
   background-color: rgba(212, 175, 55, 0.3);
   color: #ffffff;
 }
+
+/* ─── Erişilebilirlik: Reduced Motion ─────────────────────────────────────── */
+/* Kullanıcı sisteminde animasyonları azalt ayarı açıksa tüm transition ve
+   animation'ları anında keser. Framer Motion bunu otomatik takip eder;
+   canvas ve keyframe'ler için ayrıca JS tarafında kontrol yapılır. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

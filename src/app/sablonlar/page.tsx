@@ -8,9 +8,24 @@ import { HiOutlineEye } from "react-icons/hi";
 
 const WHATSAPP_NUMBER  = "905349829940";
 const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
-const INSTAGRAM_URL    = "https://instagram.com/birlikteydik";
+const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
 
 const templates = [
+    {
+    id: "premium-black",
+    title: "Premium Asil Siyah",
+    subtitle: "Siyahın Asilliği ve Hafif Sarı Tonlar",
+    accentColor: "#ffed47",
+    tag: null,
+    description: "Karanlığın en şık tonu",
+    demoUrl: "/sablonlar/sablon-siyah",
+    features: [
+      "Koyu Lüks Polaroid Çerçeveleri",
+      "Süzülen Canlı Gül Yaprakları",
+      "Premium Koyu Kadife Plak Çalar",
+      "Zarif El Yazısı ve Serif Tipografisi",
+    ],
+  },
   {
     id: "klasik-retro",
     title: "Koyu Gül Kurusu",

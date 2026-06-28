@@ -118,6 +118,9 @@ function FloatingRedHearts() {
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
+    // Kullanıcı "animasyonları azalt" diyorsa canvas'ı başlatma
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -169,7 +172,7 @@ function FloatingRedHearts() {
     return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(rafRef.current); };
   }, []);
 
-  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
+  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: -1 }} />;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -280,7 +283,6 @@ function LoveBookWidget({ isPlaying, toggleMusic }: { isPlaying: boolean; toggle
 // FOTOĞRAF KART KOMPONENTI
 // ─────────────────────────────────────────────────────────────────────────────
 function MemoryCard({ memory, index }: { memory: (any)[0]; index: number }) {
-  const { config, memories } = useContext(TemplateContext) || {};
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], [30, -30]);
@@ -435,16 +437,17 @@ export default function RomanticRedTemplate({ config: propConfig, memories: prop
     <TemplateContext.Provider value={{ config, memories }}>
     <main
       className="min-h-screen overflow-x-hidden selection:bg-[#E63946]/30"
-      style={{ background: "#0B0204", color: "#F9ECEF", fontFamily: "var(--font-lato), sans-serif" }}
+      style={{ background: "#0B0204", color: "#F9ECEF", fontFamily: "var(--font-lato), sans-serif", position: "relative", zIndex: 1 }}
     >
       {/* AMBIENT LIGHTS */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
+      <div className="fixed inset-0 pointer-events-none" style={{
         background: `
           radial-gradient(ellipse 80% 50% at 50% -10%, rgba(230,57,70,0.16) 0%, transparent 60%),
           radial-gradient(ellipse 70% 60% at 85% 75%, rgba(155,34,38,0.09) 0%, transparent 65%),
           linear-gradient(to bottom, #0B0204 0%, #160408 100%)
         `,
-        pointerEvents: "none"
+        pointerEvents: "none",
+        zIndex: -2
       }} />
 
       {/* FLOATING HEARTS CANVAS */}
@@ -455,7 +458,10 @@ export default function RomanticRedTemplate({ config: propConfig, memories: prop
         className="relative w-full max-w-[480px] mx-auto min-h-screen bg-[#0B0204]/85 shadow-[0_0_80px_rgba(0,0,0,0.85)] z-10 flex flex-col"
         style={{
           borderLeft: "1px solid rgba(230,57,70,0.08)",
-          borderRight: "1px solid rgba(230,57,70,0.08)"
+          borderRight: "1px solid rgba(230,57,70,0.08)",
+          zIndex: 10,
+          transform: "translate3d(0,0,0)",
+          WebkitTransform: "translate3d(0,0,0)"
         }}
       >
         {/* LOVE BOOK WIDGET */}
@@ -648,7 +654,6 @@ export default function RomanticRedTemplate({ config: propConfig, memories: prop
         className="relative flex flex-col items-center justify-center overflow-hidden py-36 z-10"
         style={{ background: "#060102", borderTop: "1px solid rgba(230,57,70,0.1)" }}
       >
-        <FloatingRedHearts />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "radial-gradient(circle at 50% 50%, rgba(230,57,70,0.07) 0%, transparent 70%)" }} />
 
