@@ -13,7 +13,7 @@ const defaultConfig = {
   tagline: "Lavanta kokulu rüzgarların arasında, seninle geçen her saniye ömre bedel...",
   accentColor: "#D8B4FE", // Varsayılan: Altın Sarısı (#C9A84C)
   specialDate: "26 Ekim 2024",
-  musicUrl: "/music/default.mp3", // Müzik dosyası yolu
+  musicUrl: "/music/emerald.mp3", // Müzik dosyası yolu
   videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
@@ -384,38 +384,50 @@ export default function LavantaTemplate({ config: propConfig, memories: propMemo
   const config = propConfig ?? defaultConfig;
   const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
-  const [countdown, setCountdown] = useState(4);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    useEffect(() => {
+      useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      if (audioRef.current) {
-        audioRef.current
-          .play()
-          .then(() => setIsPlaying(true))
-          .catch(() => {});
-      }
-    }
-  }, [countdown]);
+  
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -506,60 +518,7 @@ export default function LavantaTemplate({ config: propConfig, memories: propMemo
               {config.tagline}
             </motion.p>
 
-            <motion.div
-              variants={fadeUp}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "12px",
-                marginBottom: "2.5rem",
-              }}
-            >
-              <button
-                onClick={toggleMusic}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 24px",
-                  borderRadius: "30px",
-                  border: `1px solid ${config.accentColor}`,
-                  background: isPlaying ? "rgba(201,168,76,0.1)" : "transparent",
-                  color: isPlaying ? "#FFFFFF" : config.accentColor,
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontSize: "11px",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  boxShadow: isPlaying ? `0 0 15px ${config.accentColor}33` : "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = isPlaying ? "rgba(201,168,76,0.2)" : `${config.accentColor}18`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = isPlaying ? "rgba(201,168,76,0.1)" : "transparent";
-                }}
-              >
-                {isPlaying ? <Volume2 size={13} /> : <VolumeX size={13} />}
-                <span>{isPlaying ? "Sesi Durdur" : "Hikayeyi Sesli Dinle"}</span>
-              </button>
-              <motion.span
-                animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
-                transition={{ duration: 0.6 }}
-                style={{
-                  fontFamily: "var(--font-cormorant), serif",
-                  fontSize: "13px",
-                  fontStyle: "italic",
-                  color: "rgba(255, 255, 255, 0.6)",
-                  textAlign: "center",
-                }}
-              >
-                ✨ bence tıklamalısın, böylesi çok daha güzel
-              </motion.span>
-            </motion.div>
+            
 
             <motion.div
               variants={fadeIn}

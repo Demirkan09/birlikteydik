@@ -209,15 +209,6 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
-// Validate ../../src/app/sablonlar/sablon-mavi/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-mavi">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-mavi/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
 // Validate ../../src/app/sablonlar/sablon-minimal/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-minimal">> = Specific

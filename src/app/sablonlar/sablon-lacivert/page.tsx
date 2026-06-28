@@ -12,7 +12,7 @@ const defaultConfig = {
   tagline: "Birlikte geçen her anın değerini ve sonsuzluğa uzanan hikayemizi kutluyoruz...",
   accentColor: "#C9A84C", // Varsayılan: Altın Sarısı (#C9A84C)
   specialDate: "26 Ekim 2024",
-  musicUrl: "/music/default.mp3", // Müzik dosyası yolu
+  musicUrl: "/music/indigo.mp3", // Müzik dosyası yolu
 };
 
 const defaultMemories = [
@@ -379,38 +379,50 @@ export default function BosTemplate({ config: propConfig, memories: propMemories
   const config = propConfig ?? defaultConfig;
   const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
-  const [countdown, setCountdown] = useState(4);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    useEffect(() => {
+      useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      if (audioRef.current) {
-        audioRef.current
-          .play()
-          .then(() => setIsPlaying(true))
-          .catch(() => {});
-      }
-    }
-  }, [countdown]);
+  
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -501,53 +513,7 @@ export default function BosTemplate({ config: propConfig, memories: propMemories
               {config.tagline}
             </motion.p>
 
-            <motion.div
-              variants={fadeUp}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "12px",
-                marginBottom: "2rem",
-              }}
-            >
-              <button
-                onClick={toggleMusic}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 24px",
-                  borderRadius: "30px",
-                  border: `1px solid ${config.accentColor}`,
-                  background: isPlaying ? "rgba(59,130,246,0.1)" : "transparent",
-                  color: isPlaying ? "#FFFFFF" : config.accentColor,
-                  fontFamily: "var(--font-inter), sans-serif",
-                  fontSize: "11px",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                {isPlaying ? <Volume2 size={13} /> : <VolumeX size={13} />}
-                <span>{isPlaying ? "Sesi Durdur" : "Hikayeyi Sesli Dinle"}</span>
-              </button>
-              <motion.span
-                animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
-                transition={{ duration: 0.6 }}
-                style={{
-                  fontFamily: "var(--font-cormorant), serif",
-                  fontSize: "13px",
-                  fontStyle: "italic",
-                  color: "rgba(255, 255, 255, 0.6)",
-                  textAlign: "center",
-                }}
-              >
-                ✨ bence tıklamalısın, böylesi çok daha güzel
-              </motion.span>
-            </motion.div>
+            
 
             <motion.div
               variants={fadeIn}

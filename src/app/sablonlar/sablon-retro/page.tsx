@@ -10,7 +10,7 @@ const defaultConfig = {
   coupleNames: "Serkan\n&\nKübra",
   tagline: "Karanlığın en zarif tonunda, aşkımızın en derin izleri... Koyu kadife gül kurusu ve gül yapraklarının süzüldüğü sonsuz bir rüya.",
   specialDate: "14 Şubat 2025",
-  musicUrl: "/music/romantic.mp3",
+  musicUrl: "/music/retro.mp3",
   videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
@@ -149,7 +149,7 @@ function RecordWidget({ isPlaying, toggle }: { isPlaying: boolean; toggle: () =>
         </motion.div>
       </div>
       <div>
-        <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "15px", color: "#E5C2BA", lineHeight: 1 }}>
+        <div style={{ fontFamily: "'Pinyon Script', cursive", fontSize: "21px", color: "#E5C2BA", lineHeight: 1 }}>
           {isPlaying ? "melodi çalıyor..." : "Müzik"}
         </div>
         <div style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "8px", color: "rgba(229,194,186,0.45)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: "3px" }}>
@@ -219,7 +219,7 @@ function KoyuPolaroidCard({ memory, index }: { memory: any[0]; index: number }) 
         
         {/* Caption alanı text rengi vs.*/}
         <div style={{ paddingTop: "14px", paddingLeft: "6px" }}>
-          <div style={{ fontFamily: "'Dancing Script', cursive", fontSize: "17px", color: "#000000", lineHeight: 1.2 }}>
+          <div style={{ fontFamily: "'Pinyon Script', cursive", fontSize: "24px", color: "#000000", lineHeight: 1.2 }}>
             {memory.caption}
           </div>
           <div style={{ fontFamily: "var(--font-lato), sans-serif", fontSize: "8px", color: "#000000", opacity: 0.6, letterSpacing: "0.2em", marginTop: "5px", textTransform: "uppercase" }}>
@@ -250,7 +250,7 @@ function KoyuPolaroidCard({ memory, index }: { memory: any[0]; index: number }) 
         <motion.h3
           variants={fadeUp}
           style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-cormorant), serif",
             fontSize: "clamp(1.5rem, 5vw, 2rem)",
             fontWeight: 400,
             color: "#ffffff",
@@ -279,20 +279,44 @@ export default function DarkRoseTemplate({ config: propConfig, memories: propMem
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
   const toggle = () => {
@@ -388,7 +412,7 @@ export default function DarkRoseTemplate({ config: propConfig, memories: propMem
 
               <h1
                 style={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: "var(--font-cormorant), serif",
                   fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.5, 7),
                   fontWeight: 400,
                   color: "#F9F3F1",
@@ -424,47 +448,7 @@ export default function DarkRoseTemplate({ config: propConfig, memories: propMem
                 {config.tagline}
               </p>
 
-              <motion.div
-                variants={fadeUp}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginTop: "12px",
-                }}
-              >
-                <button
-                  onClick={toggle}
-                  style={{
-                    fontFamily: "var(--font-lato), sans-serif",
-                    fontSize: "9px",
-                    letterSpacing: "0.4em",
-                    textTransform: "uppercase",
-                    padding: "12px 30px",
-                    border: "1px solid rgba(229,194,186,0.35)",
-                    color: "rgba(249,243,241,0.75)",
-                    background: "rgba(255,255,255,0.03)",
-                    borderRadius: "2px",
-                    cursor: "pointer",
-                    backdropFilter: "blur(8px)",
-                  }}
-                >
-                  {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
-                </button>
-                <motion.span
-                  animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
-                  transition={{ duration: 0.6 }}
-                  style={{
-                    fontFamily: "'Dancing Script', cursive",
-                    fontSize: "13px",
-                    color: "rgba(229,194,186,0.7)",
-                    textAlign: "center",
-                  }}
-                >
-                  ✨ bence tıklamalısın, böylesi çok daha güzel
-                </motion.span>
-              </motion.div>
+              
 
               <span
                 style={{
@@ -508,7 +492,7 @@ export default function DarkRoseTemplate({ config: propConfig, memories: propMem
       </main>
 
       <style>{`
-        
+        @import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap');
       `}</style>
     </TemplateContext.Provider>
   );

@@ -13,7 +13,7 @@ const defaultConfig = {
   tagline: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben.",
   accentColor: "#8C7E6C",
   specialDate: "26.10.2024",
-  musicUrl: "/music/minimal.mp3",
+  musicUrl: "/music/beyaz.mp3",
   videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
@@ -333,7 +333,7 @@ export default function MinimalTemplate({ config: propConfig, memories: propMemo
   const config = propConfig ?? defaultConfig;
   const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
-  const [countdown, setCountdown] = useState(4);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const heroRef = useRef<HTMLElement>(null);
@@ -341,32 +341,47 @@ export default function MinimalTemplate({ config: propConfig, memories: propMemo
   const heroY = useTransform(heroScroll, [0, 1], [0, 80]);
   const heroOpacity = useTransform(heroScroll, [0, 0.8], [1, 0]);
 
-    useEffect(() => {
+      useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    }
-  }, [countdown]);
+  
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -470,43 +485,7 @@ export default function MinimalTemplate({ config: propConfig, memories: propMemo
             </motion.p>
 
             {/* Müzik butonu */}
-            <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center justify-center gap-3 w-full">
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  onClick={toggleMusic}
-                  className="group flex items-center justify-center gap-3 transition-all duration-400"
-                  style={{
-                    fontFamily: "'Source Sans 3', sans-serif",
-                    fontSize: "10px",
-                    letterSpacing: "0.32em",
-                    textTransform: "uppercase",
-                    color: isPlaying ? "#736E6A" : "#1C1A19",
-                    background: "transparent",
-                    border: "none",
-                    padding: 0,
-                    cursor: "pointer",
-                  }}
-                >
-                  <span style={{ borderBottom: `1px solid ${isPlaying ? "rgba(115,110,106,0.4)" : "rgba(28,26,25,0.7)"}`, paddingBottom: "2px" }}>
-                    {isPlaying ? "Sesi Durdur" : "Hikayeyi Dinle"}
-                  </span>
-                  <ChevronRight size={12} className="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                </button>
-              </div>
-              <motion.span
-                animate={{ opacity: isPlaying ? 0 : 0.5, y: isPlaying ? -4 : 0 }}
-                transition={{ duration: 0.6 }}
-                style={{
-                  fontFamily: "'EB Garamond', serif",
-                  fontSize: "11px",
-                  fontStyle: "italic",
-                  color: "#8C7E6C",
-                  textAlign: "center",
-                }}
-              >
-                ✨ bence tıklamalısın, böylesi çok daha güzel
-              </motion.span>
-            </motion.div>
+            
           </motion.div>
         </motion.div>
 

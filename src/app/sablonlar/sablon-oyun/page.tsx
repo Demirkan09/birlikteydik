@@ -13,7 +13,7 @@ const defaultConfig = {
   tagline: "SENİNLE EN İYİ MACERALARA",
   accentColor: "#cbff3e",
   specialDate: "26.10.2024",
-  musicUrl: "/music/pixel.mp3",
+  musicUrl: "/music/default.mp3",
   videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
@@ -370,7 +370,7 @@ export default function GameTemplate({ config: propConfig, memories: propMemorie
   const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
   const [blink, setBlink] = useState(true);
-  const [countdown, setCountdown] = useState(4);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const heroRef = useRef<HTMLElement>(null);
@@ -378,32 +378,47 @@ export default function GameTemplate({ config: propConfig, memories: propMemorie
   const heroY = useTransform(heroScroll, [0, 1], [0, 80]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
 
-    useEffect(() => {
+      useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    }
-  }, [countdown]);
+  
 
   useEffect(() => {
     const interval = setInterval(() => setBlink(b => !b), 600);
@@ -549,39 +564,7 @@ export default function GameTemplate({ config: propConfig, memories: propMemorie
             </motion.div>
 
             {/* Müzik butonu - pixel stil */}
-            <motion.div variants={fadeUp} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-              <button
-                onClick={toggleMusic}
-                style={{
-                  fontFamily: "'Press Start 2P', monospace",
-                  fontSize: "9px",
-                  letterSpacing: "0.08em",
-                  padding: "12px 28px",
-                  background: "transparent",
-                  border: `2px solid ${isPlaying ? "rgba(203,255,62,0.5)" : "#CBFF3E"}`,
-                  color: isPlaying ? "rgba(203,255,62,0.6)" : "#111",
-                  cursor: "pointer",
-                  position: "relative",
-                  backgroundColor: isPlaying ? "transparent" : "#CBFF3E",
-                  textShadow: isPlaying ? "none" : "none",
-                  boxShadow: isPlaying ? "none" : "4px 4px 0 rgba(203,255,62,0.3)",
-                  transition: "all 0.2s steps(1)",
-                }}
-              >
-                {isPlaying ? "[ DURDUR ]" : "[ SESLI DINLE ]"}
-              </button>
-              <span
-                style={{
-                  fontFamily: "'VT323', monospace",
-                  fontSize: "18px",
-                  color: "rgba(255,255,255,0.3)",
-                  opacity: blink ? 1 : 0,
-                  transition: "opacity 0.1s steps(1)",
-                }}
-              >
-                ✨ bence tıklamalısın, böylesi çok daha güzel
-              </span>
-            </motion.div>
+            
           </motion.div>
         </motion.div>
 

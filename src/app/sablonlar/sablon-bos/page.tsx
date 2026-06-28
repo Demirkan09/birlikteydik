@@ -14,8 +14,8 @@ const defaultConfig = {
   coupleNames: "Sen\n&\nBen",          // "\n" satır sonu yapar, "&" küçük gösterilir
   tagline: "Birlikte geçen her anın değerini ve sonsuzluğa uzanan hikayemizi kutluyoruz...",
   accentColor: "#C9A84C",              // Tema aksan rengi — tüm bileşenler buradan alır
-  specialDate: "26 Ekim 2024",
-  musicUrl: "/music/romantic.mp3",     // /public/music/ klasörüne koy
+  specialDate: "26 Ekim 2026",
+  musicUrl:  "/music/default.mp3",     // /public/music/ klasörüne koy
   finalHeading: "Sonsuza Dek Birlikte",
 };
 
@@ -453,29 +453,52 @@ export default function BosTemplate({
   const memories = propMemories ?? defaultMemories;
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [countdown, setCountdown] = useState(4); // 4 saniye sonra müzik otomatik başlar
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Müzik URL değişince yeni Audio oluştur
-  useEffect(() => {
-    audioRef.current?.pause();
-    if (!config.musicUrl) return;
-    audioRef.current = new Audio(config.musicUrl);
-    audioRef.current.loop = true;
-    return () => {
-      audioRef.current?.pause();
-    };
+    useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (config.musicUrl) {
+      audioRef.current = new Audio(config.musicUrl);
+      audioRef.current.loop = true;
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
+    }
   }, [config.musicUrl]);
 
   // Geri sayım: 4 saniye sonra otomatik başlat
-  useEffect(() => {
-    if (countdown <= 0) {
-      audioRef.current?.play().then(() => setIsPlaying(true)).catch(() => {});
-      return;
-    }
-    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [countdown]);
+  
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -610,40 +633,7 @@ export default function BosTemplate({
               </motion.p>
 
               {/* Müzik Butonu */}
-              <motion.div variants={fadeUp} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-                <button
-                  onClick={toggleMusic}
-                  style={{
-                    fontFamily: "var(--font-inter), sans-serif",
-                    fontSize: "10px",
-                    letterSpacing: "0.28em",
-                    textTransform: "uppercase",
-                    padding: "13px 32px",
-                    border: `1px solid ${ac}55`,
-                    color: isPlaying ? "rgba(255,255,255,0.65)" : `${ac}dd`,
-                    background: isPlaying ? `${ac}0d` : "transparent",
-                    borderRadius: "3px",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = `${ac}18`)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = isPlaying ? `${ac}0d` : "transparent")}
-                >
-                  {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
-                </button>
-                <motion.span
-                  animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
-                  transition={{ duration: 0.6 }}
-                  style={{
-                    fontFamily: "var(--font-cormorant), serif",
-                    fontSize: "12px",
-                    fontStyle: "italic",
-                    color: "rgba(255,255,255,0.55)",
-                  }}
-                >
-                  ✨ bence tıklamalısın, böylesi çok daha güzel
-                </motion.span>
-              </motion.div>
+              
             </motion.div>
 
             {/* Scroll göstergesi */}

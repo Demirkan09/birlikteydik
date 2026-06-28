@@ -12,7 +12,7 @@ const defaultConfig = {
   coupleNames: "Yasin\n&\nArzu",
   tagline: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki birlikteydik...",
   accentColor: "#D4AF37",
-  specialDate: "2024",
+  specialDate: "17.03.2026",
   musicUrl: "/music/emerald.mp3",
   videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
@@ -346,7 +346,7 @@ export default function EmeraldTemplate({ config: propConfig, memories: propMemo
   const config = propConfig ?? defaultConfig;
   const memories = propMemories ?? defaultMemories;
   const [isPlaying, setIsPlaying] = useState(false);
-  const [countdown, setCountdown] = useState(4);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const heroRef = useRef<HTMLElement>(null);
@@ -354,32 +354,47 @@ export default function EmeraldTemplate({ config: propConfig, memories: propMemo
   const heroY = useTransform(heroScroll, [0, 1], [0, 100]);
   const heroOpacity = useTransform(heroScroll, [0, 0.75], [1, 0]);
 
-    useEffect(() => {
+      useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    }
-  }, [countdown]);
+  
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -508,44 +523,7 @@ export default function EmeraldTemplate({ config: propConfig, memories: propMemo
             </motion.p>
 
             {/* Müzik butonu */}
-            <motion.div variants={fadeUp} className="mt-10 flex flex-col items-center gap-3">
-              <button
-                onClick={toggleMusic}
-                className="relative overflow-hidden group transition-all duration-700"
-                style={{
-                  fontFamily: "'Didact Gothic', sans-serif",
-                  fontSize: "10px",
-                  letterSpacing: "0.38em",
-                  textTransform: "uppercase",
-                  padding: "14px 36px",
-                  border: `1px solid rgba(212,175,55,0.4)`,
-                  color: isPlaying ? "rgba(255,255,255,0.6)" : "#D4AF37",
-                  background: isPlaying ? "rgba(255,255,255,0.02)" : "rgba(212,175,55,0.05)",
-                  borderRadius: "1px",
-                }}
-              >
-                {/* Hover shimmer efekti */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                  style={{ background: "linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent)" }}
-                />
-                <span className="relative z-10">
-                  {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
-                </span>
-              </button>
-              <motion.span
-                animate={{ opacity: isPlaying ? 0 : 1, y: isPlaying ? -4 : 0 }}
-                transition={{ duration: 0.6 }}
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "11px",
-                  fontStyle: "italic",
-                  color: "rgba(255,255,255,0.22)",
-                }}
-              >
-                ✨ bence tıklamalısın, böylesi çok daha güzel
-              </motion.span>
-            </motion.div>
+            
           </motion.div>
         </motion.div>
 

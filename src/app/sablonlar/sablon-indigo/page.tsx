@@ -11,7 +11,7 @@ const defaultConfig = {
   partnerName: "Sana",
   tagline: "Gecenin en derin mavisinde, yıldızlar bile bizim hikayemizi fısıldıyor.",
   specialDate: "14 Şubat 2025",
-  musicUrl: "/music/romantic.mp3",
+  musicUrl: "/music/indigo.mp3",
   videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-romantic-couple-enjoying-a-sunset-together-42417-large.mp4",
 };
 
@@ -205,20 +205,44 @@ export default function MidnightVelvetTemplate({ config: propConfig, memories: p
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-    useEffect(() => {
+      useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
     if (config.musicUrl) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {});
-      }
+
+      const playAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => {
+              setIsPlaying(true);
+              removeListeners();
+            })
+            .catch(() => {});
+        }
+      };
+
+      const removeListeners = () => {
+        window.removeEventListener("click", playAudio);
+        window.removeEventListener("touchstart", playAudio);
+        window.removeEventListener("scroll", playAudio);
+      };
+
+      // Try playing immediately
+      playAudio();
+
+      // Add listeners for interaction fallback
+      window.addEventListener("click", playAudio);
+      window.addEventListener("touchstart", playAudio);
+      window.addEventListener("scroll", playAudio);
+
+      return () => {
+        removeListeners();
+        audioRef.current?.pause();
+      };
     }
-    return () => {
-      audioRef.current?.pause();
-    };
   }, [config.musicUrl]);
 
   const toggle = () => {
@@ -297,46 +321,7 @@ export default function MidnightVelvetTemplate({ config: propConfig, memories: p
                 {config.tagline}
               </motion.p>
 
-              <motion.div
-                variants={fadeUp}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <button
-                  onClick={toggle}
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: "9px",
-                    letterSpacing: "0.45em",
-                    textTransform: "uppercase",
-                    padding: "13px 32px",
-                    border: "1px solid rgba(60,100,200,0.35)",
-                    color: "rgba(130,170,230,0.8)",
-                    background: "rgba(10,30,80,0.3)",
-                    borderRadius: "3px",
-                    cursor: "pointer",
-                    backdropFilter: "blur(10px)",
-                  }}
-                >
-                  {isPlaying ? "Müziği Durdur" : "Hikayeyi Sesli Dinle"}
-                </button>
-                <motion.span
-                  animate={{ opacity: isPlaying ? 0 : 0.65, y: isPlaying ? -4 : 0 }}
-                  transition={{ duration: 0.6 }}
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: "10px",
-                    color: "rgba(130,170,230,0.6)",
-                    textAlign: "center",
-                  }}
-                >
-                  ✨ bence tıklamalısın, böylesi çok daha güzel
-                </motion.span>
-              </motion.div>
+              
 
             </motion.div>
           </motion.div>

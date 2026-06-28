@@ -285,12 +285,6 @@
       "namedRegex": "^/sablonlar/sablon\\-lavanta(?:/)?$"
     },
     {
-      "page": "/sablonlar/sablon-mavi",
-      "regex": "^/sablonlar/sablon\\-mavi(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-mavi(?:/)?$"
-    },
-    {
       "page": "/sablonlar/sablon-minimal",
       "regex": "^/sablonlar/sablon\\-minimal(?:/)?$",
       "routeKeys": {},
