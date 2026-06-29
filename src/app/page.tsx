@@ -406,16 +406,16 @@ function FaqItem({ faq }: { faq: (typeof faqs)[0] }) {
 // ─────────────────────────────────────────────────────────────────────────────
 const plans = [
   {
-    name: "Temel",
-    price: "₺499",
+    name: "Açılışa Özel!",
+    price: "₺199",
     features: [
-      "16 fotoğrafa kadar",
+      "10 fotoğrafa kadar",
       "Özel mesaj & isim",
       "Özel müzik ekleme",
       "6 ay aktif link",
       "Şifreyle koruma",
     ],
-    highlighted: false,
+    highlighted: true,
     cta: "Sipariş Ver",
   },
   {
@@ -457,7 +457,7 @@ const plans = [
       "Öncelikli hazırlama (12 saat)",
       "Şifreyle koruma",
     ],
-    highlighted: true,
+    highlighted: false,
     cta: "İletişime Geç",
   },
 ];
