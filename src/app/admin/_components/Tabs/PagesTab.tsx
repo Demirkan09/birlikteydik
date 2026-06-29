@@ -34,6 +34,17 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState("");
 
+  // Custom (özel) şablonlar
+  const [customTemplates, setCustomTemplates] = useState<{ id: string; name: string; preview_color: string }[]>([]);
+  const fetchCustomTemplates = useCallback(async () => {
+    if (!adminEmail) return;
+    try {
+      const res = await fetch(`/api/admin/custom-templates?adminEmail=${encodeURIComponent(adminEmail)}`);
+      const data = await res.json();
+      if (res.ok && data.templates) setCustomTemplates(data.templates);
+    } catch { /* ignore */ }
+  }, [adminEmail]);
+
   // Sayfaları Yükle
   const fetchAllPages = useCallback(async () => {
     if (!adminEmail) return;
@@ -53,7 +64,8 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
   useEffect(() => {
     fetchAllPages();
-  }, [fetchAllPages]);
+    fetchCustomTemplates();
+  }, [fetchAllPages, fetchCustomTemplates]);
   // Sayfa Ayarlarını Yükle
   const loadPageSettings = async (slug: string) => {
     if (!adminEmail || !slug) return;
@@ -233,7 +245,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                     {/* Sol: Yeni Sayfa Oluştur */}
                     <div style={{ ...cardStyle, padding: "28px" }}>
                       <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "22px", fontWeight: 600, color: C.text, marginBottom: "24px" }}>
-                        Yeni Şablon Sayfası <em style={{ color: C.gold, fontStyle: "italic" }}>Oluştur</em>
+                        Yeni Müşteri Sayfası <em style={{ color: C.gold, fontStyle: "italic" }}>Oluştur</em>
                       </h2>
 
                       {createError && (
@@ -256,6 +268,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           { id: "sablon-amber", title: "Günbatımı Amberi", color: "#F59E0B" },
                           { id: "sablon-rose", title: "Gül Kurusu", color: "#FCA5A5" },
                           { id: "sablon-indigo", title: "Gece Yarısı İndigo", color: "#818CF8" },
+                          { id: "sablon-siyah", title: "Karanlık Gece (Siyah)", color: "#1A1A1A" },
                         ].map((tpl) => (
                           <button
                             key={tpl.id}
@@ -276,6 +289,42 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           </button>
                         ))}
                       </div>
+
+                      {/* Özel Şablonlar */}
+                      {customTemplates.length > 0 && (
+                        <>
+                          <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "8px", marginTop: "16px", fontWeight: 500 }}>
+                            🎨 Özel Şablonlarım
+                          </p>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px", maxHeight: "200px", overflowY: "auto", paddingRight: "4px" }}>
+                            {customTemplates.map((tpl) => {
+                              const tplId = `custom-${tpl.id}`;
+                              return (
+                                <button
+                                  key={tpl.id}
+                                  type="button"
+                                  onClick={() => setNewTemplateId(tplId)}
+                                  style={{
+                                    padding: "12px", borderRadius: "12px",
+                                    border: `1px solid ${newTemplateId === tplId ? tpl.preview_color : "rgba(255,255,255,0.06)"}`,
+                                    background: newTemplateId === tplId ? `${tpl.preview_color}15` : "rgba(255,255,255,0.03)",
+                                    color: newTemplateId === tplId ? tpl.preview_color : C.text,
+                                    cursor: "pointer", transition: "all 0.2s", textAlign: "left",
+                                    fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tplId ? 600 : 400,
+                                    display: "flex", flexDirection: "column", gap: "6px",
+                                  }}
+                                >
+                                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                                    <span style={{ width: "12px", height: "12px", borderRadius: "50%", background: tpl.preview_color, display: "inline-block" }} />
+                                    <span style={{ fontSize: "9px", opacity: 0.5, letterSpacing: "0.12em" }}>ÖZEL</span>
+                                  </span>
+                                  {tpl.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
 
                       {/* Sayfa Slug */}
                       <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "10px", fontWeight: 500 }}>Sayfa Adresi</p>
@@ -515,6 +564,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 <option value="sablon-amber">Günbatımı Amberi</option>
                                 <option value="sablon-rose">Gül Kurusu</option>
                                 <option value="sablon-indigo">Gece Yarısı İndigo</option>
+                                <option value="sablon-siyah">Karanlık Gece (Siyah)</option>
                               </select>
                             </div>
 
@@ -585,31 +635,6 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
                                 }}
                               />
-                            </div>
-
-                            {/* Vurgu Rengi */}
-                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Tema Rengi (Accent)</label>
-                              <div style={{ display: "flex", gap: "10px" }}>
-                                <input
-                                  type="color"
-                                  value={editConfig.accentColor || "#C9A84C"}
-                                  onChange={(e) => setEditConfig({ ...editConfig, accentColor: e.target.value })}
-                                  style={{
-                                    width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px",
-                                    background: "transparent", cursor: "pointer"
-                                  }}
-                                />
-                                <input
-                                  value={editConfig.accentColor || ""}
-                                  onChange={(e) => setEditConfig({ ...editConfig, accentColor: e.target.value })}
-                                  placeholder="#C9A84C"
-                                  style={{
-                                    flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)",
-                                    border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
-                                  }}
-                                />
-                              </div>
                             </div>
                           </div>
 

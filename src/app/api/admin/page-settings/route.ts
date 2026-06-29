@@ -233,7 +233,30 @@ export async function POST(request: Request) {
       }
 
       // Fetch default config
-      const defaults = DEFAULT_CONFIGS[templateId] ?? FALLBACK_DEFAULT;
+      let defaults = DEFAULT_CONFIGS[templateId] ?? FALLBACK_DEFAULT;
+
+      // Özel (custom-*) şablon: veritabanından config çek
+      if (templateId.startsWith("custom-")) {
+        const customId = templateId.replace("custom-", "");
+        const customRes = await pool.query(
+          "SELECT template_config FROM custom_templates WHERE id = $1",
+          [customId]
+        );
+        if ((customRes.rowCount ?? 0) > 0) {
+          const tplConfig = customRes.rows[0].template_config;
+          defaults = {
+            config: {
+              coupleNames: "Sen & Ben",
+              tagline: "Hayatımın en güzel anı seninle geçen her saniye...",
+              specialDate: "14 Şubat 2026",
+              musicUrl: "/music/default.mp3",
+              // Şablon görsel ayarlarını default config'e aktar
+              ...tplConfig,
+            },
+            memories: FALLBACK_DEFAULT.memories,
+          };
+        }
+      }
 
       await pool.query(
         `INSERT INTO page_settings (page_slug, template_id, config, memories, is_published)

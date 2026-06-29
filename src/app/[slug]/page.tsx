@@ -15,6 +15,8 @@ import LavantaTemplate from "@/app/sablonlar/sablon-lavanta/page";
 import AmberTemplate from "@/app/sablonlar/sablon-amber/page";
 import DustyRoseTemplate from "@/app/sablonlar/sablon-rose/page";
 import MidnightVelvetTemplate from "@/app/sablonlar/sablon-indigo/page";
+import BlackNightTemplate from "@/app/sablonlar/sablon-siyah/page";
+import BosTemplate from "@/app/sablonlar/sablon-bos/page";
 
 const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   "klasik-retro": DarkRoseTemplate,
@@ -27,6 +29,7 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<any>> = {
   "sablon-amber": AmberTemplate,
   "sablon-rose": DustyRoseTemplate,
   "sablon-indigo": MidnightVelvetTemplate,
+  "sablon-siyah": BlackNightTemplate,
 };
 
 interface PageProps {
@@ -52,6 +55,18 @@ export default async function DynamicUserPage({ params }: PageProps) {
   // If page is not published yet, show 404 (or we could show a draft warning)
   if (!pageSetting.is_published) {
     return notFound();
+  }
+
+  // custom-* şablonlar: BosTemplate ile render et
+  if (pageSetting.template_id.startsWith("custom-")) {
+    return (
+      <PasswordGate slug={cleanSlug}>
+        <BosTemplate
+          config={pageSetting.config}
+          memories={pageSetting.memories}
+        />
+      </PasswordGate>
+    );
   }
 
   const TemplateComponent = TEMPLATE_MAP[pageSetting.template_id];

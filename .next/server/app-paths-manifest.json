@@ -4,6 +4,7 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/admin/page": "app/admin/page.js",
   "/api/activate/route": "app/api/activate/route.js",
+  "/api/admin/custom-templates/route": "app/api/admin/custom-templates/route.js",
   "/api/admin/generate-code/route": "app/api/admin/generate-code/route.js",
   "/api/admin/page-settings/route": "app/api/admin/page-settings/route.js",
   "/api/admin/reset-page-password/route": "app/api/admin/reset-page-password/route.js",

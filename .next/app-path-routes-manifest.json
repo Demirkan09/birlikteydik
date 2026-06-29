@@ -4,6 +4,7 @@
   "/_not-found/page": "/_not-found",
   "/admin/page": "/admin",
   "/api/activate/route": "/api/activate",
+  "/api/admin/custom-templates/route": "/api/admin/custom-templates",
   "/api/admin/generate-code/route": "/api/admin/generate-code",
   "/api/admin/page-settings/route": "/api/admin/page-settings",
   "/api/admin/reset-page-password/route": "/api/admin/reset-page-password",

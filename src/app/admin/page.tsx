@@ -10,13 +10,14 @@ import { CodesTab } from "./_components/Tabs/CodesTab";
 import { UsersTab } from "./_components/Tabs/UsersTab";
 import { MarketingTab } from "./_components/Tabs/MarketingTab";
 import { SettingsTab } from "./_components/Tabs/SettingsTab";
+import { TemplateBuilderTab } from "./_components/Tabs/TemplateBuilderTab";
 
 export default function AdminPage() {
   const router = useRouter();
   const [adminEmail, setAdminEmail] = useState("");
   const [adminRole, setAdminRole] = useState("admin");
   const [authorized, setAuthorized] = useState(false);
-  const [activeTab, setActiveTab] = useState<"create_page" | "codes" | "users" | "marketing" | "settings">("create_page");
+  const [activeTab, setActiveTab] = useState<"create_page" | "codes" | "users" | "marketing" | "settings" | "template_builder">("create_page");
   const [prefilledSlug, setPrefilledSlug] = useState("");
 
   useEffect(() => {
@@ -59,13 +60,14 @@ export default function AdminPage() {
               { key: "codes", icon: "📋", label: "Kod Üret" },
               { key: "users", icon: "👥", label: "Kullanıcılar" },
               ...(adminRole === "admin" ? [
+                { key: "template_builder", icon: "🎨", label: "Şablon Oluştur" },
                 { key: "marketing", icon: "📢", label: "Pazarlama" },
                 { key: "settings", icon: "⚙️", label: "Site Ayarları" }
               ] : [])
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as "create_page" | "codes" | "users" | "marketing" | "settings")}
+                onClick={() => setActiveTab(tab.key as "create_page" | "codes" | "users" | "marketing" | "settings" | "template_builder")}
                 style={{
                   padding: "10px 20px", borderRadius: "12px",
                   background: activeTab === tab.key ? C.gold : "rgba(255,255,255,0.05)",
@@ -87,6 +89,7 @@ export default function AdminPage() {
             {activeTab === "users" && <UsersTab adminEmail={adminEmail} adminRole={adminRole} />}
             {activeTab === "marketing" && adminRole === "admin" && <MarketingTab adminEmail={adminEmail} />}
             {activeTab === "settings" && adminRole === "admin" && <SettingsTab adminEmail={adminEmail} />}
+            {activeTab === "template_builder" && adminRole === "admin" && <TemplateBuilderTab adminEmail={adminEmail} onTemplateCreated={() => {}} />}
           </AnimatePresence>
         </main>
       </div>

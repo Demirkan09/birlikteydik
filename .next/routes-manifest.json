@@ -71,6 +71,12 @@
       "namedRegex": "^/api/activate(?:/)?$"
     },
     {
+      "page": "/api/admin/custom-templates",
+      "regex": "^/api/admin/custom\\-templates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/custom\\-templates(?:/)?$"
+    },
+    {
       "page": "/api/admin/generate-code",
       "regex": "^/api/admin/generate\\-code(?:/)?$",
       "routeKeys": {},
