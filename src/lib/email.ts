@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 // ─── Mailcow SMTP Transporter ───────────────────────────────────
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST ?? "mail.birlikteydik.com",
+  host: process.env.SMTP_HOST ?? "157.90.173.248",
   port: Number(process.env.SMTP_PORT ?? 587),
   secure: Number(process.env.SMTP_PORT ?? 587) === 465,
   auth: {
