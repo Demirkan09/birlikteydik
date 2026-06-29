@@ -658,9 +658,15 @@ export default function TemplatesPage() {
         <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.1rem", color: "rgba(240,237,232,0.5)" }}>
           birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
         </span>
-        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
-          © {new Date().getFullYear()} — Sevgiyle yapıldı
-        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap" }}>
+          <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+            onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+            onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+          >info@birlikteydik.com</a>
+          <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em", margin: 0 }}>
+            © {new Date().getFullYear()} — Sevgiyle yapıldı
+          </p>
+        </div>
       </footer>
     </>
   );

@@ -335,6 +335,12 @@
       "namedRegex": "^/sablonlar/sablon\\-siyah(?:/)?$"
     },
     {
+      "page": "/sitemap.xml",
+      "regex": "^/sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
       "page": "/verify-email",
       "regex": "^/verify\\-email(?:/)?$",
       "routeKeys": {},

@@ -50,5 +50,6 @@
   "/sablonlar/sablon-rose/page": "/sablonlar/sablon-rose",
   "/sablonlar/sablon-sinematik/page": "/sablonlar/sablon-sinematik",
   "/sablonlar/sablon-siyah/page": "/sablonlar/sablon-siyah",
+  "/sitemap.xml/route": "/sitemap.xml",
   "/verify-email/page": "/verify-email"
 }

@@ -11,7 +11,7 @@ import VideoPlayerPro from "@/components/ui/video-player-pro";
 //     Renk, isim, tarih, müzik, tagline buradan yönetilir.
 // ─────────────────────────────────────────────────────────────────────────────
 const defaultConfig = {
-  coupleNames: "Sen\n&\nBen",          // "\n" satır sonu yapar, "&" küçük gösterilir
+  coupleNames: "Berke\n&\nSelin",          // "\n" satır sonu yapar, "&" küçük gösterilir
   tagline: "Birlikte geçen her anın değerini ve sonsuzluğa uzanan hikayemizi kutluyoruz...",
   accentColor: "#C9A84C",              // Tema aksan rengi — tüm bileşenler buradan alır
   specialDate: "26 Ekim 2024",

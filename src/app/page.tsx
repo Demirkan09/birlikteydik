@@ -1725,6 +1725,10 @@ export default function LandingPage() {
               onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
               onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
             >İletişim</a>
+            <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >info@birlikteydik.com</a>
           </div>
         </div>
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>

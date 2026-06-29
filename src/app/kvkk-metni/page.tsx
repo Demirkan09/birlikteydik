@@ -55,7 +55,7 @@ export default function KvkkMetniPage() {
 
           {/* Bölüm 1 */}
           <Section number="1" title="Veri Sorumlusu">
-            Sitede toplanan ve PostgreSQL veritabanımızda güvenli bir şekilde şifrelenerek saklanan kişisel verileriniz bakımından veri sorumlusu <strong style={{ color: C.text, fontWeight: 500 }}>birlikteydik.com yönetimidir</strong>.
+            Sitede toplanan ve veritabanımızda güvenli bir şekilde şifrelenerek saklanan kişisel verileriniz bakımından veri sorumlusu <strong style={{ color: C.text, fontWeight: 500 }}>birlikteydik.com yönetimidir</strong>.
           </Section>
 
           {/* Bölüm 2 */}
@@ -92,7 +92,7 @@ export default function KvkkMetniPage() {
           </Section>
 
           {/* Bölüm 5 */}
-          <Section number="5" title="Veri Güvenliği ve PostgreSQL Saklama Politikası">
+          <Section number="5" title="Veri Güvenliği ve Saklama Politikası">
             Verileriniz, sunucumuzda bulunan izole ve şifreli veritabanı odasında saklanmaktadır. Şifreleriniz sisteme düz metin olarak değil, kriptografik hash algoritmalarıyla kaydedilir. Yetkisiz erişimleri engellemek amacıyla sunucu düzeyinde SSH anahtar koruması ve port kısıtlamaları uygulanmaktadır.
           </Section>
 
