@@ -180,8 +180,17 @@ export default function RegisterPage() {
         setLoading(false);
         return;
       }
-      // Başarılı kayıt — kullanıcıyı e-posta doğrulama sayfasına yönlendir
-      router.push(`/verify-email?email=${encodeURIComponent(email.toLowerCase().trim())}`);
+      // Başarılı kayıt — otomatik giriş yap ve profil sayfasına yönlendir
+      localStorage.setItem("birlikteydik_user", JSON.stringify({
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        marketingConsent: data.user.marketingConsent,
+        isVerified: data.user.isVerified,
+      }));
+      window.dispatchEvent(new Event("auth-change"));
+
+      router.push("/profil");
     } catch {
       setErrors({ general: "Sunucuya bağlanılamadı. İnternet bağlantını kontrol et." });
       setLoading(false);

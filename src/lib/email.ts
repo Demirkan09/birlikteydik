@@ -12,6 +12,9 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false, // TLS sertifika doğrulama hatası alınmasını önler
   },
+  connectionTimeout: 5000, // 5 saniye
+  greetingTimeout: 5000,   // 5 saniye
+  socketTimeout: 10000,    // 10 saniye
 });
 
 const FROM = process.env.SMTP_FROM || '"birlikteydik.com" <info@birlikteydik.com>';

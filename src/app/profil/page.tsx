@@ -71,6 +71,10 @@ export default function ProfilePage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // E-posta doğrulama states
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationSuccess, setVerificationSuccess] = useState("");
+
   // 1. Session check on mount & fetch fresh database details
   useEffect(() => {
     const checkSession = async () => {
@@ -96,6 +100,7 @@ export default function ProfilePage() {
               email: data.user.email,
               role: data.user.role,
               marketingConsent: data.user.marketingConsent,
+              isVerified: data.user.isVerified,
             };
             setUser(freshUser);
             // Sync role to localStorage
@@ -186,6 +191,7 @@ export default function ProfilePage() {
         ...user,
         name: data.user.name,
         email: data.user.email,
+        isVerified: data.user.isVerified,
       };
       localStorage.setItem("birlikteydik_user", JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -282,6 +288,34 @@ export default function ProfilePage() {
     } catch {
       setErrors({ delete: "Bağlantı hatası oluştu." });
       setLoading(false);
+    }
+  };
+
+  // ─── E-posta Doğrulama Kodu Gönder ──────────────────────────────────────────
+  const handleSendVerification = async () => {
+    if (!user?.email) return;
+    setVerificationLoading(true);
+    setVerificationSuccess("");
+    setErrors({});
+    try {
+      const res = await fetch("/api/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrors({ general: data.error ?? "Doğrulama kodu gönderilemedi." });
+        return;
+      }
+      setVerificationSuccess("Doğrulama kodu e-postanıza gönderildi! Yönlendiriliyorsunuz...");
+      setTimeout(() => {
+        router.push(`/verify-email?email=${encodeURIComponent(user.email)}`);
+      }, 2000);
+    } catch {
+      setErrors({ general: "Bağlantı hatası oluştu." });
+    } finally {
+      setVerificationLoading(false);
     }
   };
 
@@ -493,6 +527,9 @@ export default function ProfilePage() {
                   handleUpdateProfile={handleUpdateProfile}
                   loading={loading}
                   errors={errors}
+                  handleSendVerification={handleSendVerification}
+                  verificationLoading={verificationLoading}
+                  verificationSuccess={verificationSuccess}
                 />
               )}
 

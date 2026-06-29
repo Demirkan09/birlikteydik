@@ -58,27 +58,24 @@ export async function POST(request: Request) {
 
     const newUser = result.rows[0];
 
-    // ── Doğrulama E-postasını Gönder ──────────────────────────────────────
-    try {
-      await sendVerificationCodeEmail({
-        to: newUser.email,
-        name: newUser.name,
-        code: verificationCode,
-      });
-    } catch (mailErr) {
+    // ── Doğrulama E-postasını Gönder (Arka Planda) ────────────────────────
+    sendVerificationCodeEmail({
+      to: newUser.email,
+      name: newUser.name,
+      code: verificationCode,
+    }).catch((mailErr) => {
       console.error("Kayıt sonrası doğrulama maili gönderilemedi:", mailErr);
-      // E-posta gönderimi başarısız olsa bile kullanıcı kaydını iptal etmiyoruz
-    }
+    });
 
     return NextResponse.json(
       {
-        message: "Hesap başarıyla oluşturuldu. Lütfen e-postanıza gönderilen onay kodunu girin.",
-        unverified: true,
+        message: "Hesap başarıyla oluşturuldu.",
         user: {
           id: newUser.id,
           name: newUser.name,
           email: newUser.email,
           marketingConsent: newUser.marketing_consent,
+          isVerified: false,
         },
       },
       { status: 201 }

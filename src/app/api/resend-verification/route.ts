@@ -49,20 +49,14 @@ export async function POST(request: Request) {
       [newCode, user.id]
     );
 
-    // Send code via SMTP
-    try {
-      await sendVerificationCodeEmail({
-        to: user.email,
-        name: user.name,
-        code: newCode,
-      });
-    } catch (mailErr) {
+    // Send code via SMTP in the background
+    sendVerificationCodeEmail({
+      to: user.email,
+      name: user.name,
+      code: newCode,
+    }).catch((mailErr) => {
       console.error("Doğrulama kodu tekrar gönderilemedi:", mailErr);
-      return NextResponse.json(
-        { error: "E-posta gönderimi başarısız oldu. Sunucuyu kontrol edin." },
-        { status: 500 }
-      );
-    }
+    });
 
     return NextResponse.json({
       message: "Yeni doğrulama kodu e-postanıza gönderildi.",

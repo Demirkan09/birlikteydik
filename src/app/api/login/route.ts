@@ -44,17 +44,6 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!user.is_verified) {
-      return NextResponse.json(
-        {
-          error: "Lütfen e-posta adresinizi doğrulayın.",
-          unverified: true,
-          email: user.email,
-        },
-        { status: 401 }
-      );
-    }
-
     return NextResponse.json({
       message: "Giriş başarılı.",
       user: {
@@ -63,6 +52,7 @@ export async function POST(request: Request) {
         email: user.email,
         marketingConsent: user.marketing_consent,
         role: user.role,
+        isVerified: user.is_verified,
       },
     });
   } catch (err) {

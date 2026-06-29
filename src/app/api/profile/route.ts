@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     }
 
     const res = await pool.query(
-      "SELECT id, name, email, marketing_consent, created_at, role FROM users WHERE email = $1",
+      "SELECT id, name, email, marketing_consent, created_at, role, is_verified FROM users WHERE email = $1",
       [email.toLowerCase().trim()]
     );
 
@@ -71,6 +71,7 @@ export async function GET(request: Request) {
         marketingConsent: user.marketing_consent,
         createdAt: user.created_at,
         role: user.role,
+        isVerified: user.is_verified,
         pages: pagesRes.rows.map((row) => ({
           id: row.id,
           pageSlug: row.page_slug,
@@ -155,7 +156,7 @@ export async function POST(request: Request) {
     }
 
     queryParams.push(user.id);
-    updateQuery += ` WHERE id = $${queryParams.length} RETURNING id, name, email, marketing_consent`;
+    updateQuery += ` WHERE id = $${queryParams.length} RETURNING id, name, email, marketing_consent, is_verified`;
 
     const updateRes = await pool.query(updateQuery, queryParams);
     const updatedUser = updateRes.rows[0];
@@ -167,6 +168,7 @@ export async function POST(request: Request) {
         name: updatedUser.name,
         email: updatedUser.email,
         marketingConsent: updatedUser.marketing_consent,
+        isVerified: updatedUser.is_verified,
       },
     });
   } catch (err) {

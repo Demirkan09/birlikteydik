@@ -21,6 +21,9 @@ export function PersonalInfoTab({
   handleUpdateProfile,
   loading,
   errors,
+  handleSendVerification,
+  verificationLoading,
+  verificationSuccess,
 }: {
   user: User;
   name: string;
@@ -36,6 +39,9 @@ export function PersonalInfoTab({
   handleUpdateProfile: () => void;
   loading: boolean;
   errors: Record<string, string>;
+  handleSendVerification: () => void;
+  verificationLoading: boolean;
+  verificationSuccess: string;
 }) {
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
@@ -55,7 +61,58 @@ export function PersonalInfoTab({
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="form-row">
           <ProfileInput label="Adınız Soyadınız" value={name} onChange={setName} icon={<HiOutlineUser size={15} />} error={errors.name} />
-          <ProfileInput label="E-posta Adresiniz" type="email" value={email} onChange={setEmail} icon={<HiOutlineMail size={15} />} error={errors.email} />
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <ProfileInput label="E-posta Adresiniz" type="email" value={email} onChange={setEmail} icon={<HiOutlineMail size={15} />} error={errors.email} />
+            
+            {/* E-posta Doğrulama Durumu */}
+            {!user.isVerified && (
+              <div style={{
+                marginTop: "8px",
+                padding: "10px 14px",
+                background: "rgba(232,160,160,0.06)",
+                border: "1px solid rgba(232,160,160,0.18)",
+                borderRadius: "10px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+              }}>
+                <span style={{ fontSize: "12px", color: "#E8A0A0", display: "flex", alignItems: "center", gap: "6px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 400 }}>
+                  ⚠ E-posta adresiniz doğrulanmadı.
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSendVerification();
+                  }}
+                  disabled={verificationLoading}
+                  style={{
+                    alignSelf: "flex-start",
+                    padding: "6px 14px",
+                    borderRadius: "20px",
+                    border: "1px solid #C9A84C",
+                    background: "transparent",
+                    color: "#C9A84C",
+                    fontSize: "11px",
+                    cursor: verificationLoading ? "not-allowed" : "pointer",
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    fontFamily: "var(--font-inter), sans-serif",
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={(e) => { if (!verificationLoading) e.currentTarget.style.background = "rgba(201,168,76,0.1)"; }}
+                  onMouseLeave={(e) => { if (!verificationLoading) e.currentTarget.style.background = "transparent"; }}
+                >
+                  {verificationLoading ? "Gönderiliyor..." : "Doğrulama Kodu Gönder"}
+                </button>
+                {verificationSuccess && (
+                  <span style={{ fontSize: "12px", color: C.success, fontFamily: "var(--font-inter), sans-serif", fontWeight: 300, marginTop: "2px" }}>
+                    {verificationSuccess}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "8px 0" }} />

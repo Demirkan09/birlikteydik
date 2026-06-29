@@ -12,4 +12,5 @@ export type User = {
   email: string;
   role?: string;
   marketingConsent?: boolean;
+  isVerified?: boolean;
 };
