@@ -4,26 +4,32 @@ import path from "path";
 import pool from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
-// Extract all /uploads/ asset URLs from config & memories
-function extractUploadUrls(config: any, memories: any[]) {
-  const urls = new Set<string>();
-  if (config?.musicUrl && config.musicUrl.startsWith("/uploads/")) {
-    urls.add(config.musicUrl);
-  }
-  if (config?.videoUrl && config.videoUrl.startsWith("/uploads/")) {
-    urls.add(config.videoUrl);
-  }
+// Helper: extract filename from any URL containing /uploads/
+function extractFilename(url: string) {
+  if (!url || typeof url !== "string") return null;
+  const match = url.match(/\/uploads\/([^/?#]+)/);
+  return match ? match[1] : null;
+}
+
+// Extract all /uploads/ asset filenames from config & memories
+function extractUploadFilenames(config: any, memories: any[]) {
+  const filenames = new Set<string>();
+  
+  const addIfUpload = (url: string) => {
+    const fn = extractFilename(url);
+    if (fn) filenames.add(fn);
+  };
+
+  if (config?.musicUrl) addIfUpload(config.musicUrl);
+  if (config?.videoUrl) addIfUpload(config.videoUrl);
+
   if (Array.isArray(memories)) {
     memories.forEach((m: any) => {
-      if (m?.image && m.image.startsWith("/uploads/")) {
-        urls.add(m.image);
-      }
-      if (m?.video && m.video.startsWith("/uploads/")) {
-        urls.add(m.video);
-      }
+      if (m?.image) addIfUpload(m.image);
+      if (m?.video) addIfUpload(m.video);
     });
   }
-  return urls;
+  return filenames;
 }
 
 // Helper: verify caller is admin or staff
@@ -260,22 +266,21 @@ export async function POST(request: Request) {
 
         if ((oldSettingsRes.rowCount ?? 0) > 0) {
           const oldRow = oldSettingsRes.rows[0];
-          const oldUrls = extractUploadUrls(oldRow.config, oldRow.memories);
-          const newUrls = extractUploadUrls(config, memories);
+          const oldFilenames = extractUploadFilenames(oldRow.config, oldRow.memories);
+          const newFilenames = extractUploadFilenames(config, memories);
 
-          // Find URLs in old that are NOT in new
-          const orphanedUrls = [...oldUrls].filter((url) => !newUrls.has(url));
+          // Find filenames in old that are NOT in new
+          const orphanedFilenames = [...oldFilenames].filter((fn) => !newFilenames.has(fn));
 
           // Delete orphaned files from VDS filesystem
-          for (const url of orphanedUrls) {
+          for (const filename of orphanedFilenames) {
             try {
-              const cleanPath = url.startsWith("/") ? url.substring(1) : url;
-              const filePath = path.join(process.cwd(), "public", cleanPath);
+              const filePath = path.join(process.cwd(), "public", "uploads", filename);
               await fs.unlink(filePath);
               console.log(`[CleanUp] Silindi: ${filePath}`);
             } catch (err: any) {
               // Ignore if file doesn't exist on disk
-              console.error(`[CleanUp] Silme hatası (${url}):`, err.message);
+              console.error(`[CleanUp] Silme hatası (${filename}):`, err.message);
             }
           }
         }
@@ -345,17 +350,16 @@ export async function DELETE(request: Request) {
 
     if ((settingsRes.rowCount ?? 0) > 0) {
       const row = settingsRes.rows[0];
-      const urls = extractUploadUrls(row.config, row.memories);
+      const filenames = extractUploadFilenames(row.config, row.memories);
 
       // Delete files from public/uploads/
-      for (const url of urls) {
+      for (const filename of filenames) {
         try {
-          const cleanPath = url.startsWith("/") ? url.substring(1) : url;
-          const filePath = path.join(process.cwd(), "public", cleanPath);
+          const filePath = path.join(process.cwd(), "public", "uploads", filename);
           await fs.unlink(filePath);
           console.log(`[DeletePage] Silindi: ${filePath}`);
         } catch (err: any) {
-          console.error(`[DeletePage] Dosya silme hatası (${url}):`, err.message);
+          console.error(`[DeletePage] Dosya silme hatası (${filename}):`, err.message);
         }
       }
     }

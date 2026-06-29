@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const filePath = path.join(uploadDir, uniqueName);
     await fs.writeFile(filePath, buffer);
 
-    const relativeUrl = `/uploads/${uniqueName}`;
+    const relativeUrl = `/api/uploads/${uniqueName}`;
     return NextResponse.json({ url: relativeUrl });
   } catch (err) {
     console.error("[POST /api/admin/upload] Hata:", err);

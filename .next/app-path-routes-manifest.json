@@ -24,6 +24,7 @@
   "/api/resend-verification/route": "/api/resend-verification",
   "/api/reset-password/route": "/api/reset-password",
   "/api/site-settings/route": "/api/site-settings",
+  "/api/uploads/[filename]/route": "/api/uploads/[filename]",
   "/api/verify-email/route": "/api/verify-email",
   "/demirkanmelis/page": "/demirkanmelis",
   "/forgot-password/page": "/forgot-password",

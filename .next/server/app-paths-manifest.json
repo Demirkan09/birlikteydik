@@ -24,6 +24,7 @@
   "/api/resend-verification/route": "app/api/resend-verification/route.js",
   "/api/reset-password/route": "app/api/reset-password/route.js",
   "/api/site-settings/route": "app/api/site-settings/route.js",
+  "/api/uploads/[filename]/route": "app/api/uploads/[filename]/route.js",
   "/api/verify-email/route": "app/api/verify-email/route.js",
   "/demirkanmelis/page": "app/demirkanmelis/page.js",
   "/forgot-password/page": "app/forgot-password/page.js",
