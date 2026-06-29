@@ -52,49 +52,55 @@ export async function POST(request: Request) {
 
     const user = userRes.rows[0];
 
-    if (type === "account") {
-      const token = generateSecureToken();
+    try {
+      if (type === "account") {
+        const token = generateSecureToken();
 
-      await pool.query(
-        `INSERT INTO password_reset_tokens
-           (user_id, token, expires_at, reset_type)
-         VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'account')`,
-        [user.id, token]
-      );
+        await pool.query(
+          `INSERT INTO password_reset_tokens
+             (user_id, token, expires_at, reset_type)
+           VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'account')`,
+          [user.id, token]
+        );
 
-      await sendAccountPasswordReset({
-        to: user.email,
-        name: user.name,
-        token,
-      });
-    } else {
-      // type === 'page'
-      const pageRes = await pool.query(
-        "SELECT id, page_slug FROM user_pages WHERE page_slug = $1 AND user_id = $2",
-        [pageSlug, user.id]
-      );
+        await sendAccountPasswordReset({
+          to: user.email,
+          name: user.name,
+          token,
+        });
+      } else {
+        // type === 'page'
+        const pageRes = await pool.query(
+          "SELECT id, page_slug FROM user_pages WHERE page_slug = $1 AND user_id = $2",
+          [pageSlug, user.id]
+        );
 
-      if ((pageRes.rowCount ?? 0) === 0) {
-        // Page not found for this user — return success silently
-        return successResponse;
+        if ((pageRes.rowCount ?? 0) === 0) {
+          // Page not found for this user — return success silently
+          return successResponse;
+        }
+
+        const page = pageRes.rows[0];
+        const token = generateSecureToken();
+
+        await pool.query(
+          `INSERT INTO password_reset_tokens
+             (user_id, token, expires_at, reset_type, page_slug)
+           VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'page_password', $3)`,
+          [user.id, token, page.page_slug]
+        );
+
+        await sendPagePasswordReset({
+          to: user.email,
+          name: user.name,
+          token,
+          pageSlug: page.page_slug,
+        });
       }
-
-      const page = pageRes.rows[0];
-      const token = generateSecureToken();
-
-      await pool.query(
-        `INSERT INTO password_reset_tokens
-           (user_id, token, expires_at, reset_type, page_slug)
-         VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'page_password', $3)`,
-        [user.id, token, page.page_slug]
-      );
-
-      await sendPagePasswordReset({
-        to: user.email,
-        name: user.name,
-        token,
-        pageSlug: page.page_slug,
-      });
+    } catch (mailErr) {
+      console.error("[forgot-password] SMTP hatası:", mailErr);
+      // E-posta gönderilemese dahi kullanıcı bilgisi sızdırmamak adına 
+      // sessiz başarı (successResponse) yanıtını dönüyoruz.
     }
 
     return successResponse;

@@ -69,34 +69,42 @@ export async function POST(request: Request) {
     const targetUser = targetRes.rows[0];
     const token = generateSecureToken();
 
-    if (resetType === "account") {
-      await pool.query(
-        `INSERT INTO password_reset_tokens
-           (user_id, token, expires_at, reset_type)
-         VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'account')`,
-        [targetUser.id, token]
-      );
+    try {
+      if (resetType === "account") {
+        await pool.query(
+          `INSERT INTO password_reset_tokens
+             (user_id, token, expires_at, reset_type)
+           VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'account')`,
+          [targetUser.id, token]
+        );
 
-      await sendAccountPasswordReset({
-        to: targetUser.email,
-        name: targetUser.name,
-        token,
-      });
-    } else {
-      // type === 'page'
-      await pool.query(
-        `INSERT INTO password_reset_tokens
-           (user_id, token, expires_at, reset_type, page_slug)
-         VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'page_password', $3)`,
-        [targetUser.id, token, pageSlug]
-      );
+        await sendAccountPasswordReset({
+          to: targetUser.email,
+          name: targetUser.name,
+          token,
+        });
+      } else {
+        // type === 'page'
+        await pool.query(
+          `INSERT INTO password_reset_tokens
+             (user_id, token, expires_at, reset_type, page_slug)
+           VALUES ($1, $2, NOW() + INTERVAL '1 hour', 'page_password', $3)`,
+          [targetUser.id, token, pageSlug]
+        );
 
-      await sendPagePasswordReset({
-        to: targetUser.email,
-        name: targetUser.name,
-        token,
-        pageSlug: pageSlug!,
-      });
+        await sendPagePasswordReset({
+          to: targetUser.email,
+          name: targetUser.name,
+          token,
+          pageSlug: pageSlug!,
+        });
+      }
+    } catch (mailErr: any) {
+      console.error("[send-reset-email] SMTP hatası:", mailErr);
+      return NextResponse.json(
+        { error: `E-posta gönderilemedi: ${mailErr.message || "Bağlantı zaman aşımı"}. Lütfen SMTP ayarlarını kontrol edin.` },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({

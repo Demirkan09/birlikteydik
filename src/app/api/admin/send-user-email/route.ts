@@ -52,11 +52,19 @@ export async function POST(request: Request) {
     const customizedBody = emailBody.replace(/{name}/g, targetUser.name || "Kullanıcımız").replace(/\n/g, "<br/>");
 
     // 5. Send e-mail
-    await sendCustomEmail({
-      to: targetUser.email,
-      subject: subject,
-      html: customizedBody,
-    });
+    try {
+      await sendCustomEmail({
+        to: targetUser.email,
+        subject: subject,
+        html: customizedBody,
+      });
+    } catch (mailErr: any) {
+      console.error("[send-user-email] SMTP hatası:", mailErr);
+      return NextResponse.json(
+        { error: `E-posta gönderilemedi: ${mailErr.message || "Bağlantı zaman aşımı"}. Lütfen SMTP ayarlarını ve ağ erişimini kontrol edin.` },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({
       message: "E-posta başarıyla gönderildi.",
