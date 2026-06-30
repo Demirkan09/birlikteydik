@@ -636,9 +636,28 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 }}
                               />
                             </div>
+
+                            {/* Özel Gün Tarihi Rengi */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Özel Gün Rengi</label>
+                              <div style={{ display: "flex", gap: "10px" }}>
+                                <input
+                                  type="color"
+                                  value={editConfig.specialDateColor || "#C9A84C"}
+                                  onChange={(e) => setEditConfig({ ...editConfig, specialDateColor: e.target.value })}
+                                  style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }}
+                                />
+                                <input
+                                  value={editConfig.specialDateColor || ""}
+                                  onChange={(e) => setEditConfig({ ...editConfig, specialDateColor: e.target.value })}
+                                  placeholder="Varsayılan"
+                                  style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                                />
+                              </div>
+                            </div>
                           </div>
 
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px", marginTop: "20px" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 240px", gap: "20px", marginTop: "20px" }}>
                             {/* Giriş Yazısı / Tagline */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                               <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Sayfa Giriş Cümlesi (Tagline)</label>
@@ -651,6 +670,25 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
                                 }}
                               />
+                            </div>
+
+                            {/* Tagline Rengi */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Giriş Cümlesi Rengi</label>
+                              <div style={{ display: "flex", gap: "10px" }}>
+                                <input
+                                  type="color"
+                                  value={editConfig.taglineColor || "#888888"}
+                                  onChange={(e) => setEditConfig({ ...editConfig, taglineColor: e.target.value })}
+                                  style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }}
+                                />
+                                <input
+                                  value={editConfig.taglineColor || ""}
+                                  onChange={(e) => setEditConfig({ ...editConfig, taglineColor: e.target.value })}
+                                  placeholder="Varsayılan"
+                                  style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                                />
+                              </div>
                             </div>
                           </div>
 

@@ -44,8 +44,8 @@ const templates = [
     {
     id: "premium-black",
     title: "Asil Siyah",
-    subtitle: "Siyahın Asilliği ve Hafif Sarı Tonlar",
-    accentColor: "#383838",
+    subtitle: "Asil ve Lüks",
+    accentColor: "#bdbdbd",
     tag: null,
     description: "Karanlığın en kusursuz siyahında saklı, sessiz ve derin bir bağlılık... Mat gece siyahı, loş ışıkta süzülen gölgeler, gizemli ve son derece romantik bir anı.",
     demoUrl: "/sablonlar/sablon-siyah",

@@ -22,6 +22,8 @@ interface TemplateConfig {
   bodyFont: "inter" | "lato" | "dm-sans";
   finalEnabled: boolean;
   finalHeading: string;
+  nameGradientStart: string;
+  nameGradientEnd: string;
 }
 
 interface CustomTemplate {
@@ -38,7 +40,7 @@ const DEFAULT_CONFIG: TemplateConfig = {
   particlesEnabled: true,
   particlesType: "hearts",
   particlesDensity: 20,
-  particlesColor: "",  // boşsa accentColor kullanılır
+  particlesColor: "",  // boşsa aksan rengi kullanılır
   musicWidgetEnabled: true,
   musicWidgetType: "vinyl",
   musicWidgetPosition: "bottom-left",
@@ -49,6 +51,8 @@ const DEFAULT_CONFIG: TemplateConfig = {
   bodyFont: "inter",
   finalEnabled: true,
   finalHeading: "Sonsuza Dek Birlikte",
+  nameGradientStart: "",
+  nameGradientEnd: "",
 };
 
 // ─── Yardımcı bileşenler ──────────────────────────────────────────────────────
@@ -158,7 +162,17 @@ function TemplatePreviewCard({ config }: { config: TemplateConfig }) {
       <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 80% 55% at 50% -5%, ${config.accentColor}33 0%, transparent 60%)` }} />
       {/* Fake isim */}
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>
-        <div style={{ fontSize: "28px", color: config.accentColor, fontFamily: config.headingFont === "pinyon" ? "'Pinyon Script', cursive" : "serif", opacity: 0.9 }}>Sen & Ben</div>
+        <div style={{
+          fontSize: "28px",
+          background: `linear-gradient(160deg, ${config.nameGradientStart || "#ffffff"} 0%, ${config.nameGradientEnd || config.accentColor} 100%)`,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          fontFamily: config.headingFont === "pinyon" ? "'Pinyon Script', cursive" : "serif",
+          opacity: 0.95
+        }}>
+          Sen & Ben
+        </div>
         <div style={{ width: "40px", height: "1px", background: `${config.accentColor}66` }} />
         <div style={{ fontSize: "9px", letterSpacing: "0.4em", color: `${config.accentColor}88`, textTransform: "uppercase" as const, fontFamily: "sans-serif" }}>
           {config.particlesType !== "none" && config.particlesEnabled ? `✦ ${config.particlesType}` : "—"} · {config.memoryCardStyle}
@@ -405,6 +419,16 @@ export function TemplateBuilderTab({ adminEmail, onTemplateCreated }: TemplateBu
             <p style={sectionTitleStyle}>🎨 Renkler</p>
             <ColorField label="Arkaplan Rengi" value={config.bgColor} onChange={(v) => updateConfig("bgColor", v)} />
             <ColorField label="Aksan Rengi" value={config.accentColor} onChange={(v) => updateConfig("accentColor", v)} />
+            <div style={{ marginTop: "16px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "16px" }}>
+              <p style={{ ...sectionTitleStyle, fontSize: "11px", marginBottom: "12px" }}>✍️ İsimlerin Degrade Renkleri</p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <ColorField label="Degrade Başlangıç" value={config.nameGradientStart || "#ffffff"} onChange={(v) => updateConfig("nameGradientStart", v)} />
+                <ColorField label="Degrade Bitiş" value={config.nameGradientEnd || config.accentColor} onChange={(v) => updateConfig("nameGradientEnd", v)} />
+              </div>
+              <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: C.muted, marginTop: "4px" }}>
+                Çift isimlerinin degrade geçiş renklerini belirler.
+              </p>
+            </div>
           </div>
 
           {/* Partiküller */}

@@ -33,6 +33,11 @@ export const defaultConfig = {
   // Tipografi
   headingFont: "cormorant" as "cormorant" | "playfair" | "cinzel" | "pinyon",
   bodyFont: "inter" as "inter" | "lato" | "dm-sans",
+  // Renk Özelleştirmeleri
+  taglineColor: "" as string,
+  specialDateColor: "" as string,
+  nameGradientStart: "" as string,
+  nameGradientEnd: "" as string,
 };
 
 export type TemplateConfig = typeof defaultConfig;
@@ -537,7 +542,7 @@ export default function BosTemplate({
               <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
                 <div style={{ width: "28px", height: "1px", background: `${ac}55` }} />
                 <Heart size={9} fill={ac} stroke="none" className="animate-pulse" style={{ opacity: 0.75 }} />
-                <span style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.48em", textTransform: "uppercase", color: `${ac}bb` }}>{config.specialDate}</span>
+                <span style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.48em", textTransform: "uppercase", color: config.specialDateColor || `${ac}bb` }}>{config.specialDate}</span>
                 <Heart size={9} fill={ac} stroke="none" className="animate-pulse" style={{ opacity: 0.75 }} />
                 <div style={{ width: "28px", height: "1px", background: `${ac}55` }} />
               </motion.div>
@@ -547,7 +552,7 @@ export default function BosTemplate({
                 fontFamily: hFont,
                 fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.8, 7),
                 fontWeight: 400, lineHeight: 1.2, paddingBottom: "0.1em", letterSpacing: "0.04em",
-                background: `linear-gradient(160deg, rgba(255,255,255,0.96) 0%, ${ac}cc 55%, ${ac}88 100%)`,
+                background: `linear-gradient(160deg, ${config.nameGradientStart || "rgba(255,255,255,0.96)"} 0%, ${config.nameGradientEnd || `${ac}cc`} 100%)`,
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 whiteSpace: "pre-line",
               }}>
@@ -562,7 +567,7 @@ export default function BosTemplate({
               </motion.div>
 
               {/* Tagline */}
-              <motion.p variants={fadeUp} style={{ fontFamily: bFont, fontSize: "0.78rem", color: "rgba(255,255,255,0.5)", letterSpacing: "0.06em", lineHeight: 1.95, maxWidth: "26rem", marginTop: "8px", marginBottom: "40px" }}>
+              <motion.p variants={fadeUp} style={{ fontFamily: bFont, fontSize: "0.78rem", color: config.taglineColor || "rgba(255,255,255,0.5)", letterSpacing: "0.06em", lineHeight: 1.95, maxWidth: "26rem", marginTop: "8px", marginBottom: "40px" }}>
                 {config.tagline}
               </motion.p>
             </motion.div>
@@ -623,10 +628,10 @@ export default function BosTemplate({
                   <Heart size={12} fill={ac} stroke="none" style={{ opacity: 0.85, filter: `drop-shadow(0 0 8px ${ac}cc)` }} />
                   <Heart size={6} fill={ac} stroke="none" style={{ opacity: 0.35 }} />
                 </motion.div>
-                <motion.div variants={fadeUp} style={{ fontFamily: bFont, fontSize: "11px", letterSpacing: "0.42em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)", whiteSpace: "pre-line", lineHeight: 1.5 }}>
+                 <motion.div variants={fadeUp} style={{ fontFamily: bFont, fontSize: "11px", letterSpacing: "0.42em", textTransform: "uppercase", color: config.taglineColor || "rgba(255,255,255,0.6)", whiteSpace: "pre-line", lineHeight: 1.5 }}>
                   {config.coupleNames}
                 </motion.div>
-                <motion.span variants={fadeIn} style={{ fontFamily: "monospace", fontSize: "9px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.3em", textTransform: "uppercase" }}>
+                <motion.span variants={fadeIn} style={{ fontFamily: "monospace", fontSize: "9px", color: config.specialDateColor || "rgba(255,255,255,0.25)", letterSpacing: "0.3em", textTransform: "uppercase" }}>
                   {config.specialDate}
                 </motion.span>
               </motion.div>

@@ -1,14 +1,14 @@
 [
   {
     "route": "/[slug]",
-    "firstLoadUncompressedJsBytes": 984600,
+    "firstLoadUncompressedJsBytes": 984936,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\041uw4qhrzbgb.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
       ".next\\static\\chunks\\0b_-mgibsb0aj.js",
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\1vdcgum2h430v.js",
-      ".next\\static\\chunks\\0nardq6hxfzhf.js",
+      ".next\\static\\chunks\\0pdgdlvlzqh11.js",
       ".next\\static\\chunks\\1bjkk70ym_-g4.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
@@ -19,14 +19,14 @@
   },
   {
     "route": "/admin",
-    "firstLoadUncompressedJsBytes": 794912,
+    "firstLoadUncompressedJsBytes": 797482,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\041uw4qhrzbgb.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
       ".next\\static\\chunks\\0b_-mgibsb0aj.js",
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\1vdcgum2h430v.js",
-      ".next\\static\\chunks\\14d3cbgvwf1ff.js",
+      ".next\\static\\chunks\\2h72gza2m-02u.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
@@ -70,7 +70,7 @@
   },
   {
     "route": "/sablonlar/sablon-bos",
-    "firstLoadUncompressedJsBytes": 732622,
+    "firstLoadUncompressedJsBytes": 732958,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\041uw4qhrzbgb.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
@@ -78,7 +78,7 @@
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\1vdcgum2h430v.js",
       ".next\\static\\chunks\\02k2tu9cwhjsx.js",
-      ".next\\static\\chunks\\0nardq6hxfzhf.js",
+      ".next\\static\\chunks\\0pdgdlvlzqh11.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
@@ -309,14 +309,14 @@
   },
   {
     "route": "/sablonlar",
-    "firstLoadUncompressedJsBytes": 711270,
+    "firstLoadUncompressedJsBytes": 711243,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\041uw4qhrzbgb.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
       ".next\\static\\chunks\\0b_-mgibsb0aj.js",
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\1vdcgum2h430v.js",
-      ".next\\static\\chunks\\1dfcr1a1hbosf.js",
+      ".next\\static\\chunks\\2a88y5xrz5j3-.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
