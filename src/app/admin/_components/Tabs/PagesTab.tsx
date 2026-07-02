@@ -1268,7 +1268,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         value={memory.senderName ?? ""}
                                         onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], senderName: e.target.value }; return u; })}
                                         style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", boxSizing: "border-box" }}
-                                        placeholder="İsmin"
+                                        placeholder="Ayşe'den"
                                       />
                                     </div>
                                     <div>

@@ -581,7 +581,7 @@ function LetterBlock({ memory, accentColor, bodyFont, headingFont }: { memory: a
           padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: `${accentColor}88` }}>
-            {memory.senderName ? `${memory.senderName}'dan` : "Senden"}
+            {memory.senderName || "Senden"}
           </span>
           <motion.span
             animate={isOpen ? { rotate: 180 } : { rotate: 0 }}
