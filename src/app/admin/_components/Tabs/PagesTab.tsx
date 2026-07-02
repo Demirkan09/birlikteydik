@@ -17,6 +17,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [pagesTab, setPagesTab] = useState<"published" | "drafts">("published");
   const [pagesLoading, setPagesLoading] = useState(false);
   const [selectedEditSlug, setSelectedEditSlug] = useState("");
+  const [editPageSlug, setEditPageSlug] = useState("");
   
   // Editor state
   const [editTemplateId, setEditTemplateId] = useState("klasik-retro");
@@ -135,6 +136,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
       if (res.ok && data.pageSettings) {
         const ps = data.pageSettings;
         setSelectedEditSlug(ps.pageSlug);
+        setEditPageSlug(ps.pageSlug);
         setEditTemplateId(ps.templateId);
         
         let baseConfig = {};
@@ -226,6 +228,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
           adminEmail,
           action: "update",
           pageSlug: selectedEditSlug,
+          newPageSlug: editPageSlug,
           templateId: editTemplateId,
           config: editConfig,
           memories: editMemories,
@@ -239,6 +242,10 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
       }
       setEditIsPublished(isPub);
       setEditorSuccess(isPub ? "Sayfa başarıyla yayına alındı! 🎉" : "Düzenlemeler kaydedildi (Taslak).");
+      if (data.pageSlug) {
+        setSelectedEditSlug(data.pageSlug);
+        setEditPageSlug(data.pageSlug);
+      }
       await fetchAllPages();
     } catch {
       setEditorError("Sunucuya bağlanılamadı.");
@@ -630,6 +637,36 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           
                           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
                             
+                            {/* Sayfa Adresi (Slug) */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Sayfa Adresi (Link)</label>
+                              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                <span style={{ fontSize: "13px", color: C.muted }}>birlikteydik.com/</span>
+                                <input
+                                  value={editPageSlug}
+                                  disabled={editIsPublished}
+                                  onChange={(e) => setEditPageSlug(e.target.value.toLowerCase().replace(/\s+/g, ""))}
+                                  placeholder="musteri-linki"
+                                  style={{
+                                    flex: 1,
+                                    padding: "12px",
+                                    borderRadius: "10px",
+                                    background: editIsPublished ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.03)",
+                                    border: `1px solid ${C.border}`,
+                                    color: editIsPublished ? C.muted : C.text,
+                                    outline: "none",
+                                    fontSize: "13px",
+                                    cursor: editIsPublished ? "not-allowed" : "text"
+                                  }}
+                                />
+                              </div>
+                              {editIsPublished && (
+                                <span style={{ fontSize: "10px", color: C.muted, marginTop: "2px" }}>
+                                  ℹ Sayfa adresini değiştirmek için önce sayfayı taslağa almalısınız.
+                                </span>
+                              )}
+                            </div>
+
                             {/* Şablon Değiştir */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                               <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Şablon</label>

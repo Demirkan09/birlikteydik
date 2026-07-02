@@ -193,10 +193,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { adminEmail, action, pageSlug, templateId, config, memories, isPublished } = body as {
+    const { adminEmail, action, pageSlug, newPageSlug, templateId, config, memories, isPublished } = body as {
       adminEmail?: string;
       action?: "create" | "update";
       pageSlug?: string;
+      newPageSlug?: string;
       templateId?: string;
       config?: any;
       memories?: any;
@@ -312,13 +313,66 @@ export async function POST(request: Request) {
       }
 
       // Update the page settings
-      const result = await pool.query(
-        `UPDATE page_settings
-         SET template_id = $1, config = $2, memories = $3, is_published = $4
-         WHERE page_slug = $5
-         RETURNING id`,
-        [templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, cleanSlug]
-      );
+      let cleanNewSlug = cleanSlug;
+      let slugChanged = false;
+      if (newPageSlug && newPageSlug.trim().toLowerCase().replace(/\s+/g, "") !== cleanSlug) {
+        cleanNewSlug = newPageSlug.trim().toLowerCase().replace(/\s+/g, "");
+        slugChanged = true;
+        if (!/^[a-z0-9-]+$/.test(cleanNewSlug)) {
+          return NextResponse.json({ error: "Yeni sayfa adresi sadece küçük harf, rakam ve tire içerebilir." }, { status: 400 });
+        }
+        // Check if new slug is already taken
+        const checkRes = await pool.query(
+          "SELECT id FROM page_settings WHERE page_slug = $1",
+          [cleanNewSlug]
+        );
+        if ((checkRes.rowCount ?? 0) > 0) {
+          return NextResponse.json({ error: "Bu yeni sayfa adresi zaten kullanımda." }, { status: 409 });
+        }
+      }
+
+      let result;
+      if (slugChanged) {
+        // Run transaction to rename slug everywhere
+        await pool.query("BEGIN");
+        try {
+          // Update activation_codes
+          await pool.query(
+            "UPDATE activation_codes SET page_slug = $1 WHERE page_slug = $2",
+            [cleanNewSlug, cleanSlug]
+          );
+          // Update user_pages
+          await pool.query(
+            "UPDATE user_pages SET page_slug = $1 WHERE page_slug = $2",
+            [cleanNewSlug, cleanSlug]
+          );
+          // Update quiz_answers
+          await pool.query(
+            "UPDATE quiz_answers SET page_slug = $1 WHERE page_slug = $2",
+            [cleanNewSlug, cleanSlug]
+          );
+          // Update page_settings
+          result = await pool.query(
+            `UPDATE page_settings
+             SET page_slug = $1, template_id = $2, config = $3, memories = $4, is_published = $5
+             WHERE page_slug = $6
+             RETURNING id`,
+            [cleanNewSlug, templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, cleanSlug]
+          );
+          await pool.query("COMMIT");
+        } catch (transErr) {
+          await pool.query("ROLLBACK");
+          throw transErr;
+        }
+      } else {
+        result = await pool.query(
+          `UPDATE page_settings
+           SET template_id = $1, config = $2, memories = $3, is_published = $4
+           WHERE page_slug = $5
+           RETURNING id`,
+          [templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, cleanSlug]
+        );
+      }
 
       if ((result.rowCount ?? 0) === 0) {
         return NextResponse.json({ error: "Güncellenecek sayfa bulunamadı." }, { status: 404 });
@@ -326,13 +380,16 @@ export async function POST(request: Request) {
 
       try {
         revalidatePath(`/${cleanSlug}`);
+        if (slugChanged) {
+          revalidatePath(`/${cleanNewSlug}`);
+        }
       } catch (err) {
         console.error("[Revalidate] Hata:", err);
       }
 
       return NextResponse.json({
         message: isPublished ? "Sayfa başarıyla yayına alındı! 🎉" : "Düzenlemeler kaydedildi (Taslak).",
-        pageSlug: cleanSlug,
+        pageSlug: cleanNewSlug,
       });
     }
 
