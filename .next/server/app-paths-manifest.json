@@ -21,6 +21,7 @@
   "/api/login/route": "app/api/login/route.js",
   "/api/page-password/route": "app/api/page-password/route.js",
   "/api/profile/route": "app/api/profile/route.js",
+  "/api/quiz-answers/route": "app/api/quiz-answers/route.js",
   "/api/register/route": "app/api/register/route.js",
   "/api/resend-verification/route": "app/api/resend-verification/route.js",
   "/api/reset-password/route": "app/api/reset-password/route.js",

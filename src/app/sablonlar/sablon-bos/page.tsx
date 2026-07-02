@@ -31,13 +31,14 @@ export const defaultConfig = {
   memoryCardLayout: "vertical" as "vertical" | "grid",
   polaroidTilt: true,
   // Tipografi
-  headingFont: "cormorant" as "cormorant" | "playfair" | "cinzel" | "pinyon",
-  bodyFont: "inter" as "inter" | "lato" | "dm-sans",
+  headingFont: "cormorant" as "cormorant" | "playfair" | "cinzel" | "pinyon" | "vt323" | "press-start",
+  bodyFont: "inter" as "inter" | "lato" | "dm-sans" | "vt323" | "press-start",
   // Renk Özelleştirmeleri
   taglineColor: "" as string,
   specialDateColor: "" as string,
   nameGradientStart: "" as string,
   nameGradientEnd: "" as string,
+  finalHeadingColor: "" as string,
 };
 
 export type TemplateConfig = typeof defaultConfig;
@@ -60,12 +61,26 @@ const HEADING_FONT: Record<string, string> = {
   playfair: "'Playfair Display', Georgia, serif",
   cinzel: "'Cinzel', 'Times New Roman', serif",
   pinyon: "'Pinyon Script', cursive",
+  vt323: "'VT323', monospace",
+  "press-start": "'Press Start 2P', monospace",
 };
 const BODY_FONT: Record<string, string> = {
   inter: "var(--font-inter), 'Inter', sans-serif",
   lato: "var(--font-lato), 'Lato', sans-serif",
   "dm-sans": "'DM Sans', sans-serif",
+  vt323: "'VT323', monospace",
+  "press-start": "'Press Start 2P', monospace",
 };
+
+function hexToRgb(hex: string) {
+  let cleanHex = (hex || "#C9A84C").replace("#", "");
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split("").map((c) => c + c).join("");
+  }
+  const num = parseInt(cleanHex, 16) || 0;
+  return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🔢  YARDIMCI
@@ -333,6 +348,298 @@ function MusicWidget({ isPlaying, toggleMusic, accentColor, type, position }: { 
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ⏱  ZAMAN SAYACI BİLEŞENİ
+// ─────────────────────────────────────────────────────────────────────────────
+function CountdownBlock({ memory, accentColor, bodyFont, headingFont }: { memory: any; accentColor: string; bodyFont: string; headingFont: string }) {
+  const [elapsed, setElapsed] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const start = memory.startDate ? new Date(memory.startDate).getTime() : Date.now();
+    const tick = () => {
+      const diff = Math.max(0, Date.now() - start);
+      const totalSecs = Math.floor(diff / 1000);
+      setElapsed({
+        days:    Math.floor(totalSecs / 86400),
+        hours:   Math.floor((totalSecs % 86400) / 3600),
+        minutes: Math.floor((totalSecs % 3600) / 60),
+        seconds: totalSecs % 60,
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [memory.startDate]);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <motion.div
+      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
+      variants={fadeUp}
+      style={{
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "20px",
+        padding: "36px 24px", border: `1px solid ${accentColor}22`,
+        background: "rgba(255,255,255,0.02)", borderRadius: "4px", textAlign: "center",
+      }}
+    >
+      {memory.label && (
+        <div style={{ fontFamily: bodyFont, fontSize: "10px", letterSpacing: "0.4em", textTransform: "uppercase", color: `${accentColor}99` }}>
+          {memory.label}
+        </div>
+      )}
+      {/* Sayı bloğu */}
+      <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+        {[
+          { val: elapsed.days,    unit: "Gün" },
+          { val: elapsed.hours,   unit: "Saat" },
+          { val: elapsed.minutes, unit: "Dakika" },
+          { val: elapsed.seconds, unit: "Saniye" },
+        ].map(({ val, unit }, i) => (
+          <div key={unit} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "48px" }}>
+              <motion.span
+                key={val}
+                initial={{ opacity: 0.5, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                style={{ fontFamily: headingFont, fontSize: "clamp(2rem, 6vw, 3.2rem)", fontWeight: 400, color: accentColor, lineHeight: 1 }}
+              >
+                {pad(val)}
+              </motion.span>
+              <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginTop: "6px" }}>{unit}</span>
+            </div>
+            {i < 3 && <span style={{ color: `${accentColor}55`, fontSize: "1.5rem", fontFamily: headingFont, marginTop: "-12px" }}>·</span>}
+          </div>
+        ))}
+      </div>
+      {memory.description && (
+        <p style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, maxWidth: "280px" }}>{memory.description}</p>
+      )}
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ❓  ANKET / OYUN BİLEŞENİ
+// ─────────────────────────────────────────────────────────────────────────────
+function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug }: { memory: any; accentColor: string; bodyFont: string; headingFont: string; pageSlug?: string }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleSelect = async (option: string) => {
+    if (selected !== null) return; // once answered, locked
+    setSelected(option);
+    setSaving(true);
+    try {
+      await fetch("/api/quiz-answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pageSlug: pageSlug ?? window.location.pathname.replace("/", ""),
+          componentId: memory.id,
+          question: memory.question,
+          selectedOption: option,
+        }),
+      });
+      setSaved(true);
+    } catch { /* noop */ } finally {
+      setSaving(false);
+    }
+  };
+
+  const options: string[] = Array.isArray(memory.options) ? memory.options : [];
+
+  return (
+    <motion.div
+      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
+      variants={stagger}
+      style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "32px 24px", border: `1px solid ${accentColor}22`, background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}
+    >
+      {/* Soru */}
+      <motion.div variants={fadeUp} style={{ display: "flex", flexDirection: "column", gap: "8px", textAlign: "center" }}>
+        <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.4em", textTransform: "uppercase", color: `${accentColor}77` }}>
+          Bana Sor
+        </span>
+        <h3 style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 4vw, 1.9rem)", fontWeight: 400, color: "#fff", lineHeight: 1.3, letterSpacing: "0.01em" }}>
+          {memory.question || "Soru henüz eklenmedi"}
+        </h3>
+      </motion.div>
+
+      {/* Seçenekler */}
+      <motion.div variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {options.map((opt, i) => {
+          const isSelected = selected === opt;
+          return (
+            <motion.button
+              key={i}
+              variants={fadeUp}
+              type="button"
+              onClick={() => handleSelect(opt)}
+              disabled={selected !== null}
+              whileHover={selected === null ? { scale: 1.01 } : {}}
+              whileTap={selected === null ? { scale: 0.99 } : {}}
+              style={{
+                padding: "14px 20px", border: `1px solid ${isSelected ? accentColor : `${accentColor}33`}`,
+                borderRadius: "4px", background: isSelected ? `${accentColor}18` : "transparent",
+                color: isSelected ? accentColor : "rgba(255,255,255,0.65)",
+                fontFamily: bodyFont, fontSize: "0.9rem", textAlign: "left",
+                cursor: selected !== null ? "default" : "pointer",
+                transition: "all 0.2s ease",
+                display: "flex", alignItems: "center", gap: "12px",
+              }}
+            >
+              <span style={{
+                width: "22px", height: "22px", borderRadius: "50%", flexShrink: 0,
+                border: `1px solid ${isSelected ? accentColor : `${accentColor}44`}`,
+                background: isSelected ? accentColor : "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "11px", color: isSelected ? "#000" : `${accentColor}88`,
+                transition: "all 0.2s",
+              }}>
+                {isSelected ? "✓" : String.fromCharCode(65 + i)}
+              </span>
+              {opt}
+            </motion.button>
+          );
+        })}
+      </motion.div>
+
+      {/* Teşekkür mesajı */}
+      {saved && (
+        <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
+          style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: `${accentColor}99`, textAlign: "center", letterSpacing: "0.06em" }}>
+          Cevabın kaydedildi ♡
+        </motion.p>
+      )}
+      {saving && (
+        <p style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: "rgba(255,255,255,0.3)", textAlign: "center" }}>Kaydediliyor...</p>
+      )}
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ✉  MEKTUP (ZARF) BİLEŞENİ
+// ─────────────────────────────────────────────────────────────────────────────
+function LetterBlock({ memory, accentColor, bodyFont, headingFont }: { memory: any; accentColor: string; bodyFont: string; headingFont: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
+      variants={fadeUp}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0px" }}
+    >
+      {/* Zarf */}
+      <div
+        style={{ position: "relative", width: "260px", cursor: "pointer", userSelect: "none" }}
+        onClick={() => setIsOpen((o) => !o)}
+      >
+        {/* Zarf gövdesi */}
+        <div style={{
+          width: "100%", paddingBottom: "65%", position: "relative",
+          background: `linear-gradient(160deg, ${accentColor}18 0%, rgba(255,255,255,0.04) 100%)`,
+          border: `1px solid ${accentColor}44`, borderRadius: "4px 4px 0 0",
+          boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px ${accentColor}11`,
+          overflow: "hidden",
+        }}>
+          {/* Zarf ortası mühür */}
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <motion.div
+              animate={isOpen ? { scale: 0.8, opacity: 0 } : { scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                width: "40px", height: "40px", borderRadius: "50%",
+                border: `1px solid ${accentColor}66`, display: "flex", alignItems: "center", justifyContent: "center",
+                background: `${accentColor}12`,
+              }}
+            >
+              <Heart size={16} fill={accentColor} stroke="none" />
+            </motion.div>
+          </div>
+          {/* Zarf kapak üçgeni */}
+          <motion.div
+            animate={isOpen ? { rotateX: 180, zIndex: 2 } : { rotateX: 0, zIndex: 0 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            style={{
+              position: "absolute", top: 0, left: 0, right: 0,
+              height: "50%", transformOrigin: "top center", perspective: 400,
+              background: `linear-gradient(to bottom, ${accentColor}22 0%, ${accentColor}08 100%)`,
+              borderBottom: `1px solid ${accentColor}33`,
+              clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+            }}
+          />
+        </div>
+
+        {/* Zarf alt kısım */}
+        <div style={{
+          background: `linear-gradient(to bottom, ${accentColor}11, rgba(255,255,255,0.02))`,
+          border: `1px solid ${accentColor}44`, borderTop: "none", borderRadius: "0 0 4px 4px",
+          padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: `${accentColor}88` }}>
+            {memory.senderName ? `${memory.senderName}'dan` : "Senden"}
+          </span>
+          <motion.span
+            animate={isOpen ? { rotate: 180 } : { rotate: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ color: `${accentColor}88`, fontSize: "12px" }}
+          >
+            ▾
+          </motion.span>
+        </div>
+      </div>
+
+      {/* Mektup içeriği */}
+      <motion.div
+        initial={false}
+        animate={isOpen ? { height: "auto", opacity: 1, y: 0 } : { height: 0, opacity: 0, y: -8 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        style={{ width: "260px", overflow: "hidden" }}
+      >
+        <div style={{
+          background: "#f5f0e8", padding: "28px 24px 32px",
+          borderRadius: "0 0 4px 4px", border: `1px solid ${accentColor}22`, borderTop: "none",
+        }}>
+          {/* Çizgili kağıt efekti */}
+          <div style={{
+            backgroundImage: "repeating-linear-gradient(transparent, transparent 23px, rgba(0,0,0,0.08) 24px)",
+            padding: "4px 0",
+          }}>
+            {memory.title && (
+              <div style={{ fontFamily: headingFont, fontSize: "1.2rem", color: "#2a1a0f", marginBottom: "12px", fontStyle: "italic" }}>
+                {memory.title}
+              </div>
+            )}
+            <p style={{ fontFamily: "'Lato', sans-serif", fontSize: "0.85rem", color: "#3a2a1f", lineHeight: "24px", whiteSpace: "pre-wrap" }}>
+              {memory.content || memory.description || "..."}
+            </p>
+            {memory.senderName && (
+              <div style={{ fontFamily: headingFont, fontSize: "1rem", color: "#5a3a2f", marginTop: "20px", textAlign: "right", fontStyle: "italic" }}>
+                — {memory.senderName}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Tıkla butonu ipucu */}
+      {!isOpen && (
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+          style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: `${accentColor}55`, marginTop: "12px" }}
+        >
+          Zarfı Aç ↑
+        </motion.p>
+      )}
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 📸  CONTEXT
 // ─────────────────────────────────────────────────────────────────────────────
 const TemplateContext = createContext<{ config: TemplateConfig; memories: typeof defaultMemories } | null>(null);
@@ -359,11 +666,11 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont }: { memor
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: "320px", gap: "12px" }}>
         <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div style={{ width: "28px", height: "1px", background: `${accentColor}55` }} />
-          <span style={{ fontFamily: bodyFont, fontSize: "9px", color: `${accentColor}99`, letterSpacing: "0.3em", textTransform: "uppercase" }}>{memory.date}</span>
+          <span style={{ fontFamily: bodyFont, fontSize: "9px", color: accentColor, letterSpacing: "0.3em", textTransform: "uppercase" }}>{memory.date}</span>
           <div style={{ width: "28px", height: "1px", background: `${accentColor}55` }} />
         </motion.div>
-        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.55rem, 3vw, 2.1rem)", fontWeight: 400, color: "#FFFFFF", lineHeight: 1.2, letterSpacing: "0.02em" }}>{memory.title}</motion.h3>
-        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.875rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.85, fontWeight: 300 }}>{memory.description}</motion.p>
+        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.55rem, 3vw, 2.1rem)", fontWeight: 400, color: accentColor, lineHeight: 1.2, letterSpacing: "0.02em" }}>{memory.title}</motion.h3>
+        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.875rem", color: accentColor, opacity: 0.85, lineHeight: 1.85, fontWeight: 300 }}>{memory.description}</motion.p>
         <motion.div variants={fadeIn} style={{ width: "20px", height: "1px", background: `${accentColor}44` }} />
       </div>
     </motion.div>
@@ -402,16 +709,16 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
           )}
         </div>
         <div style={{ paddingTop: "14px", paddingLeft: "6px" }}>
-          <div style={{ fontFamily: headingFont, fontSize: "22px", color: "#222", lineHeight: 1.2 }}>
+          <div style={{ fontFamily: headingFont, fontSize: "22px", color: accentColor, lineHeight: 1.2 }}>
             {memory.caption || memory.title}
           </div>
-          <div style={{ fontFamily: bodyFont, fontSize: "8px", color: "#333", opacity: 0.6, letterSpacing: "0.2em", marginTop: "5px", textTransform: "uppercase" }}>{memory.date}</div>
+          <div style={{ fontFamily: bodyFont, fontSize: "8px", color: accentColor, opacity: 0.8, letterSpacing: "0.2em", marginTop: "5px", textTransform: "uppercase" }}>{memory.date}</div>
         </div>
       </motion.div>
       <motion.div variants={stagger} style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "8px", maxWidth: "280px" }}>
-        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 3vw, 1.8rem)", fontWeight: 400, color: "#FFFFFF", lineHeight: 1.2 }}>{memory.title}</motion.h3>
+        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 3vw, 1.8rem)", fontWeight: 400, color: accentColor, lineHeight: 1.2 }}>{memory.title}</motion.h3>
         {memory.description && (
-          <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.8 }}>{memory.description}</motion.p>
+          <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: accentColor, opacity: 0.85, lineHeight: 1.8 }}>{memory.description}</motion.p>
         )}
       </motion.div>
     </motion.div>
@@ -435,14 +742,14 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont }: { m
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
             <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px" }}>
-              <div style={{ fontFamily: bodyFont, fontSize: "8px", color: `${accentColor}cc`, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "4px" }}>{memory.date}</div>
-              <div style={{ fontFamily: headingFont, fontSize: "1.4rem", color: "#fff", lineHeight: 1.2 }}>{memory.title}</div>
+              <div style={{ fontFamily: bodyFont, fontSize: "8px", color: accentColor, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "4px" }}>{memory.date}</div>
+              <div style={{ fontFamily: headingFont, fontSize: "1.4rem", color: accentColor, lineHeight: 1.2 }}>{memory.title}</div>
             </div>
           </>
         )}
       </motion.div>
       {memory.description && (
-        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.8, paddingLeft: "4px", borderLeft: `2px solid ${accentColor}55` }}>
+        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: accentColor, opacity: 0.85, lineHeight: 1.8, paddingLeft: "4px", borderLeft: `2px solid ${accentColor}55` }}>
           {memory.description}
         </motion.p>
       )}
@@ -456,9 +763,11 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont }: { m
 export default function BosTemplate({
   config: propConfig,
   memories: propMemories,
+  pageSlug,
 }: {
   config?: Partial<TemplateConfig>;
   memories?: Array<typeof defaultMemories[0] & { video?: string; caption?: string }>;
+  pageSlug?: string;
 } = {}) {
   const config: TemplateConfig = { ...defaultConfig, ...(propConfig ?? {}) };
   const memories = propMemories ?? defaultMemories;
@@ -509,6 +818,20 @@ export default function BosTemplate({
   };
 
   const renderMemoryCard = (memory: any, i: number) => {
+    const type: string = memory.type ?? "photo";
+
+    // Yeni bileşen tipleri
+    if (type === "countdown") {
+      return <CountdownBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
+    }
+    if (type === "quiz") {
+      return <QuizBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} pageSlug={pageSlug} />;
+    }
+    if (type === "letter") {
+      return <LetterBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
+    }
+
+    // Klasik fotoğraf/video kartları
     if (config.memoryCardStyle === "polaroid") {
       return <PolaroidMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} tiltEnabled={config.polaroidTilt} />;
     }
@@ -518,17 +841,37 @@ export default function BosTemplate({
     return <PlainMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
   };
 
+  const isArcade = hFont.includes("Press Start") || hFont.includes("VT323") || bFont.includes("Press Start") || bFont.includes("VT323");
+
   return (
     <TemplateContext.Provider value={{ config, memories }}>
-      <main className="min-h-screen overflow-x-hidden" style={{ background: config.bgColor ?? "#09090b", color: "#FFFFFF", fontFamily: bFont, position: "relative" }}>
+      {/* Google Fonts Import for retro arcade */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+        @keyframes scanMove {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 32px; }
+        }
+      ` }} />
+
+      <main className="min-h-screen overflow-x-hidden" style={{ background: config.bgColor ?? "#09090b", color: isArcade ? ac : "#FFFFFF", fontFamily: bFont, position: "relative" }}>
+        {/* Arcade Scanlines */}
+        {isArcade && (
+          <div className="fixed inset-0 pointer-events-none z-30" style={{ backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px)", animation: "scanMove 8s linear infinite" }} />
+        )}
+
         {/* Arka plan gradient — zIndex 0, partiküller 1'de bunun üzerinde görünür */}
-        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, background: `radial-gradient(ellipse 80% 55% at 50% -5%, ${ac}22 0%, transparent 60%), radial-gradient(ellipse 60% 45% at 85% 80%, ${ac}0d 0%, transparent 60%), linear-gradient(to bottom, ${config.bgColor ?? "#09090b"}, ${config.bgColor ?? "#09090b"})` }} />
+        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, background: isArcade ? (config.bgColor ?? "#111111") : `radial-gradient(ellipse 80% 55% at 50% -5%, ${ac}22 0%, transparent 60%), radial-gradient(ellipse 60% 45% at 85% 80%, ${ac}0d 0%, transparent 60%), linear-gradient(to bottom, ${config.bgColor ?? "#09090b"}, ${config.bgColor ?? "#09090b"})` }} />
+
 
         {/* Partiküller */}
         {renderParticles()}
 
         {/* Mobil merkez çerçeve */}
         <div className="relative w-full max-w-[480px] mx-auto min-h-screen flex flex-col" style={{ zIndex: 10, borderLeft: `1px solid ${ac}12`, borderRight: `1px solid ${ac}12` }}>
+          {isArcade && (
+            <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: `linear-gradient(rgba(${hexToRgb(ac)},0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(${hexToRgb(ac)},0.03) 1px, transparent 1px)`, backgroundSize: "32px 32px", zIndex: 0 }} />
+          )}
 
           {/* Müzik Widget */}
           {config.musicWidgetEnabled && config.musicWidgetType !== "hidden" && (
@@ -580,7 +923,7 @@ export default function BosTemplate({
               <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}>
                 <ChevronDown size={18} style={{ color: ac }} />
               </motion.div>
-              <span style={{ fontFamily: bFont, fontSize: "8px", letterSpacing: "0.38em", textTransform: "uppercase", color: `${ac}99` }}>Kaydır</span>
+              <span style={{ fontFamily: bFont, fontSize: "8px", letterSpacing: "0.38em", textTransform: "uppercase", color: ac }}>Kaydır</span>
             </motion.div>
           </section>
 
@@ -592,7 +935,7 @@ export default function BosTemplate({
             <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: `${ac}99`, marginBottom: "12px" }}>
               Birlikte Yazdığımız
             </motion.span>
-            <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: "#FFFFFF", letterSpacing: "0.04em", lineHeight: 1.2 }}>
+            <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: ac, letterSpacing: "0.04em", lineHeight: 1.2 }}>
               Hikayemiz
             </motion.h2>
             <motion.div variants={fadeIn} style={{ width: "28px", height: "1px", marginTop: "20px", background: `${ac}55` }} />
@@ -620,7 +963,7 @@ export default function BosTemplate({
                 <motion.div variants={fadeUp}>
                   <Heart size={28} fill={ac} stroke="none" className="animate-pulse" style={{ filter: `drop-shadow(0 0 12px ${ac}99)` }} />
                 </motion.div>
-                <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3.5rem)", fontWeight: 400, color: "#FFFFFF", letterSpacing: "0.04em", lineHeight: 1.2 }}>
+                <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3.5rem)", fontWeight: 400, color: config.finalHeadingColor || "#FFFFFF", letterSpacing: "0.04em", lineHeight: 1.2 }}>
                   {config.finalHeading}
                 </motion.h2>
                 <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "10px" }}>

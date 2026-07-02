@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminRole, setAdminRole] = useState("admin");
   const [authorized, setAuthorized] = useState(false);
-  const [activeTab, setActiveTab] = useState<"create_page" | "codes" | "users" | "marketing" | "settings" | "template_builder">("create_page");
+  const [activeTab, setActiveTab] = useState<"create_page" | "codes" | "users" | "marketing" | "settings">("create_page");
   const [prefilledSlug, setPrefilledSlug] = useState("");
 
   useEffect(() => {
@@ -45,6 +45,12 @@ export default function AdminPage() {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: `
+        select option {
+          background-color: #0b0f1a !important;
+          color: #ffffff !important;
+        }
+      ` }} />
 
       {/* Arka plan */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 70% 50% at 15% 15%, rgba(201,168,76,0.05) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 85% 85%, rgba(184,169,212,0.04) 0%, transparent 50%), linear-gradient(150deg, #0B0F1A 0%, #0d1220 50%, #0a0d18 100%)" }} />
@@ -60,14 +66,13 @@ export default function AdminPage() {
               { key: "codes", icon: "📋", label: "Kod Üret" },
               { key: "users", icon: "👥", label: "Kullanıcılar" },
               ...(adminRole === "admin" ? [
-                { key: "template_builder", icon: "🎨", label: "Şablon Oluştur" },
                 { key: "marketing", icon: "📢", label: "Pazarlama" },
                 { key: "settings", icon: "⚙️", label: "Site Ayarları" }
               ] : [])
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as "create_page" | "codes" | "users" | "marketing" | "settings" | "template_builder")}
+                onClick={() => setActiveTab(tab.key as "create_page" | "codes" | "users" | "marketing" | "settings")}
                 style={{
                   padding: "10px 20px", borderRadius: "12px",
                   background: activeTab === tab.key ? C.gold : "rgba(255,255,255,0.05)",
@@ -89,7 +94,6 @@ export default function AdminPage() {
             {activeTab === "users" && <UsersTab adminEmail={adminEmail} adminRole={adminRole} />}
             {activeTab === "marketing" && adminRole === "admin" && <MarketingTab adminEmail={adminEmail} />}
             {activeTab === "settings" && adminRole === "admin" && <SettingsTab adminEmail={adminEmail} />}
-            {activeTab === "template_builder" && adminRole === "admin" && <TemplateBuilderTab adminEmail={adminEmail} onTemplateCreated={() => {}} />}
           </AnimatePresence>
         </main>
       </div>

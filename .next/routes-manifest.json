@@ -173,6 +173,12 @@
       "namedRegex": "^/api/profile(?:/)?$"
     },
     {
+      "page": "/api/quiz-answers",
+      "regex": "^/api/quiz\\-answers(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/quiz\\-answers(?:/)?$"
+    },
+    {
       "page": "/api/register",
       "regex": "^/api/register(?:/)?$",
       "routeKeys": {},

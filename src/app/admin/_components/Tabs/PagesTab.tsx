@@ -23,10 +23,18 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [editConfig, setEditConfig] = useState<any>(null);
   const [editMemories, setEditMemories] = useState<any[]>([]);
   const [editIsPublished, setEditIsPublished] = useState(false);
+  
+  // Custom template save states
+  const [saveTemplateName, setSaveTemplateName] = useState("");
+  const [templateSaving, setTemplateSaving] = useState(false);
+  const [templateSaveSuccess, setTemplateSaveSuccess] = useState("");
+  const [templateSaveError, setTemplateSaveError] = useState("");
+
   const [editorLoading, setEditorLoading] = useState(false);
   const [editorSaving, setEditorSaving] = useState(false);
   const [editorError, setEditorError] = useState("");
   const [editorSuccess, setEditorSuccess] = useState("");
+  const [showComponentPicker, setShowComponentPicker] = useState(false);
 
   // Create Page sub-states
   const [newSlug, setNewSlug] = useState("");
@@ -66,6 +74,55 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
     fetchAllPages();
     fetchCustomTemplates();
   }, [fetchAllPages, fetchCustomTemplates]);
+  const TEMPLATE_DEFAULTS: Record<string, any> = {
+    "klasik-retro": { bgColor: "#160C0E", accentColor: "#e5c2ba", particlesEnabled: true, particlesType: "rose-petals", memoryCardStyle: "polaroid", headingFont: "cormorant", bodyFont: "lato", polaroidTilt: true },
+    "romantik-kirmizi": { bgColor: "#160408", accentColor: "#e63946", particlesEnabled: true, particlesType: "hearts", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" },
+    "modern-minimal": { bgColor: "#F6F3F0", accentColor: "#8C7E6C", particlesEnabled: false, particlesType: "none", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" },
+    "sinematik-ask": { bgColor: "#0C0C0E", accentColor: "#B8A9D4", particlesEnabled: true, particlesType: "stars", memoryCardStyle: "cinematic", headingFont: "cormorant", bodyFont: "inter" },
+    "premium-emerald": { bgColor: "#022C22", accentColor: "#D4AF37", particlesEnabled: true, particlesType: "stars", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" },
+    "sablon-oyun": { bgColor: "#111111", accentColor: "#cbff3e", particlesEnabled: false, particlesType: "none", memoryCardStyle: "plain", headingFont: "press-start", bodyFont: "vt323" },
+    "sablon-lavanta": { bgColor: "#1E1B4B", accentColor: "#D8B4FE", particlesEnabled: true, particlesType: "stars", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" },
+    "sablon-amber": { bgColor: "#090300", accentColor: "#F59E0B", particlesEnabled: true, particlesType: "stars", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" },
+    "sablon-rose": { bgColor: "#F8F0EA", accentColor: "#E8A0A0", particlesEnabled: true, particlesType: "rose-petals", memoryCardStyle: "polaroid", headingFont: "cormorant", bodyFont: "lato", polaroidTilt: true },
+    "sablon-indigo": { bgColor: "#04091a", accentColor: "#6366F1", particlesEnabled: true, particlesType: "stars", memoryCardStyle: "plain", headingFont: "cinzel", bodyFont: "lato" },
+    "sablon-siyah": { bgColor: "#09090b", accentColor: "#C9A84C", particlesEnabled: true, particlesType: "hearts", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" }
+  };
+
+  const handleSaveCustomTemplate = async () => {
+    if (!saveTemplateName.trim()) {
+      setTemplateSaveError("Şablon adı giriniz.");
+      return;
+    }
+    setTemplateSaving(true);
+    setTemplateSaveError("");
+    setTemplateSaveSuccess("");
+    try {
+      const res = await fetch("/api/admin/custom-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail,
+          action: "create",
+          name: saveTemplateName.trim(),
+          previewColor: editConfig.accentColor || "#C9A84C",
+          templateConfig: editConfig,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTemplateSaveError(data.error ?? "Şablon kaydedilemedi.");
+        return;
+      }
+      setTemplateSaveSuccess("Şablon başarıyla özel şablonlara kaydedildi!");
+      setSaveTemplateName("");
+      await fetchCustomTemplates();
+    } catch {
+      setTemplateSaveError("Sunucuya bağlanılamadı.");
+    } finally {
+      setTemplateSaving(false);
+    }
+  };
+
   // Sayfa Ayarlarını Yükle
   const loadPageSettings = async (slug: string) => {
     if (!adminEmail || !slug) return;
@@ -79,7 +136,37 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
         const ps = data.pageSettings;
         setSelectedEditSlug(ps.pageSlug);
         setEditTemplateId(ps.templateId);
-        setEditConfig(ps.config || {});
+        
+        let baseConfig = {};
+        if (ps.templateId && ps.templateId.startsWith("custom-")) {
+          const match = customTemplates.find(t => `custom-${t.id}` === ps.templateId);
+          if (match && (match as any).template_config) {
+            baseConfig = (match as any).template_config;
+          }
+        } else {
+          baseConfig = TEMPLATE_DEFAULTS[ps.templateId] || {};
+        }
+
+        setEditConfig({
+          bgColor: "#09090b",
+          accentColor: "#C9A84C",
+          particlesEnabled: true,
+          particlesType: "hearts",
+          particlesDensity: 20,
+          particlesColor: "",
+          musicWidgetEnabled: true,
+          musicWidgetType: "vinyl",
+          musicWidgetPosition: "bottom-left",
+          memoryCardStyle: "plain",
+          memoryCardLayout: "vertical",
+          polaroidTilt: true,
+          headingFont: "cormorant",
+          bodyFont: "inter",
+          finalEnabled: true,
+          finalHeading: "Sonsuza Dek Birlikte",
+          ...baseConfig,
+          ...(ps.config || {})
+        });
         setEditMemories(ps.memories || []);
         setEditIsPublished(ps.isPublished);
       } else {
@@ -548,7 +635,24 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Şablon</label>
                               <select
                                 value={editTemplateId}
-                                onChange={(e) => setEditTemplateId(e.target.value)}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setEditTemplateId(val);
+                                  
+                                  let baseConfig = {};
+                                  if (val.startsWith("custom-")) {
+                                    const match = customTemplates.find(t => `custom-${t.id}` === val);
+                                    if (match && (match as any).template_config) {
+                                      baseConfig = (match as any).template_config;
+                                    }
+                                  } else {
+                                    baseConfig = TEMPLATE_DEFAULTS[val] || {};
+                                  }
+                                  setEditConfig((prev: any) => ({
+                                    ...prev,
+                                    ...baseConfig
+                                  }));
+                                }}
                                 style={{
                                   padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)",
                                   border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
@@ -565,6 +669,11 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 <option value="sablon-rose">Gül Kurusu</option>
                                 <option value="sablon-indigo">Gece Yarısı İndigo</option>
                                 <option value="sablon-siyah">Karanlık Gece (Siyah)</option>
+                                {customTemplates.map((tpl) => (
+                                  <option key={tpl.id} value={`custom-${tpl.id}`}>
+                                    🎨 [Özel] {tpl.name}
+                                  </option>
+                                ))}
                               </select>
                             </div>
 
@@ -730,8 +839,196 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               />
                             </div>
                           </div>
+                        </div>
 
+                        {/* Yeni Kısım: Tasarım Özelleştirme */}
+                        <div style={{ ...cardStyle, padding: "28px" }}>
+                          <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text, marginBottom: "20px", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px", fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif" }}>
+                            🎨 Tasarım Özelleştirme (Şablon Detayları)
+                          </h3>
 
+                          {/* Renk Ayarları */}
+                          <div style={{ marginBottom: "24px" }}>
+                            <h4 style={{ fontSize: "13px", fontWeight: 600, color: C.gold, marginBottom: "14px" }}>Renkler</h4>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Arkaplan Rengi</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.bgColor || "#09090b"} onChange={(e) => setEditConfig({ ...editConfig, bgColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.bgColor || ""} onChange={(e) => setEditConfig({ ...editConfig, bgColor: e.target.value })} placeholder="#09090b" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Gövde Rengi</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, accentColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.accentColor || ""} onChange={(e) => setEditConfig({ ...editConfig, accentColor: e.target.value })} placeholder="#C9A84C" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>İsim Degrade Başlangıç</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.nameGradientStart || "#ffffff"} onChange={(e) => setEditConfig({ ...editConfig, nameGradientStart: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.nameGradientStart || ""} onChange={(e) => setEditConfig({ ...editConfig, nameGradientStart: e.target.value })} placeholder="#ffffff" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>İsim Degrade Bitiş</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.nameGradientEnd || editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, nameGradientEnd: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.nameGradientEnd || ""} onChange={(e) => setEditConfig({ ...editConfig, nameGradientEnd: e.target.value })} placeholder="Gövde Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Arka Plan Partikülleri */}
+                          <div style={{ marginBottom: "24px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                              <h4 style={{ fontSize: "13px", fontWeight: 600, color: C.gold, margin: 0 }}>Arka Plan Partikülleri</h4>
+                              <button type="button" onClick={() => setEditConfig({ ...editConfig, particlesEnabled: !editConfig.particlesEnabled })} style={{ padding: "6px 14px", borderRadius: "8px", border: "none", background: editConfig.particlesEnabled ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.particlesEnabled ? "#0B0F1A" : C.text, fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                                {editConfig.particlesEnabled ? "Aktif" : "Kapalı"}
+                              </button>
+                            </div>
+                            {editConfig.particlesEnabled && (
+                              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Partikül Tipi</label>
+                                  <select value={editConfig.particlesType || "hearts"} onChange={(e) => setEditConfig({ ...editConfig, particlesType: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                    <option value="hearts">💙 Yüzen Kalpler</option>
+                                    <option value="rose-petals">🌹 Gül Yaprakları</option>
+                                    <option value="stars">⭐ Titreyen Yıldızlar</option>
+                                    <option value="none">— Hiçbiri</option>
+                                  </select>
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Yoğunluk: {editConfig.particlesDensity || 20}</label>
+                                  <input type="range" min={5} max={50} value={editConfig.particlesDensity || 20} onChange={(e) => setEditConfig({ ...editConfig, particlesDensity: Number(e.target.value) })} style={{ width: "100%", height: "40px", accentColor: C.gold }} />
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Partikül Rengi</label>
+                                  <div style={{ display: "flex", gap: "10px" }}>
+                                    <input type="color" value={editConfig.particlesColor || editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, particlesColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                    <input value={editConfig.particlesColor || ""} onChange={(e) => setEditConfig({ ...editConfig, particlesColor: e.target.value })} placeholder="Boş = Gövde Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Müzik Widget */}
+                          <div style={{ marginBottom: "24px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                              <h4 style={{ fontSize: "13px", fontWeight: 600, color: C.gold, margin: 0 }}>Müzik Widget'ı</h4>
+                              <button type="button" onClick={() => setEditConfig({ ...editConfig, musicWidgetEnabled: !editConfig.musicWidgetEnabled })} style={{ padding: "6px 14px", borderRadius: "8px", border: "none", background: editConfig.musicWidgetEnabled ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.musicWidgetEnabled ? "#0B0F1A" : C.text, fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                                {editConfig.musicWidgetEnabled ? "Aktif" : "Kapalı"}
+                              </button>
+                            </div>
+                            {editConfig.musicWidgetEnabled && (
+                              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Widget Tipi</label>
+                                  <select value={editConfig.musicWidgetType || "vinyl"} onChange={(e) => setEditConfig({ ...editConfig, musicWidgetType: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                    <option value="vinyl">🎵 Plak (Vinyl)</option>
+                                    <option value="minimal">📊 Minimal Bar</option>
+                                    <option value="hidden">🔇 Gizli (sadece ses)</option>
+                                  </select>
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Widget Pozisyonu</label>
+                                  <select value={editConfig.musicWidgetPosition || "bottom-left"} onChange={(e) => setEditConfig({ ...editConfig, musicWidgetPosition: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                    <option value="bottom-left">↙ Sol Alt</option>
+                                    <option value="bottom-right">↘ Sağ Alt</option>
+                                    <option value="top-left">↖ Sol Üst</option>
+                                    <option value="top-right">↗ Sağ Üst</option>
+                                  </select>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Fotoğraf Kartları */}
+                          <div style={{ marginBottom: "24px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "20px" }}>
+                            <h4 style={{ fontSize: "13px", fontWeight: 600, color: C.gold, marginBottom: "14px" }}>Fotoğraf Kartları</h4>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Stili</label>
+                                <select value={editConfig.memoryCardStyle || "plain"} onChange={(e) => setEditConfig({ ...editConfig, memoryCardStyle: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                  <option value="plain">⬜ Düz / Minimal</option>
+                                  <option value="polaroid">📷 Polaroid</option>
+                                  <option value="cinematic">🎬 Sinematik</option>
+                                </select>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Listeleme Düzeni</label>
+                                <select value={editConfig.memoryCardLayout || "vertical"} onChange={(e) => setEditConfig({ ...editConfig, memoryCardLayout: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                  <option value="vertical">☰ Dikey (tek sütun)</option>
+                                  <option value="grid">⊞ Grid (2 sütun)</option>
+                                </select>
+                              </div>
+                              {editConfig.memoryCardStyle === "polaroid" && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Polaroid Eğim Efekti</label>
+                                  <button type="button" onClick={() => setEditConfig({ ...editConfig, polaroidTilt: !editConfig.polaroidTilt })} style={{ padding: "12px", borderRadius: "10px", border: "none", background: editConfig.polaroidTilt !== false ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.polaroidTilt !== false ? "#0B0F1A" : C.text, fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                                    {editConfig.polaroidTilt !== false ? "Eğik Polaroid Aktif" : "Düz Polaroid"}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Tipografi */}
+                          <div style={{ marginBottom: "24px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "20px" }}>
+                            <h4 style={{ fontSize: "13px", fontWeight: 600, color: C.gold, marginBottom: "14px" }}>Tipografi</h4>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Başlık Fontu</label>
+                                <select value={editConfig.headingFont || "cormorant"} onChange={(e) => setEditConfig({ ...editConfig, headingFont: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                  <option value="cormorant">Cormorant Garamond (Zarif Serif)</option>
+                                  <option value="playfair">Playfair Display (Klasik)</option>
+                                  <option value="cinzel">Cinzel (Antik / Roma)</option>
+                                  <option value="pinyon">Pinyon Script (El Yazısı)</option>
+                                  <option value="vt323">VT323 (Piksel Arcade)</option>
+                                  <option value="press-start">Press Start 2P (Retro Retro)</option>
+                                </select>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Metin Fontu</label>
+                                <select value={editConfig.bodyFont || "inter"} onChange={(e) => setEditConfig({ ...editConfig, bodyFont: e.target.value })} style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}>
+                                  <option value="inter">Inter (Modern Sans-Serif)</option>
+                                  <option value="lato">Lato (Dengeli)</option>
+                                  <option value="dm-sans">DM Sans (Sade)</option>
+                                  <option value="vt323">VT323 (Piksel Arcade)</option>
+                                  <option value="press-start">Press Start 2P (Retro Retro)</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Final Bölümü */}
+                          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                              <h4 style={{ fontSize: "13px", fontWeight: 600, color: C.gold, margin: 0 }}>Final Bölümü</h4>
+                              <button type="button" onClick={() => setEditConfig({ ...editConfig, finalEnabled: !editConfig.finalEnabled })} style={{ padding: "6px 14px", borderRadius: "8px", border: "none", background: editConfig.finalEnabled !== false ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.finalEnabled !== false ? "#0B0F1A" : C.text, fontSize: "11px", fontWeight: 600, cursor: "pointer" }}>
+                                {editConfig.finalEnabled !== false ? "Gösteriliyor" : "Gizli"}
+                              </button>
+                            </div>
+                            {editConfig.finalEnabled !== false && (
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 240px", gap: "20px", marginTop: "12px" }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Final Başlığı</label>
+                                  <input value={editConfig.finalHeading || ""} onChange={(e) => setEditConfig({ ...editConfig, finalHeading: e.target.value })} placeholder="Sonsuza Dek Birlikte" style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Final Başlığı Rengi</label>
+                                  <div style={{ display: "flex", gap: "10px" }}>
+                                    <input type="color" value={editConfig.finalHeadingColor || "#FFFFFF"} onChange={(e) => setEditConfig({ ...editConfig, finalHeadingColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                    <input value={editConfig.finalHeadingColor || ""} onChange={(e) => setEditConfig({ ...editConfig, finalHeadingColor: e.target.value })} placeholder="Varsayılan (Beyaz)" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* 2. Kısım: Hikayeler / Anılar Listesi */}
@@ -740,28 +1037,259 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                             <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text }}>
                               Hikayelerimiz & Anılar
                             </h3>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newId = editMemories.length > 0 ? Math.max(...editMemories.map((m) => m.id || 0)) + 1 : 1;
-                                setEditMemories([...editMemories, { id: newId, image: "/moment.jpg", title: "Yeni Anı Başlığı", description: "Bu anıya dair açıklama...", date: "Tarih Girin" }]);
-                              }}
-                              style={{
-                                padding: "6px 14px", borderRadius: "8px", border: "none",
-                                background: C.gold, color: "#0B0F1A", fontSize: "12px", fontWeight: 600, cursor: "pointer",
-                                transition: "opacity 0.2s"
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
-                              onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
-                            >
-                              + Yeni Anı Ekle
-                            </button>
+                            <div style={{ display: "flex", gap: "8px", alignItems: "center", position: "relative" }}>
+                              {/* + Yeni Bileşen Ekle */}
+                              <button
+                                type="button"
+                                onClick={() => setShowComponentPicker((v) => !v)}
+                                style={{
+                                  padding: "6px 14px", borderRadius: "8px",
+                                  border: `1px solid ${C.gold}55`, background: "rgba(201,168,76,0.08)",
+                                  color: C.gold, fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                                  transition: "all 0.2s",
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.16)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.08)"; }}
+                              >
+                                + Yeni Bileşen Ekle
+                              </button>
+
+                              {/* Component Picker Dropdown */}
+                              {showComponentPicker && (
+                                <div
+                                  style={{
+                                    position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 50,
+                                    background: "#160408", border: `1px solid ${C.border}`,
+                                    borderRadius: "12px", padding: "12px", width: "260px",
+                                    boxShadow: "0 16px 48px rgba(0,0,0,0.7)",
+                                    display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px",
+                                  }}
+                                >
+                                  {[
+                                    { type: "countdown", icon: "⏱", label: "Zaman Sayıcı", desc: "Gün • Saat • Dakika" },
+                                    { type: "quiz",      icon: "❓", label: "Anket / Oyun",  desc: "Soru & Cevaplar" },
+                                    { type: "letter",   icon: "✉️", label: "Mektup Efekti", desc: "Dijital Zarf" },
+                                  ].map(({ type, icon, label, desc }) => (
+                                    <button
+                                      key={type}
+                                      type="button"
+                                      onClick={() => {
+                                        const newId = editMemories.length > 0 ? Math.max(...editMemories.map((m) => m.id || 0)) + 1 : 1;
+                                        const defaults: Record<string, any> = {
+                                          countdown: { type: "countdown", id: newId, label: "Tanıştığımızdan Beri", startDate: "", description: "" },
+                                          quiz:      { type: "quiz",      id: newId, question: "Benimle ilgili en sevdiğin şey ne?", options: ["Gülüşüm", "Sabırsızlığım", "Sarılmalarım"] },
+                                          letter:    { type: "letter",   id: newId, title: "Sevgilime", senderName: "Senden", content: "Seni çok seviyorum..." },
+                                        };
+                                        setEditMemories([...editMemories, defaults[type]]);
+                                        setShowComponentPicker(false);
+                                      }}
+                                      style={{
+                                        padding: "12px 10px", borderRadius: "8px",
+                                        border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)",
+                                        color: C.text, cursor: "pointer", textAlign: "center",
+                                        transition: "all 0.15s", display: "flex", flexDirection: "column", gap: "4px",
+                                      }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.08)"; e.currentTarget.style.borderColor = `${C.gold}44`; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor = C.border; }}
+                                    >
+                                      <span style={{ fontSize: "20px" }}>{icon}</span>
+                                      <span style={{ fontSize: "11px", fontWeight: 600, color: C.text }}>{label}</span>
+                                      <span style={{ fontSize: "10px", color: C.muted }}>{desc}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* + Yeni Anı Ekle */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newId = editMemories.length > 0 ? Math.max(...editMemories.map((m) => m.id || 0)) + 1 : 1;
+                                  setEditMemories([...editMemories, { type: "photo", id: newId, image: "/moment.jpg", title: "Yeni Anı Başlığı", description: "Bu anıya dair açıklama...", date: "Tarih Girin" }]);
+                                  setShowComponentPicker(false);
+                                }}
+                                style={{
+                                  padding: "6px 14px", borderRadius: "8px", border: "none",
+                                  background: C.gold, color: "#0B0F1A", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                                  transition: "opacity 0.2s"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                              >
+                                + Yeni Anı Ekle
+                              </button>
+                            </div>
                           </div>
 
                           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                            {editMemories.map((memory, index) => (
-                              <div
-                                key={memory.id}
+                            {editMemories.map((memory, index) => {
+                              const memType: string = memory.type ?? "photo";
+                              const isFirst = index === 0;
+                              const isLast  = index === editMemories.length - 1;
+
+                              // Shared up/down/delete footer
+                              const MoveDeleteControls = (
+                                <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
+                                  <button type="button" disabled={isFirst}
+                                    onClick={() => setEditMemories((prev) => { const u = [...prev]; [u[index], u[index-1]] = [u[index-1], u[index]]; return u; })}
+                                    style={{ padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)", color: isFirst ? "rgba(255,255,255,0.1)" : C.muted, fontSize: "11px", cursor: isFirst ? "not-allowed" : "pointer" }}
+                                  >↑ Yukarı</button>
+                                  <button type="button" disabled={isLast}
+                                    onClick={() => setEditMemories((prev) => { const u = [...prev]; [u[index], u[index+1]] = [u[index+1], u[index]]; return u; })}
+                                    style={{ padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)", color: isLast ? "rgba(255,255,255,0.1)" : C.muted, fontSize: "11px", cursor: isLast ? "not-allowed" : "pointer" }}
+                                  >↓ Aşağı</button>
+                                  <button type="button"
+                                    onClick={() => { if (confirm("Bu öğeyi silmek istediğinize emin misiniz?")) setEditMemories(editMemories.filter((_, idx) => idx !== index)); }}
+                                    style={{ padding: "4px 10px", borderRadius: "6px", border: "1px solid rgba(232,160,160,0.2)", background: "rgba(232,160,160,0.05)", color: C.error, fontSize: "11px", cursor: "pointer" }}
+                                  >Sil</button>
+                                </div>
+                              );
+
+                              // ── COUNTDOWN editörü ──
+                              if (memType === "countdown") return (
+                                <div key={memory.id} style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+                                    <span style={{ fontSize: "16px" }}>⏱</span>
+                                    <span style={{ fontSize: "13px", fontWeight: 600, color: C.text }}>Zaman Sayıcı</span>
+                                  </div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Etiket ("Tanıştığımızdan Beri" gibi)</label>
+                                      <input
+                                        type="text"
+                                        value={memory.label ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], label: e.target.value }; return u; })}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", boxSizing: "border-box" }}
+                                        placeholder="Tanıştığımızdan Beri"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Başlangıç Tarihi & Saati</label>
+                                      <input
+                                        type="datetime-local"
+                                        value={memory.startDate ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], startDate: e.target.value }; return u; })}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", colorScheme: "dark", boxSizing: "border-box" }}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Alt Açıklama (isteğe bağlı)</label>
+                                      <input
+                                        type="text"
+                                        value={memory.description ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], description: e.target.value }; return u; })}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", boxSizing: "border-box" }}
+                                        placeholder="Günden bu yana birlikte..."
+                                      />
+                                    </div>
+                                  </div>
+                                  {MoveDeleteControls}
+                                </div>
+                              );
+
+                              // ── QUIZ editörü ──
+                              if (memType === "quiz") return (
+                                <div key={memory.id} style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+                                    <span style={{ fontSize: "16px" }}>❓</span>
+                                    <span style={{ fontSize: "13px", fontWeight: 600, color: C.text }}>Anket / Oyun</span>
+                                  </div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Soru</label>
+                                      <input
+                                        type="text"
+                                        value={memory.question ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], question: e.target.value }; return u; })}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", boxSizing: "border-box" }}
+                                        placeholder="Benimle ilgili en sevdiğin şey ne?"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>
+                                        Seçenekler
+                                        <button type="button"
+                                          onClick={() => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], options: [...(u[index].options ?? []), ""] }; return u; })}
+                                          style={{ marginLeft: "8px", fontSize: "10px", padding: "2px 8px", borderRadius: "4px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.04)", color: C.gold, cursor: "pointer" }}
+                                        >+ Ekle</button>
+                                      </label>
+                                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                        {(memory.options ?? []).map((opt: string, oi: number) => (
+                                          <div key={oi} style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                                            <span style={{ fontSize: "11px", color: C.muted, minWidth: "18px" }}>{String.fromCharCode(65 + oi)}.</span>
+                                            <input
+                                              type="text"
+                                              value={opt}
+                                              onChange={(e) => setEditMemories((prev) => {
+                                                const u = [...prev]; const opts = [...(u[index].options ?? [])]; opts[oi] = e.target.value;
+                                                u[index] = { ...u[index], options: opts }; return u;
+                                              })}
+                                              style={{ flex: 1, padding: "6px 10px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "6px", color: C.text, fontSize: "12px", outline: "none" }}
+                                              placeholder={`Seçenek ${String.fromCharCode(65 + oi)}`}
+                                            />
+                                            <button type="button"
+                                              onClick={() => setEditMemories((prev) => {
+                                                const u = [...prev]; const opts = (u[index].options ?? []).filter((_: string, i2: number) => i2 !== oi);
+                                                u[index] = { ...u[index], options: opts }; return u;
+                                              })}
+                                              style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid rgba(232,160,160,0.2)", background: "none", color: C.error, cursor: "pointer", fontSize: "11px" }}
+                                            >×</button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {MoveDeleteControls}
+                                </div>
+                              );
+
+                              // ── LETTER editörü ──
+                              if (memType === "letter") return (
+                                <div key={memory.id} style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+                                    <span style={{ fontSize: "16px" }}>✉️</span>
+                                    <span style={{ fontSize: "13px", fontWeight: 600, color: C.text }}>Mektup Efekti</span>
+                                  </div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Mektup Başlığı</label>
+                                      <input
+                                        type="text"
+                                        value={memory.title ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], title: e.target.value }; return u; })}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", boxSizing: "border-box" }}
+                                        placeholder="Sevgilime"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Gönderen Adı</label>
+                                      <input
+                                        type="text"
+                                        value={memory.senderName ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], senderName: e.target.value }; return u; })}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", boxSizing: "border-box" }}
+                                        placeholder="İsmin"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label style={{ fontSize: "11px", color: C.muted, display: "block", marginBottom: "4px" }}>Mektup İçeriği</label>
+                                      <textarea
+                                        value={memory.content ?? ""}
+                                        onChange={(e) => setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], content: e.target.value }; return u; })}
+                                        rows={5}
+                                        style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.text, fontSize: "13px", outline: "none", resize: "vertical", boxSizing: "border-box", lineHeight: 1.6 }}
+                                        placeholder="Seni çok seviyorum..."
+                                      />
+                                    </div>
+                                  </div>
+                                  {MoveDeleteControls}
+                                </div>
+                              );
+
+                              // ── PHOTO editörü (varsayılan) ──
+                              return (
+                                <div
+                                  key={memory.id}
                                 style={{
                                   display: "grid", gridTemplateColumns: "100px 1fr", gap: "20px",
                                   padding: "20px", borderRadius: "16px", background: "rgba(255,255,255,0.015)",
@@ -1138,8 +1666,6 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         }}
                                         style={{
                                           padding: "4px 10px", borderRadius: "6px", border: "1px solid rgba(232, 160, 160, 0.2)",
-                                          background: "rgba(232, 160, 160, 0.05)", color: C.error,
-                                          fontSize: "11px", cursor: "pointer"
                                         }}
                                       >
                                         Sil
@@ -1148,8 +1674,60 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   </div>
                                 </div>
                               </div>
-                            ))}
+                              );})}
+
                           </div>
+                        </div>
+
+                        {/* 3. Kısım: Şablon Olarak Kaydet */}
+                        <div style={{ ...cardStyle, padding: "28px" }}>
+                          <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text, marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px", fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif" }}>
+                            💾 Bu Sayfanın Tasarımını Şablon Olarak Kaydet
+                          </h3>
+                          <p style={{ fontSize: "13px", color: C.muted, marginBottom: "20px" }}>
+                            Bu sayfa için yaptığınız tasarım ayarlarını (renkler, fontlar, partiküller vb.) yeni bir şablon olarak kaydederek diğer müşterilerinizde de kullanabilirsiniz.
+                          </p>
+
+                          <div style={{ display: "flex", gap: "12px", alignItems: "flex-end", flexWrap: "wrap" }}>
+                            <div style={{ flex: 1, minWidth: "240px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Şablon Adı</label>
+                              <input
+                                value={saveTemplateName}
+                                onChange={(e) => setSaveTemplateName(e.target.value)}
+                                placeholder="Örn: Benim Özel Pembem, Gece Yıldızları..."
+                                style={{
+                                  padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)",
+                                  border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
+                                }}
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              disabled={templateSaving}
+                              onClick={handleSaveCustomTemplate}
+                              style={{
+                                padding: "14px 28px", borderRadius: "10px", border: "none",
+                                background: templateSaving ? "rgba(255,255,255,0.1)" : C.gold,
+                                color: templateSaving ? C.muted : "#0B0F1A", fontFamily: "var(--font-inter), sans-serif",
+                                fontSize: "13px", fontWeight: 600, cursor: "pointer", transition: "opacity 0.2s"
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
+                              onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                            >
+                              {templateSaving ? "Kaydediliyor..." : "Tasarımı Şablon Olarak Kaydet"}
+                            </button>
+                          </div>
+
+                          {templateSaveSuccess && (
+                            <div style={{ marginTop: "12px", padding: "10px 14px", borderRadius: "8px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)" }}>
+                              <span style={{ fontSize: "12px", color: "#22c55e" }}>✓ {templateSaveSuccess}</span>
+                            </div>
+                          )}
+                          {templateSaveError && (
+                            <div style={{ marginTop: "12px", padding: "10px 14px", borderRadius: "8px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}>
+                              <span style={{ fontSize: "12px", color: "#ef4444" }}>⚠ {templateSaveError}</span>
+                            </div>
+                          )}
                         </div>
 
                         {/* Alt Butonlar - Kaydet / Tamamlandı */}
@@ -1189,7 +1767,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                             onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.07)"}
                             onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
                           >
-                            Taslağı Güncelle
+                            {editIsPublished ? (editorSaving ? "Taslağa Alınıyor..." : "Sayfayı Taslağa Al") : (editorSaving ? "Kaydediliyor..." : "Taslağı Güncelle")}
                           </button>
                           
                           <button
@@ -1205,7 +1783,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                             onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
                             onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                           >
-                            {editorSaving ? "Yayınlanıyor..." : "Değişiklikleri Yayına Al"}
+                            {editIsPublished ? (editorSaving ? "Güncelleniyor..." : "Güncelle") : (editorSaving ? "Yayına Alınıyor..." : "Yayına Al")}
                           </button>
                         </div>
 

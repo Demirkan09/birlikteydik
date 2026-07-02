@@ -164,7 +164,7 @@ function TemplatePreviewCard({ config }: { config: TemplateConfig }) {
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>
         <div style={{
           fontSize: "28px",
-          background: `linear-gradient(160deg, ${config.nameGradientStart || "#ffffff"} 0%, ${config.nameGradientEnd || config.accentColor} 100%)`,
+          backgroundImage: `linear-gradient(160deg, ${config.nameGradientStart || "#ffffff"} 0%, ${config.nameGradientEnd || config.accentColor} 100%)`,
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",

@@ -21,6 +21,7 @@
   "/api/login/route": "/api/login",
   "/api/page-password/route": "/api/page-password",
   "/api/profile/route": "/api/profile",
+  "/api/quiz-answers/route": "/api/quiz-answers",
   "/api/register/route": "/api/register",
   "/api/resend-verification/route": "/api/resend-verification",
   "/api/reset-password/route": "/api/reset-password",

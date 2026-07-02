@@ -64,6 +64,7 @@ export default async function DynamicUserPage({ params }: PageProps) {
         <BosTemplate
           config={pageSetting.config}
           memories={pageSetting.memories}
+          pageSlug={cleanSlug}
         />
       </PasswordGate>
     );
@@ -79,6 +80,7 @@ export default async function DynamicUserPage({ params }: PageProps) {
       <TemplateComponent
         config={pageSetting.config}
         memories={pageSetting.memories}
+        pageSlug={cleanSlug}
       />
     </PasswordGate>
   );
