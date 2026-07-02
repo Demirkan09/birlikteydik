@@ -859,10 +859,17 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 </div>
                               </div>
                               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Gövde Rengi</label>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Aksan Rengi</label>
                                 <div style={{ display: "flex", gap: "10px" }}>
                                   <input type="color" value={editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, accentColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
                                   <input value={editConfig.accentColor || ""} onChange={(e) => setEditConfig({ ...editConfig, accentColor: e.target.value })} placeholder="#C9A84C" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Metin Rengi</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.textColor || "#ffffff"} onChange={(e) => setEditConfig({ ...editConfig, textColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.textColor || ""} onChange={(e) => setEditConfig({ ...editConfig, textColor: e.target.value })} placeholder="#ffffff" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
                                 </div>
                               </div>
                               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -876,7 +883,28 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>İsim Degrade Bitiş</label>
                                 <div style={{ display: "flex", gap: "10px" }}>
                                   <input type="color" value={editConfig.nameGradientEnd || editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, nameGradientEnd: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
-                                  <input value={editConfig.nameGradientEnd || ""} onChange={(e) => setEditConfig({ ...editConfig, nameGradientEnd: e.target.value })} placeholder="Gövde Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                  <input value={editConfig.nameGradientEnd || ""} onChange={(e) => setEditConfig({ ...editConfig, nameGradientEnd: e.target.value })} placeholder="Aksan Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kaydır Yazısı Rengi</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.scrollTextColor || editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, scrollTextColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.scrollTextColor || ""} onChange={(e) => setEditConfig({ ...editConfig, scrollTextColor: e.target.value })} placeholder="Aksan Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>'Birlikte Yazdığımız' Rengi</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.headingEyebrowColor || editConfig.textColor || "#ffffff"} onChange={(e) => setEditConfig({ ...editConfig, headingEyebrowColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.headingEyebrowColor || ""} onChange={(e) => setEditConfig({ ...editConfig, headingEyebrowColor: e.target.value })} placeholder="Metin Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>'Hikayemiz' Rengi</label>
+                                <div style={{ display: "flex", gap: "10px" }}>
+                                  <input type="color" value={editConfig.headingTitleColor || editConfig.textColor || "#ffffff"} onChange={(e) => setEditConfig({ ...editConfig, headingTitleColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                  <input value={editConfig.headingTitleColor || ""} onChange={(e) => setEditConfig({ ...editConfig, headingTitleColor: e.target.value })} placeholder="Metin Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
                                 </div>
                               </div>
                             </div>
@@ -909,7 +937,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Partikül Rengi</label>
                                   <div style={{ display: "flex", gap: "10px" }}>
                                     <input type="color" value={editConfig.particlesColor || editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, particlesColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
-                                    <input value={editConfig.particlesColor || ""} onChange={(e) => setEditConfig({ ...editConfig, particlesColor: e.target.value })} placeholder="Boş = Gövde Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                    <input value={editConfig.particlesColor || ""} onChange={(e) => setEditConfig({ ...editConfig, particlesColor: e.target.value })} placeholder="Boş = Aksan Rengi" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
                                   </div>
                                 </div>
                               </div>
@@ -1105,7 +1133,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 type="button"
                                 onClick={() => {
                                   const newId = editMemories.length > 0 ? Math.max(...editMemories.map((m) => m.id || 0)) + 1 : 1;
-                                  setEditMemories([...editMemories, { type: "photo", id: newId, image: "/moment.jpg", title: "Yeni Anı Başlığı", description: "Bu anıya dair açıklama...", date: "Tarih Girin" }]);
+                                  setEditMemories([...editMemories, { type: "photo", id: newId, image: "/moment.jpg", title: "Yeni Anı Başlığı", description: "Bu anıya dair açıklama...", date: "Tarih Girin", titleColor: "", descriptionColor: "", dateColor: "" }]);
                                   setShowComponentPicker(false);
                                 }}
                                 style={{
@@ -1517,6 +1545,49 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                       />
                                     </div>
                                   )}
+
+                                  {/* Anı Renk Özelleştirmeleri */}
+                                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "10px", marginTop: "8px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px", paddingBottom: "4px" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                                      <label style={{ fontSize: "9px", textTransform: "uppercase", color: C.muted }}>Başlık Rengi</label>
+                                      <div style={{ display: "flex", gap: "6px" }}>
+                                        <input type="color" value={memory.titleColor || editConfig.textColor || "#ffffff"} onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], titleColor: val }; return u; });
+                                        }} style={{ width: "28px", height: "28px", padding: 0, border: "none", borderRadius: "4px", background: "transparent", cursor: "pointer" }} />
+                                        <input value={memory.titleColor || ""} onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], titleColor: val }; return u; });
+                                        }} placeholder="Metin Rengi" style={{ flex: 1, padding: "4px 8px", borderRadius: "6px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, fontSize: "11px", outline: "none" }} />
+                                      </div>
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                                      <label style={{ fontSize: "9px", textTransform: "uppercase", color: C.muted }}>Açıklama Rengi</label>
+                                      <div style={{ display: "flex", gap: "6px" }}>
+                                        <input type="color" value={memory.descriptionColor || editConfig.textColor || "#ffffff"} onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], descriptionColor: val }; return u; });
+                                        }} style={{ width: "28px", height: "28px", padding: 0, border: "none", borderRadius: "4px", background: "transparent", cursor: "pointer" }} />
+                                        <input value={memory.descriptionColor || ""} onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], descriptionColor: val }; return u; });
+                                        }} placeholder="Metin Rengi" style={{ flex: 1, padding: "4px 8px", borderRadius: "6px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, fontSize: "11px", outline: "none" }} />
+                                      </div>
+                                    </div>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                                      <label style={{ fontSize: "9px", textTransform: "uppercase", color: C.muted }}>Tarih Rengi</label>
+                                      <div style={{ display: "flex", gap: "6px" }}>
+                                        <input type="color" value={memory.dateColor || editConfig.textColor || "#ffffff"} onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], dateColor: val }; return u; });
+                                        }} style={{ width: "28px", height: "28px", padding: 0, border: "none", borderRadius: "4px", background: "transparent", cursor: "pointer" }} />
+                                        <input value={memory.dateColor || ""} onChange={(e) => {
+                                          const val = e.target.value;
+                                          setEditMemories((prev) => { const u = [...prev]; u[index] = { ...u[index], dateColor: val }; return u; });
+                                        }} placeholder="Metin Rengi" style={{ flex: 1, padding: "4px 8px", borderRadius: "6px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, fontSize: "11px", outline: "none" }} />
+                                      </div>
+                                    </div>
+                                  </div>
 
                                   {/* Video (Opsiyonel) */}
                                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>

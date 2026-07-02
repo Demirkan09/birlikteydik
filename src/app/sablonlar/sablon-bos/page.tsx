@@ -39,6 +39,10 @@ export const defaultConfig = {
   nameGradientStart: "" as string,
   nameGradientEnd: "" as string,
   finalHeadingColor: "" as string,
+  textColor: "" as string,
+  scrollTextColor: "" as string,
+  headingEyebrowColor: "" as string,
+  headingTitleColor: "" as string,
 };
 
 export type TemplateConfig = typeof defaultConfig;
@@ -647,7 +651,10 @@ const TemplateContext = createContext<{ config: TemplateConfig; memories: typeof
 // ─────────────────────────────────────────────────────────────────────────────
 // 📸  PLAIN KART (sablon-bos orijinal stili)
 // ─────────────────────────────────────────────────────────────────────────────
-function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont }: { memory: any; accentColor: string; headingFont: string; bodyFont: string }) {
+function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; textColor: string }) {
+  const dColor = memory.dateColor || textColor || accentColor;
+  const tColor = memory.titleColor || textColor || accentColor;
+  const descColor = memory.descriptionColor || textColor || accentColor;
   return (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "28px" }}>
       <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
@@ -666,11 +673,11 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont }: { memor
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: "320px", gap: "12px" }}>
         <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div style={{ width: "28px", height: "1px", background: `${accentColor}55` }} />
-          <span style={{ fontFamily: bodyFont, fontSize: "9px", color: accentColor, letterSpacing: "0.3em", textTransform: "uppercase" }}>{memory.date}</span>
+          <span style={{ fontFamily: bodyFont, fontSize: "9px", color: dColor, letterSpacing: "0.3em", textTransform: "uppercase" }}>{memory.date}</span>
           <div style={{ width: "28px", height: "1px", background: `${accentColor}55` }} />
         </motion.div>
-        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.55rem, 3vw, 2.1rem)", fontWeight: 400, color: accentColor, lineHeight: 1.2, letterSpacing: "0.02em" }}>{memory.title}</motion.h3>
-        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.875rem", color: accentColor, opacity: 0.85, lineHeight: 1.85, fontWeight: 300 }}>{memory.description}</motion.p>
+        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.55rem, 3vw, 2.1rem)", fontWeight: 400, color: tColor, lineHeight: 1.2, letterSpacing: "0.02em" }}>{memory.title}</motion.h3>
+        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.875rem", color: descColor, opacity: 0.85, lineHeight: 1.85, fontWeight: 300 }}>{memory.description}</motion.p>
         <motion.div variants={fadeIn} style={{ width: "20px", height: "1px", background: `${accentColor}44` }} />
       </div>
     </motion.div>
@@ -680,8 +687,11 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont }: { memor
 // ─────────────────────────────────────────────────────────────────────────────
 // 📸  POLAROİD KART
 // ─────────────────────────────────────────────────────────────────────────────
-function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEnabled }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; tiltEnabled: boolean }) {
+function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEnabled, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; tiltEnabled: boolean; textColor: string }) {
   const rotateDeg = tiltEnabled ? (memory.rotate ?? 0) : 0;
+  const dColor = memory.dateColor || textColor || accentColor;
+  const tColor = memory.titleColor || textColor || accentColor;
+  const descColor = memory.descriptionColor || textColor || accentColor;
   return (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
       <motion.div
@@ -709,16 +719,16 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
           )}
         </div>
         <div style={{ paddingTop: "14px", paddingLeft: "6px" }}>
-          <div style={{ fontFamily: headingFont, fontSize: "22px", color: accentColor, lineHeight: 1.2 }}>
+          <div style={{ fontFamily: headingFont, fontSize: "22px", color: tColor, lineHeight: 1.2 }}>
             {memory.caption || memory.title}
           </div>
-          <div style={{ fontFamily: bodyFont, fontSize: "8px", color: accentColor, opacity: 0.8, letterSpacing: "0.2em", marginTop: "5px", textTransform: "uppercase" }}>{memory.date}</div>
+          <div style={{ fontFamily: bodyFont, fontSize: "8px", color: dColor, opacity: 0.8, letterSpacing: "0.2em", marginTop: "5px", textTransform: "uppercase" }}>{memory.date}</div>
         </div>
       </motion.div>
       <motion.div variants={stagger} style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "8px", maxWidth: "280px" }}>
-        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 3vw, 1.8rem)", fontWeight: 400, color: accentColor, lineHeight: 1.2 }}>{memory.title}</motion.h3>
+        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 3vw, 1.8rem)", fontWeight: 400, color: tColor, lineHeight: 1.2 }}>{memory.title}</motion.h3>
         {memory.description && (
-          <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: accentColor, opacity: 0.85, lineHeight: 1.8 }}>{memory.description}</motion.p>
+          <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: descColor, opacity: 0.85, lineHeight: 1.8 }}>{memory.description}</motion.p>
         )}
       </motion.div>
     </motion.div>
@@ -728,7 +738,10 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎬  SİNEMATİK KART
 // ─────────────────────────────────────────────────────────────────────────────
-function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont }: { memory: any; accentColor: string; headingFont: string; bodyFont: string }) {
+function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; textColor: string }) {
+  const dColor = memory.dateColor || textColor || accentColor;
+  const tColor = memory.titleColor || textColor || accentColor;
+  const descColor = memory.descriptionColor || textColor || accentColor;
   return (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <motion.div variants={fadeUp} style={{ position: "relative", overflow: "hidden", borderRadius: "4px" }}>
@@ -742,14 +755,14 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont }: { m
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
             <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px" }}>
-              <div style={{ fontFamily: bodyFont, fontSize: "8px", color: accentColor, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "4px" }}>{memory.date}</div>
-              <div style={{ fontFamily: headingFont, fontSize: "1.4rem", color: accentColor, lineHeight: 1.2 }}>{memory.title}</div>
+              <div style={{ fontFamily: bodyFont, fontSize: "8px", color: dColor, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "4px" }}>{memory.date}</div>
+              <div style={{ fontFamily: headingFont, fontSize: "1.4rem", color: tColor, lineHeight: 1.2 }}>{memory.title}</div>
             </div>
           </>
         )}
       </motion.div>
       {memory.description && (
-        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: accentColor, opacity: 0.85, lineHeight: 1.8, paddingLeft: "4px", borderLeft: `2px solid ${accentColor}55` }}>
+        <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: descColor, opacity: 0.85, lineHeight: 1.8, paddingLeft: "4px", borderLeft: `2px solid ${accentColor}55` }}>
           {memory.description}
         </motion.p>
       )}
@@ -832,13 +845,14 @@ export default function BosTemplate({
     }
 
     // Klasik fotoğraf/video kartları
+    const txtColor = config.textColor || "";
     if (config.memoryCardStyle === "polaroid") {
-      return <PolaroidMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} tiltEnabled={config.polaroidTilt} />;
+      return <PolaroidMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} tiltEnabled={config.polaroidTilt} textColor={txtColor} />;
     }
     if (config.memoryCardStyle === "cinematic") {
-      return <CinematicMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
+      return <CinematicMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
     }
-    return <PlainMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
+    return <PlainMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
   };
 
   const isArcade = hFont.includes("Press Start") || hFont.includes("VT323") || bFont.includes("Press Start") || bFont.includes("VT323");
@@ -921,9 +935,9 @@ export default function BosTemplate({
               style={{ position: "absolute", bottom: "32px", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}
             >
               <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}>
-                <ChevronDown size={18} style={{ color: ac }} />
+                <ChevronDown size={18} style={{ color: config.scrollTextColor || ac }} />
               </motion.div>
-              <span style={{ fontFamily: bFont, fontSize: "8px", letterSpacing: "0.38em", textTransform: "uppercase", color: ac }}>Kaydır</span>
+              <span style={{ fontFamily: bFont, fontSize: "8px", letterSpacing: "0.38em", textTransform: "uppercase", color: config.scrollTextColor || ac }}>Kaydır</span>
             </motion.div>
           </section>
 
@@ -932,10 +946,10 @@ export default function BosTemplate({
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger}
             style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b" }}
           >
-            <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: `${ac}99`, marginBottom: "12px" }}>
+            <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: config.headingEyebrowColor || config.textColor || `${ac}99`, marginBottom: "12px" }}>
               Birlikte Yazdığımız
             </motion.span>
-            <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: ac, letterSpacing: "0.04em", lineHeight: 1.2 }}>
+            <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: config.headingTitleColor || config.textColor || ac, letterSpacing: "0.04em", lineHeight: 1.2 }}>
               Hikayemiz
             </motion.h2>
             <motion.div variants={fadeIn} style={{ width: "28px", height: "1px", marginTop: "20px", background: `${ac}55` }} />
@@ -963,7 +977,7 @@ export default function BosTemplate({
                 <motion.div variants={fadeUp}>
                   <Heart size={28} fill={ac} stroke="none" className="animate-pulse" style={{ filter: `drop-shadow(0 0 12px ${ac}99)` }} />
                 </motion.div>
-                <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3.5rem)", fontWeight: 400, color: config.finalHeadingColor || "#FFFFFF", letterSpacing: "0.04em", lineHeight: 1.2 }}>
+                <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3.5rem)", fontWeight: 400, color: config.finalHeadingColor || config.textColor || "#FFFFFF", letterSpacing: "0.04em", lineHeight: 1.2 }}>
                   {config.finalHeading}
                 </motion.h2>
                 <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
