@@ -25,7 +25,13 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
       heading: "Aklında <em style=\"color: #C9A84C; font-style: italic\">Soru mu Var?</em>"
     },
     faqs: defaultFaqs,
-    whatsapp_number: "905555555555"
+    whatsapp_number: "905555555555",
+    abandoned_cart_settings: {
+      email_delay_hours: 12,
+      email_subject: "Yarım Kalan Bir Hikaye Var... 🤍",
+      email_body: "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;\">\n<h2 style=\"color: #C9A84C;\">Merhaba,</h2>\n<p>Birlikteydik sayfanı tasarlamaya başladığını gördük ancak henüz yayına almadın.</p>\n<p>Yarım kalan anılarını tamamlamak ve sayfanı ölümsüzleştirmek için tasarımına geri dön.</p>\n<div style=\"text-align: center; margin: 30px 0;\">\n<a href=\"https://birlikteydik.com/sayfa-olustur\" style=\"background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;\">Tasarımı Tamamla ve Hayata Geçir</a>\n</div>\n</div>",
+      delete_delay_hours: 72
+    }
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
@@ -414,6 +420,53 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* ABANDONED CART SETTINGS */}
+            <div style={{ marginTop: "32px", padding: "24px", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.04)" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text, marginBottom: "16px" }}>Terk Edilmiş Sayfa Yönetimi</h3>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>Mail Gönderme Süresi (Saat)</label>
+                  <input
+                    type="number"
+                    value={siteSettings.abandoned_cart_settings?.email_delay_hours || 12}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, abandoned_cart_settings: { ...siteSettings.abandoned_cart_settings, email_delay_hours: Number(e.target.value) } })}
+                    style={{ padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px" }}
+                  />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>Sayfa Silme Süresi (Saat)</label>
+                  <input
+                    type="number"
+                    value={siteSettings.abandoned_cart_settings?.delete_delay_hours || 72}
+                    onChange={(e) => setSiteSettings({ ...siteSettings, abandoned_cart_settings: { ...siteSettings.abandoned_cart_settings, delete_delay_hours: Number(e.target.value) } })}
+                    style={{ padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px" }}
+                  />
+                  <p style={{ fontSize: "10px", color: C.error, marginTop: "2px" }}>0 yazarsanız otomatik silme devre dışı kalır.</p>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" }}>
+                <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>E-posta Başlığı</label>
+                <input
+                  type="text"
+                  value={siteSettings.abandoned_cart_settings?.email_subject || ""}
+                  onChange={(e) => setSiteSettings({ ...siteSettings, abandoned_cart_settings: { ...siteSettings.abandoned_cart_settings, email_subject: e.target.value } })}
+                  style={{ padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>E-posta İçeriği (HTML)</label>
+                <textarea
+                  value={siteSettings.abandoned_cart_settings?.email_body || ""}
+                  onChange={(e) => setSiteSettings({ ...siteSettings, abandoned_cart_settings: { ...siteSettings.abandoned_cart_settings, email_body: e.target.value } })}
+                  rows={8}
+                  style={{ padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px", resize: "vertical", fontFamily: "monospace" }}
+                />
               </div>
             </div>
 

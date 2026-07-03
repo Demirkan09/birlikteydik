@@ -12,7 +12,7 @@ export const C = {
 };
 
 export const PACKAGES = [
-  { name: "Temel Paket", desc: "Temel özellikler, 1 sayfa", badge: "Ücretsiz" },
-  { name: "Standart Paket", desc: "Gelişmiş özellikler, müzik & galeri", badge: "Popüler" },
-  { name: "Premium Paket", desc: "Tüm özellikler + özel domain", badge: "En İyi" },
+  { name: "Temel Paket", desc: "10 fotoğrafa kadar ve 6 ay aktif link", badge: "₺199" },
+  { name: "Standart Paket", desc: "32 fotoğrafa kadar ve 18 ay aktif link", badge: "₺1299" },
+  { name: "Premium Paket", desc: "64 fotoğrafa kadar ve 2 yıl aktif link", badge: "₺2499" },
 ];

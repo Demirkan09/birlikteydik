@@ -140,7 +140,7 @@ function HeartsCanvas({ accentColor, density }: { accentColor: string; density: 
     particlesRef.current = Array.from({ length: density }, () => ({
       x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
       size: Math.random() * 7 + 3, speed: Math.random() * 0.25 + 0.1,
-      opacity: Math.random() * 0.14 + 0.03, drift: (Math.random() - 0.5) * 0.35,
+      opacity: Math.random() * 0.4 + 0.15, drift: (Math.random() - 0.5) * 0.35,
       phase: Math.random() * Math.PI * 2,
     }));
     const drawHeart = (cx: number, cy: number, size: number, opacity: number) => {
@@ -354,7 +354,7 @@ function MusicWidget({ isPlaying, toggleMusic, accentColor, type, position }: { 
 // ─────────────────────────────────────────────────────────────────────────────
 // ⏱  ZAMAN SAYACI BİLEŞENİ
 // ─────────────────────────────────────────────────────────────────────────────
-function CountdownBlock({ memory, accentColor, bodyFont, headingFont }: { memory: any; accentColor: string; bodyFont: string; headingFont: string }) {
+function CountdownBlock({ memory, accentColor, bodyFont, headingFont, textColor }: { memory: any; accentColor: string; bodyFont: string; headingFont: string; textColor?: string }) {
   const [elapsed, setElapsed] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -410,14 +410,14 @@ function CountdownBlock({ memory, accentColor, bodyFont, headingFont }: { memory
               >
                 {pad(val)}
               </motion.span>
-              <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginTop: "6px" }}>{unit}</span>
+              <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.3em", textTransform: "uppercase", color: textColor || "rgba(255,255,255,0.35)", marginTop: "6px" }}>{unit}</span>
             </div>
             {i < 3 && <span style={{ color: `${accentColor}55`, fontSize: "1.5rem", fontFamily: headingFont, marginTop: "-12px" }}>·</span>}
           </div>
         ))}
       </div>
       {memory.description && (
-        <p style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.8, maxWidth: "280px" }}>{memory.description}</p>
+        <p style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: textColor || "rgba(255,255,255,0.45)", lineHeight: 1.8, maxWidth: "280px" }}>{memory.description}</p>
       )}
     </motion.div>
   );
@@ -725,12 +725,11 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
           <div style={{ fontFamily: bodyFont, fontSize: "8px", color: dColor, opacity: 0.8, letterSpacing: "0.2em", marginTop: "5px", textTransform: "uppercase" }}>{memory.date}</div>
         </div>
       </motion.div>
-      <motion.div variants={stagger} style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "8px", maxWidth: "280px" }}>
-        <motion.h3 variants={fadeUp} style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 3vw, 1.8rem)", fontWeight: 400, color: tColor, lineHeight: 1.2 }}>{memory.title}</motion.h3>
-        {memory.description && (
+      {memory.description && (
+        <motion.div variants={stagger} style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "8px", maxWidth: "280px" }}>
           <motion.p variants={fadeUp} style={{ fontFamily: bodyFont, fontSize: "0.85rem", color: descColor, opacity: 0.85, lineHeight: 1.8 }}>{memory.description}</motion.p>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
@@ -782,8 +781,24 @@ export default function BosTemplate({
   memories?: Array<typeof defaultMemories[0] & { video?: string; caption?: string }>;
   pageSlug?: string;
 } = {}) {
-  const config: TemplateConfig = { ...defaultConfig, ...(propConfig ?? {}) };
-  const memories = propMemories ?? defaultMemories;
+  const [config, setConfig] = useState<TemplateConfig>({ ...defaultConfig, ...(propConfig ?? {}) });
+  const [memories, setMemories] = useState(propMemories ?? defaultMemories);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const search = new URLSearchParams(window.location.search);
+      if (search.get("preview") === "true") {
+        const c = search.get("config");
+        const m = search.get("memories");
+        if (c) {
+          try { setConfig(prev => ({ ...prev, ...JSON.parse(decodeURIComponent(c)) })); } catch {}
+        }
+        if (m) {
+          try { setMemories(JSON.parse(decodeURIComponent(m))); } catch {}
+        }
+      }
+    }
+  }, []);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -832,10 +847,11 @@ export default function BosTemplate({
 
   const renderMemoryCard = (memory: any, i: number) => {
     const type: string = memory.type ?? "photo";
+    const txtColor = config.textColor || "";
 
     // Yeni bileşen tipleri
     if (type === "countdown") {
-      return <CountdownBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
+      return <CountdownBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
     }
     if (type === "quiz") {
       return <QuizBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} pageSlug={pageSlug} />;
@@ -845,7 +861,6 @@ export default function BosTemplate({
     }
 
     // Klasik fotoğraf/video kartları
-    const txtColor = config.textColor || "";
     if (config.memoryCardStyle === "polaroid") {
       return <PolaroidMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} tiltEnabled={config.polaroidTilt} textColor={txtColor} />;
     }
@@ -909,7 +924,7 @@ export default function BosTemplate({
                 fontFamily: hFont,
                 fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.8, 7),
                 fontWeight: 400, lineHeight: 1.2, paddingBottom: "0.1em", letterSpacing: "0.04em",
-                background: `linear-gradient(160deg, ${config.nameGradientStart || "rgba(255,255,255,0.96)"} 0%, ${config.nameGradientEnd || `${ac}cc`} 100%)`,
+                backgroundImage: `linear-gradient(160deg, ${config.nameGradientStart || "rgba(255,255,255,0.96)"} 0%, ${config.nameGradientEnd || `${ac}cc`} 100%)`,
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 whiteSpace: "pre-line",
               }}>

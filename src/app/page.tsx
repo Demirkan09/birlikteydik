@@ -633,7 +633,7 @@ function Hero({ settings }: { settings: any }) {
         style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center" }}
       >
         <a
-          href="#ozel-gunler"
+          href="https://ig.me/m/birlikteydikcom"
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: "13px",
@@ -1664,7 +1664,7 @@ export default function LandingPage() {
                 Siparişini ver, fotoğraflarını gönder. 24 saat içinde özel linkin hazır.
               </p>
               <a
-                href={`https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`} target="_blank" rel="noopener noreferrer"
+                href="https://ig.me/m/birlikteydikcom"
                 style={{
                   display: "inline-block",
                   fontFamily: "'Inter', sans-serif",
