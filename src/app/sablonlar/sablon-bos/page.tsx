@@ -332,10 +332,10 @@ function MusicWidgetMinimal({ isPlaying, toggleMusic, accentColor }: { isPlaying
 // 🎵  Widget Wrapper — pozisyon + tip seçimi
 // ─────────────────────────────────────────────────────────────────────────────
 const WIDGET_POSITION_STYLE: Record<string, React.CSSProperties> = {
-  "bottom-left":  { position: "fixed", bottom: "24px", left: "24px", zIndex: 40 },
-  "bottom-right": { position: "fixed", bottom: "24px", right: "24px", zIndex: 40 },
-  "top-left":     { position: "fixed", top: "24px",    left: "24px",  zIndex: 40 },
-  "top-right":    { position: "fixed", top: "24px",    right: "24px", zIndex: 40 },
+  "bottom-left":  { position: "fixed", bottom: "24px", left: "max(24px, calc(50% - 216px))", zIndex: 40 },
+  "bottom-right": { position: "fixed", bottom: "24px", right: "max(24px, calc(50% - 216px))", zIndex: 40 },
+  "top-left":     { position: "fixed", top: "24px",    left: "max(24px, calc(50% - 216px))",  zIndex: 40 },
+  "top-right":    { position: "fixed", top: "24px",    right: "max(24px, calc(50% - 216px))", zIndex: 40 },
 };
 
 function MusicWidget({ isPlaying, toggleMusic, accentColor, type, position }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string; type: string; position: string }) {
