@@ -426,7 +426,7 @@ function CountdownBlock({ memory, accentColor, bodyFont, headingFont, textColor 
 // ─────────────────────────────────────────────────────────────────────────────
 // ❓  ANKET / OYUN BİLEŞENİ
 // ─────────────────────────────────────────────────────────────────────────────
-function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug }: { memory: any; accentColor: string; bodyFont: string; headingFont: string; pageSlug?: string }) {
+function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textColor }: { memory: any; accentColor: string; bodyFont: string; headingFont: string; pageSlug?: string; textColor?: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -465,7 +465,7 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug }: { m
         <span style={{ fontFamily: bodyFont, fontSize: "9px", letterSpacing: "0.4em", textTransform: "uppercase", color: `${accentColor}77` }}>
           Bana Sor
         </span>
-        <h3 style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 4vw, 1.9rem)", fontWeight: 400, color: "#fff", lineHeight: 1.3, letterSpacing: "0.01em" }}>
+        <h3 style={{ fontFamily: headingFont, fontSize: "clamp(1.3rem, 4vw, 1.9rem)", fontWeight: 400, color: textColor || "#fff", lineHeight: 1.3, letterSpacing: "0.01em" }}>
           {memory.question || "Soru henüz eklenmedi"}
         </h3>
       </motion.div>
@@ -486,7 +486,7 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug }: { m
               style={{
                 padding: "14px 20px", border: `1px solid ${isSelected ? accentColor : `${accentColor}33`}`,
                 borderRadius: "4px", background: isSelected ? `${accentColor}18` : "transparent",
-                color: isSelected ? accentColor : "rgba(255,255,255,0.65)",
+                color: isSelected ? accentColor : (textColor || "rgba(255,255,255,0.65)"),
                 fontFamily: bodyFont, fontSize: "0.9rem", textAlign: "left",
                 cursor: selected !== null ? "default" : "pointer",
                 transition: "all 0.2s ease",
@@ -854,7 +854,7 @@ export default function BosTemplate({
       return <CountdownBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
     }
     if (type === "quiz") {
-      return <QuizBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} pageSlug={pageSlug} />;
+      return <QuizBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} pageSlug={pageSlug} textColor={txtColor} />;
     }
     if (type === "letter") {
       return <LetterBlock key={memory.id ?? i} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} />;
