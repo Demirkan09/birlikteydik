@@ -646,7 +646,7 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "28px" }}>
       <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, borderRadius: "2px", background: accentColor, filter: "blur(24px)", opacity: 0.06, pointerEvents: "none" }} />
-        <div style={{ position: "relative", overflow: "hidden", background: "#111113", border: `1px solid ${accentColor}22` }}>
+        <div style={{ position: "relative", overflow: "hidden", background: "#111113", border: `1px solid ${accentColor}22`, width: "100%" }}>
           {memory.video ? (
             <VideoPlayerPro src={memory.video} />
           ) : (
@@ -695,7 +695,7 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
       >
         {/* Bant dekal */}
         <div style={{ position: "absolute", top: "-8px", left: "50%", transform: "translateX(-50%) rotate(2deg)", width: "44px", height: "18px", background: `${accentColor}33`, border: `1px solid ${accentColor}22`, boxShadow: "0 2px 8px rgba(0,0,0,0.3)", backdropFilter: "blur(1px)", borderRadius: "1px" }} />
-        <div style={{ overflow: "hidden", position: "relative" }}>
+        <div style={{ overflow: "hidden", position: "relative", width: "100%" }}>
           {memory.video ? (
             <VideoPlayerPro src={memory.video} />
           ) : (

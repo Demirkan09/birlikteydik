@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, RotateCcw } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
 interface VideoPlayerProProps {
   src: string;
@@ -118,17 +118,31 @@ export default function VideoPlayerPro({ src }: VideoPlayerProProps) {
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-xl bg-black/40 border border-white/5 group aspect-video"
       onMouseMove={triggerControlsVisibility}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       onClick={togglePlay}
-      style={{ cursor: "pointer" }}
+      style={{
+        position: "relative",
+        width: "100%",
+        overflow: "hidden",
+        borderRadius: "12px",
+        backgroundColor: "rgba(0,0,0,0.4)",
+        border: "1px solid rgba(255,255,255,0.05)",
+        cursor: "pointer",
+        aspectRatio: "16 / 9",
+        display: "block"
+      }}
     >
       {/* Video Element */}
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-full object-cover block"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block"
+        }}
         loop
         playsInline
         autoPlay
@@ -142,58 +156,78 @@ export default function VideoPlayerPro({ src }: VideoPlayerProProps) {
 
       {/* Loading Overlay */}
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-          <div className="w-8 h-8 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+          <div style={{ width: "32px", height: "32px", border: "2px solid rgba(245,158,11,0.2)", borderTopColor: "#f59e0b", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
         </div>
       )}
 
       {/* Play/Pause Overlay Centered Button */}
       <div
-        className={`absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity duration-300 ${
-          showControls || !isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0,0,0,0.2)",
+          transition: "opacity 0.3s ease",
+          opacity: showControls || !isPlaying ? 1 : 0,
+          pointerEvents: showControls || !isPlaying ? "auto" : "none",
+          zIndex: 4
+        }}
       >
-        <div className="w-14 h-14 rounded-full flex items-center justify-center bg-black/60 backdrop-blur-md border border-white/10 text-white/90 shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-white">
+        <div style={{ width: "56px", height: "56px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.9)", transition: "transform 0.3s ease" }}>
           {isPlaying ? (
-            <Pause className="w-6 h-6 fill-current" />
+            <Pause style={{ width: "24px", height: "24px", fill: "currentColor" }} />
           ) : (
-            <Play className="w-6 h-6 fill-current translate-x-0.5" />
+            <Play style={{ width: "24px", height: "24px", fill: "currentColor", transform: "translateX(1px)" }} />
           )}
         </div>
       </div>
 
       {/* Bottom Controls Bar */}
       <div
-        className={`absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-all duration-300 flex flex-col gap-3 select-none ${
-          showControls || !isPlaying ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
-        }`}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: "16px",
+          background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)",
+          transition: "all 0.3s ease",
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+          opacity: showControls || !isPlaying ? 1 : 0,
+          pointerEvents: showControls || !isPlaying ? "auto" : "none",
+          zIndex: 4
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Progress Bar */}
         <div
-          className="h-1 w-full bg-white/20 rounded-full cursor-pointer relative group/progress transition-all duration-200 hover:h-1.5"
+          style={{ height: "4px", width: "100%", backgroundColor: "rgba(255,255,255,0.2)", borderRadius: "9999px", cursor: "pointer", position: "relative" }}
           onClick={handleProgressClick}
         >
           <div
-            className="absolute top-0 left-0 h-full bg-amber-500 rounded-full"
-            style={{ width: `${progress}%` }}
+            style={{ position: "absolute", top: 0, left: 0, height: "100%", backgroundColor: "#f59e0b", borderRadius: "9999px", width: `${progress}%` }}
           />
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center justify-between text-white/80">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "rgba(255,255,255,0.8)" }}>
           <button
             onClick={togglePlay}
-            className="hover:text-white transition-colors p-1"
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "4px" }}
           >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isPlaying ? <Pause style={{ width: "16px", height: "16px" }} /> : <Play style={{ width: "16px", height: "16px" }} />}
           </button>
 
           <button
             onClick={toggleMute}
-            className="hover:text-white transition-colors p-1"
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: "4px" }}
           >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {isMuted ? <VolumeX style={{ width: "16px", height: "16px" }} /> : <Volume2 style={{ width: "16px", height: "16px" }} />}
           </button>
         </div>
       </div>

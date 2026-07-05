@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { promises as fs, createReadStream } from "fs";
+import { promises as fs } from "fs";
 import path from "path";
 
 export async function GET(
@@ -22,15 +22,16 @@ export async function GET(
       return new Response("Forbidden", { status: 403 });
     }
 
-    // Check if the file exists on disk and get its stats
-    let fileStats;
+    // Check if the file exists on disk
     try {
-      fileStats = await fs.stat(filePath);
+      await fs.access(filePath);
     } catch {
       return new Response("Not Found", { status: 404 });
     }
 
-    const totalSize = fileStats.size;
+    // Read full file buffer from disk (highly compatible for older iOS versions)
+    const fileBuffer = await fs.readFile(filePath);
+    const totalSize = fileBuffer.length;
 
     // Determine content type based on file extension
     const ext = path.extname(decodedFilename).toLowerCase();
@@ -67,23 +68,9 @@ export async function GET(
       }
 
       const chunkSize = end - start + 1;
-      
-      // Node.js stream for the requested range of bytes
-      const fileStream = createReadStream(filePath, { start, end });
-      
-      // Convert Node.js readable stream to standard Web ReadableStream
-      const webStream = new ReadableStream({
-        start(controller) {
-          fileStream.on("data", (chunk) => controller.enqueue(typeof chunk === "string" ? Buffer.from(chunk) : (chunk as any)));
-          fileStream.on("end", () => controller.close());
-          fileStream.on("error", (err) => controller.error(err));
-        },
-        cancel() {
-          fileStream.destroy();
-        }
-      });
+      const slicedBuffer = fileBuffer.subarray(start, end + 1);
 
-      return new Response(webStream, {
+      return new Response(slicedBuffer, {
         status: 206,
         headers: {
           "Content-Range": `bytes ${start}-${end}/${totalSize}`,
@@ -95,20 +82,8 @@ export async function GET(
       });
     }
 
-    // No range request - serve full file using stream
-    const fileStream = createReadStream(filePath);
-    const webStream = new ReadableStream({
-      start(controller) {
-        fileStream.on("data", (chunk) => controller.enqueue(typeof chunk === "string" ? Buffer.from(chunk) : (chunk as any)));
-        fileStream.on("end", () => controller.close());
-        fileStream.on("error", (err) => controller.error(err));
-      },
-      cancel() {
-        fileStream.destroy();
-      }
-    });
-
-    return new Response(webStream, {
+    // No range request - serve full file
+    return new Response(fileBuffer, {
       status: 200,
       headers: {
         "Accept-Ranges": "bytes",
