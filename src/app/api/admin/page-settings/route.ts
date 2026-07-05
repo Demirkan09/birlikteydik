@@ -111,6 +111,7 @@ export async function GET(request: Request) {
            p.page_slug, 
            p.template_id, 
            p.is_published,
+           p.is_showcase,
            up.created_at AS "activatedAt",
            up.package_name AS "packageName"
          FROM page_settings p
@@ -155,6 +156,7 @@ export async function GET(request: Request) {
           pageSlug: row.page_slug,
           templateId: row.template_id,
           isPublished: row.is_published,
+          isShowcase: row.is_showcase,
           activatedAt: row.activatedAt,
           packageName: row.packageName,
           remainingTime: calculateRemainingTime(row.activatedAt, row.packageName),
@@ -165,7 +167,7 @@ export async function GET(request: Request) {
     const cleanSlug = pageSlug.trim().toLowerCase();
 
     const res = await pool.query(
-      "SELECT page_slug, template_id, config, memories, is_published FROM page_settings WHERE page_slug = $1",
+      "SELECT page_slug, template_id, config, memories, is_published, is_showcase FROM page_settings WHERE page_slug = $1",
       [cleanSlug]
     );
 
@@ -181,6 +183,7 @@ export async function GET(request: Request) {
         config: row.config,
         memories: row.memories,
         isPublished: row.is_published,
+        isShowcase: row.is_showcase,
       }
     });
   } catch (err) {
@@ -193,7 +196,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { adminEmail, action, pageSlug, newPageSlug, templateId, config, memories, isPublished } = body as {
+    const { adminEmail, action, pageSlug, newPageSlug, templateId, config, memories, isPublished, isShowcase } = body as {
       adminEmail?: string;
       action?: "create" | "update";
       pageSlug?: string;
@@ -202,6 +205,7 @@ export async function POST(request: Request) {
       config?: any;
       memories?: any;
       isPublished?: boolean;
+      isShowcase?: boolean;
     };
 
     if (!adminEmail || !action || !pageSlug) {
@@ -354,10 +358,10 @@ export async function POST(request: Request) {
           // Update page_settings
           result = await pool.query(
             `UPDATE page_settings
-             SET page_slug = $1, template_id = $2, config = $3, memories = $4, is_published = $5
-             WHERE page_slug = $6
+             SET page_slug = $1, template_id = $2, config = $3, memories = $4, is_published = $5, is_showcase = $6
+             WHERE page_slug = $7
              RETURNING id`,
-            [cleanNewSlug, templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, cleanSlug]
+            [cleanNewSlug, templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, !!isShowcase, cleanSlug]
           );
           await pool.query("COMMIT");
         } catch (transErr) {
@@ -367,10 +371,10 @@ export async function POST(request: Request) {
       } else {
         result = await pool.query(
           `UPDATE page_settings
-           SET template_id = $1, config = $2, memories = $3, is_published = $4
-           WHERE page_slug = $5
+           SET template_id = $1, config = $2, memories = $3, is_published = $4, is_showcase = $5
+           WHERE page_slug = $6
            RETURNING id`,
-          [templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, cleanSlug]
+          [templateId, JSON.stringify(config), JSON.stringify(memories), !!isPublished, !!isShowcase, cleanSlug]
         );
       }
 

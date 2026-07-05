@@ -13,7 +13,7 @@ interface PagesTabProps {
 
 export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTabProps) {
   // Tab 0 — Sayfa Oluştur & Düzenle
-  const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; activatedAt?: string; remainingTime?: string }[]>([]);
+  const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; isShowcase?: boolean; activatedAt?: string; remainingTime?: string }[]>([]);
   const [pagesTab, setPagesTab] = useState<"published" | "drafts">("published");
   const [pagesLoading, setPagesLoading] = useState(false);
   const [selectedEditSlug, setSelectedEditSlug] = useState("");
@@ -24,6 +24,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [editConfig, setEditConfig] = useState<any>(null);
   const [editMemories, setEditMemories] = useState<any[]>([]);
   const [editIsPublished, setEditIsPublished] = useState(false);
+  const [editIsShowcase, setEditIsShowcase] = useState(false);
   
   // Custom template save states
   const [saveTemplateName, setSaveTemplateName] = useState("");
@@ -72,6 +73,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   }, [adminEmail]);
 
   useEffect(() => {
+    fetch("/api/admin/setup-db").catch(() => {});
     fetchAllPages();
     fetchCustomTemplates();
   }, [fetchAllPages, fetchCustomTemplates]);
@@ -171,6 +173,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
         });
         setEditMemories(ps.memories || []);
         setEditIsPublished(ps.isPublished);
+        setEditIsShowcase(ps.isShowcase || false);
       } else {
         setEditorError(data.error ?? "Sayfa ayarları yüklenemedi.");
       }
@@ -233,6 +236,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
           config: editConfig,
           memories: editMemories,
           isPublished: isPub,
+          isShowcase: editIsShowcase,
         }),
       });
       const data = await res.json();
@@ -525,6 +529,17 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 }}>
                                   {page.isPublished ? "YAYINDA" : "TASLAK"}
                                 </span>
+                                {page.isShowcase && (
+                                  <span style={{
+                                    fontSize: "10px", padding: "2px 8px", borderRadius: "20px", fontWeight: 600,
+                                    background: "rgba(168,85,247,0.12)",
+                                    color: "#A855F7",
+                                    border: "1px solid rgba(168,85,247,0.33)",
+                                    marginLeft: "8px"
+                                  }}>
+                                    VİTRİN
+                                  </span>
+                                )}
                                 <button
                                   onClick={() => loadPageSettings(page.pageSlug)}
                                   style={{
@@ -1855,12 +1870,61 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               e.currentTarget.style.borderColor = "rgba(232, 160, 160, 0.8)";
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.background = "rgba(232, 160, 160, 0.05)";
+                                            e.currentTarget.style.background = "rgba(232, 160, 160, 0.05)";
                               e.currentTarget.style.borderColor = "rgba(232, 160, 160, 0.4)";
                             }}
                           >
                             Sayfayı Sil
                           </button>
+
+                          <button
+                             type="button"
+                             disabled={editorSaving}
+                             onClick={async () => {
+                               const newShowcaseState = !editIsShowcase;
+                               setEditIsShowcase(newShowcaseState);
+                               setEditorSaving(true);
+                               try {
+                                 const res = await fetch("/api/admin/page-settings", {
+                                   method: "POST",
+                                   headers: { "Content-Type": "application/json" },
+                                   body: JSON.stringify({
+                                     adminEmail,
+                                     action: "update",
+                                     pageSlug: selectedEditSlug,
+                                     newPageSlug: editPageSlug,
+                                     templateId: editTemplateId,
+                                     config: editConfig,
+                                     memories: editMemories,
+                                     isPublished: editIsPublished,
+                                     isShowcase: newShowcaseState,
+                                   }),
+                                 });
+                                 const data = await res.json();
+                                 if (res.ok) {
+                                   setEditorSuccess(newShowcaseState ? "Sayfa başarıyla vitrine eklendi! 🌟" : "Sayfa vitrinden kaldırıldı.");
+                                   await fetchAllPages();
+                                 } else {
+                                   setEditorError(data.error || "Vitrin durumu güncellenemedi.");
+                                 }
+                               } catch {
+                                 setEditorError("Sunucu bağlantı hatası.");
+                               } finally {
+                                 setEditorSaving(false);
+                               }
+                             }}
+                             style={{
+                               padding: "14px 28px", borderRadius: "30px",
+                               border: `1px solid ${editIsShowcase ? "rgba(134,239,172,0.4)" : "rgba(255,255,255,0.15)"}`,
+                               background: editIsShowcase ? "rgba(134,239,172,0.08)" : "rgba(255,255,255,0.03)",
+                               color: editIsShowcase ? C.success : C.text,
+                               fontFamily: "var(--font-inter), sans-serif",
+                               fontSize: "13px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", cursor: "pointer",
+                               transition: "all 0.2s", marginRight: "12px"
+                             }}
+                           >
+                             {editIsShowcase ? "Vitrinden Kaldır" : "Vitrinde Sergile"}
+                           </button>
 
                           <button
                             type="button"

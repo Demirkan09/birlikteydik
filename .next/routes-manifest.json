@@ -215,6 +215,12 @@
       "namedRegex": "^/api/reset\\-password(?:/)?$"
     },
     {
+      "page": "/api/showcase",
+      "regex": "^/api/showcase(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/showcase(?:/)?$"
+    },
+    {
       "page": "/api/site-settings",
       "regex": "^/api/site\\-settings(?:/)?$",
       "routeKeys": {},

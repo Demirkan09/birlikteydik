@@ -373,6 +373,27 @@ function HeartsCanvas() {
 }
 
 export default function TemplatesPage() {
+  const [dbShowcases, setDbShowcases] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/showcase")
+      .then(res => res.json())
+      .then(data => {
+        if (data.showcasePages) {
+          setDbShowcases(data.showcasePages);
+        }
+      })
+      .catch(err => console.error("Showcase fetch error:", err));
+  }, []);
+
+  const dbIds = new Set(dbShowcases.map(t => t.id));
+  const fallbackTemplates = templates.filter(t => {
+    const slug = t.demoUrl.replace("/sablonlar/", "");
+    return !dbIds.has(slug);
+  });
+
+  const mergedTemplates = [...dbShowcases, ...fallbackTemplates];
+
   return (
     <>
 
@@ -445,7 +466,7 @@ export default function TemplatesPage() {
           gap: "32px 24px",
           marginBottom: "80px",
         }}>
-          {templates.map((tpl, i) => {
+          {mergedTemplates.map((tpl, i) => {
             const orderMessage = `Merhaba! "${tpl.title}" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.`;
             const tplWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
 
@@ -540,7 +561,7 @@ export default function TemplatesPage() {
                   </p>
 
                   <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px", marginTop: "auto" }}>
-                    {tpl.features.map((feat, idx) => (
+                    {tpl.features.map((feat: string, idx: number) => (
                       <li key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.65)", fontWeight: 300 }}>
                         <span style={{ color: tpl.accentColor, fontWeight: "bold" }}>✓</span>
                         {feat}
