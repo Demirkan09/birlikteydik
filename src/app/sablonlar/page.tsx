@@ -374,6 +374,10 @@ function HeartsCanvas() {
 
 export default function TemplatesPage() {
   const [dbShowcases, setDbShowcases] = useState<any[]>([]);
+  const [siteSettings, setSiteSettings] = useState<any>({
+    maintenance_mode: false,
+    whatsapp_number: "905349829940"
+  });
 
   useEffect(() => {
     fetch("/api/showcase")
@@ -384,6 +388,15 @@ export default function TemplatesPage() {
         }
       })
       .catch(err => console.error("Showcase fetch error:", err));
+
+    fetch("/api/site-settings")
+      .then(res => res.json())
+      .then(data => {
+        if (data.settings) {
+          setSiteSettings(data.settings);
+        }
+      })
+      .catch(err => console.error("Load settings error:", err));
   }, []);
 
   const dbIds = new Set(dbShowcases.map(t => t.id));
@@ -393,6 +406,21 @@ export default function TemplatesPage() {
   });
 
   const mergedTemplates = [...dbShowcases, ...fallbackTemplates];
+
+  if (siteSettings.maintenance_mode) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0B0F1A", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center", fontFamily: "'Inter', sans-serif", color: "#F0EDE8" }}>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>Bakım Modundayız</h1>
+        <p style={{ maxWidth: "460px", color: "rgba(240,237,232,0.6)", fontSize: "14px", lineHeight: 1.6, marginBottom: "32px" }}>
+          Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.
+        </p>
+        <a href={`https://wa.me/${siteSettings.whatsapp_number || "905349829940"}`}
+           style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          WhatsApp ile İletişim
+        </a>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -5,6 +5,26 @@ import { C } from "../../_utils/constants";
 import { formatActiveDuration } from "../../_utils/dateUtils";
 import { TEMPLATE_SCHEMAS } from "../../../../lib/templateSchemas";
 
+const SHOWCASE_SLUGS = [
+  "sablon-retro", "sablon-minimal", "sablon-sinematik", "sablon-emerald", 
+  "sablon-kirmizi", "sablon-oyun", "sablon-lavanta", "sablon-amber", 
+  "sablon-rose", "sablon-indigo", "sablon-siyah"
+];
+
+const TEMPLATE_SHOWCASE_SLUGS: Record<string, string> = {
+  "klasik-retro": "sablon-retro",
+  "romantik-kirmizi": "sablon-kirmizi",
+  "modern-minimal": "sablon-minimal",
+  "sinematik-ask": "sablon-sinematik",
+  "premium-emerald": "sablon-emerald",
+  "sablon-oyun": "sablon-oyun",
+  "sablon-lavanta": "sablon-lavanta",
+  "sablon-amber": "sablon-amber",
+  "sablon-rose": "sablon-rose",
+  "sablon-indigo": "sablon-indigo",
+  "sablon-siyah": "sablon-siyah"
+};
+
 interface PagesTabProps {
   adminEmail: string;
   setPrefilledSlug?: (slug: string) => void;
@@ -329,6 +349,8 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
     WebkitBackdropFilter: "blur(16px)",
   };
 
+  const displayPages = allPages.filter(p => !SHOWCASE_SLUGS.includes(p.pageSlug));
+
   return (
               <motion.div
                 key="create_page"
@@ -354,7 +376,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
                       {/* Şablon Seç */}
                       <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "12px", fontWeight: 500 }}>Şablon Seç</p>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
                         {[
                           { id: "klasik-retro", title: "Koyu Gül Kurusu", color: "#C9897A" },
                           { id: "romantik-kirmizi", title: "Romantik Kırmızı", color: "#E63946" },
@@ -368,23 +390,43 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           { id: "sablon-indigo", title: "Gece Yarısı İndigo", color: "#818CF8" },
                           { id: "sablon-siyah", title: "Karanlık Gece (Siyah)", color: "#1A1A1A" },
                         ].map((tpl) => (
-                          <button
-                            key={tpl.id}
-                            type="button"
-                            onClick={() => setNewTemplateId(tpl.id)}
-                            style={{
-                              padding: "12px", borderRadius: "12px",
-                              border: `1px solid ${newTemplateId === tpl.id ? tpl.color : "rgba(255,255,255,0.06)"}`,
-                              background: newTemplateId === tpl.id ? `${tpl.color}15` : "rgba(255,255,255,0.03)",
-                              color: newTemplateId === tpl.id ? tpl.color : C.text,
-                              cursor: "pointer", transition: "all 0.2s", textAlign: "left",
-                              fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tpl.id ? 600 : 400,
-                              display: "flex", flexDirection: "column", gap: "6px",
-                            }}
-                          >
-                            <span style={{ display: "inline-block", width: "12px", height: "12px", borderRadius: "50%", background: tpl.color }} />
-                            {tpl.title}
-                          </button>
+                          <div key={tpl.id} style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
+                            <button
+                              type="button"
+                              onClick={() => setNewTemplateId(tpl.id)}
+                              style={{
+                                flex: 1,
+                                padding: "10px 14px", borderRadius: "12px",
+                                border: `1px solid ${newTemplateId === tpl.id ? tpl.color : "rgba(255,255,255,0.06)"}`,
+                                background: newTemplateId === tpl.id ? `${tpl.color}15` : "rgba(255,255,255,0.03)",
+                                color: newTemplateId === tpl.id ? tpl.color : C.text,
+                                cursor: "pointer", transition: "all 0.2s", textAlign: "left",
+                                fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tpl.id ? 600 : 400,
+                                display: "flex", alignItems: "center", gap: "10px",
+                              }}
+                            >
+                              <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: tpl.color, flexShrink: 0 }} />
+                              {tpl.title}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => loadPageSettings(TEMPLATE_SHOWCASE_SLUGS[tpl.id])}
+                              style={{
+                                padding: "0 14px", borderRadius: "12px",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                                background: "rgba(255,255,255,0.03)",
+                                color: C.muted,
+                                cursor: "pointer", transition: "all 0.2s",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
+                              title="Şablonu Düzenle"
+                            >
+                              Düzenle
+                            </button>
+                          </div>
                         ))}
                       </div>
 
@@ -474,7 +516,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               fontSize: "11px", fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
                             }}
                           >
-                            Yayında ({allPages.filter(p => p.isPublished).length})
+                            Yayında ({displayPages.filter(p => p.isPublished).length})
                           </button>
                           <button
                             type="button"
@@ -486,20 +528,20 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               fontSize: "11px", fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
                             }}
                           >
-                            Taslaklar ({allPages.filter(p => !p.isPublished).length})
+                            Taslaklar ({displayPages.filter(p => !p.isPublished).length})
                           </button>
                         </div>
                       </div>
 
                       {pagesLoading ? (
                         <div style={{ color: C.muted, fontSize: "13px", padding: "24px 0", textAlign: "center" }}>Yükleniyor...</div>
-                      ) : allPages.filter(p => pagesTab === "published" ? p.isPublished : !p.isPublished).length === 0 ? (
+                      ) : displayPages.filter(p => pagesTab === "published" ? p.isPublished : !p.isPublished).length === 0 ? (
                         <div style={{ color: C.muted, fontSize: "13px", fontStyle: "italic", padding: "24px 0", textAlign: "center" }}>
                           {pagesTab === "published" ? "Yayında olan sayfa yok." : "Taslak sayfa yok."}
                         </div>
                       ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "450px", overflowY: "auto", paddingRight: "6px" }}>
-                          {allPages.filter(p => pagesTab === "published" ? p.isPublished : !p.isPublished).map((page) => (
+                          {displayPages.filter(p => pagesTab === "published" ? p.isPublished : !p.isPublished).map((page) => (
                             <div
                               key={page.pageSlug}
                               style={{
