@@ -234,6 +234,17 @@ export function TemplateBuilderTab({ adminEmail, onTemplateCreated }: TemplateBu
 
   useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
 
+  useEffect(() => {
+    const editId = typeof window !== "undefined" ? localStorage.getItem("edit_custom_template_id") : null;
+    if (editId && templates.length > 0) {
+      const found = templates.find(t => t.id === editId);
+      if (found) {
+        localStorage.removeItem("edit_custom_template_id");
+        openEdit(found);
+      }
+    }
+  }, [templates]);
+
   // ─── Yeni şablon oluştur ─────────────────────────────────────────────────
   const openNew = () => {
     setEditingId(null);

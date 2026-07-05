@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminRole, setAdminRole] = useState("admin");
   const [authorized, setAuthorized] = useState(false);
-  const [activeTab, setActiveTab] = useState<"create_page" | "codes" | "users" | "marketing" | "settings">("create_page");
+  const [activeTab, setActiveTab] = useState<"create_page" | "template_builder" | "codes" | "users" | "marketing" | "settings">("create_page");
   const [prefilledSlug, setPrefilledSlug] = useState("");
 
   useEffect(() => {
@@ -63,6 +63,7 @@ export default function AdminPage() {
           <div style={{ display: "flex", gap: "8px", marginBottom: "32px", flexWrap: "wrap" }}>
             {[
               { key: "create_page", icon: "🎨", label: "Sayfa Oluştur" },
+              { key: "template_builder", icon: "📐", label: "Şablon Tasarla" },
               { key: "codes", icon: "📋", label: "Kod Üret" },
               { key: "users", icon: "👥", label: "Kullanıcılar" },
               ...(adminRole === "admin" ? [
@@ -72,7 +73,7 @@ export default function AdminPage() {
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as "create_page" | "codes" | "users" | "marketing" | "settings")}
+                onClick={() => setActiveTab(tab.key as any)}
                 style={{
                   padding: "10px 20px", borderRadius: "12px",
                   background: activeTab === tab.key ? C.gold : "rgba(255,255,255,0.05)",
@@ -90,6 +91,7 @@ export default function AdminPage() {
 
           <AnimatePresence mode="wait">
             {activeTab === "create_page" && <PagesTab adminEmail={adminEmail} setPrefilledSlug={setPrefilledSlug} setActiveTab={setActiveTab} />}
+            {activeTab === "template_builder" && <TemplateBuilderTab adminEmail={adminEmail} />}
             {activeTab === "codes" && <CodesTab adminEmail={adminEmail} prefilledSlug={prefilledSlug} setPrefilledSlug={setPrefilledSlug} />}
             {activeTab === "users" && <UsersTab adminEmail={adminEmail} adminRole={adminRole} />}
             {activeTab === "marketing" && adminRole === "admin" && <MarketingTab adminEmail={adminEmail} />}

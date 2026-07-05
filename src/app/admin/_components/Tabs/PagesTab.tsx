@@ -39,17 +39,87 @@ const TEMPLATE_SHOWCASE_SLUGS: Record<string, string> = {
   "sablon-siyah": "sablon-siyah"
 };
 
+const DEFAULT_TEMPLATES = [
+  { id: "klasik-retro", title: "Koyu Gül Kurusu", color: "#C9897A" },
+  { id: "romantik-kirmizi", title: "Romantik Kırmızı", color: "#E63946" },
+  { id: "modern-minimal", title: "Modern Minimal", color: "#8C7E6C" },
+  { id: "sinematik-ask", title: "Sinematik Aşk", color: "#B8A9D4" },
+  { id: "premium-emerald", title: "Zümrüt Yeşili", color: "#D4AF37" },
+  { id: "sablon-oyun", title: "Oyuncu Şablonu", color: "#CBFF3E" },
+  { id: "sablon-lavanta", title: "Lavanta Rüyası", color: "#D8B4FE" },
+  { id: "sablon-amber", title: "Günbatımı Amberi", color: "#F59E0B" },
+  { id: "sablon-rose", title: "Gül Kurusu", color: "#FCA5A5" },
+  { id: "sablon-indigo", title: "Gece Yarısı İndigo", color: "#818CF8" },
+  { id: "sablon-siyah", title: "Karanlık Gece (Siyah)", color: "#1A1A1A" },
+];
+
 interface PagesTabProps {
   adminEmail: string;
   setPrefilledSlug?: (slug: string) => void;
-  setActiveTab?: (tab: "create_page" | "codes" | "users" | "marketing" | "settings") => void;
+  setActiveTab?: (tab: "create_page" | "template_builder" | "codes" | "users" | "marketing" | "settings") => void;
 }
 
 export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTabProps) {
   // Tab 0 — Sayfa Oluştur & Düzenle
-  const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; isShowcase?: boolean; activatedAt?: string; remainingTime?: string }[]>([]);
+  const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; isShowcase?: boolean; activatedAt?: string; remainingTime?: string; config?: any }[]>([]);
   const [pagesTab, setPagesTab] = useState<"published" | "drafts">("published");
   const [pagesLoading, setPagesLoading] = useState(false);
+  const [templateList, setTemplateList] = useState(DEFAULT_TEMPLATES);
+
+  // Load showcase order
+  useEffect(() => {
+    const loadShowcaseOrder = async () => {
+      if (!adminEmail) return;
+      try {
+        const res = await fetch(`/api/admin/site-settings?adminEmail=${encodeURIComponent(adminEmail)}`);
+        const data = await res.json();
+        if (res.ok && data.settings && data.settings.showcase_order) {
+          const order: string[] = data.settings.showcase_order;
+          setTemplateList((prev) => {
+            const sorted = [...prev].sort((a, b) => {
+              const slugA = TEMPLATE_SHOWCASE_SLUGS[a.id];
+              const slugB = TEMPLATE_SHOWCASE_SLUGS[b.id];
+              const idxA = order.indexOf(slugA);
+              const idxB = order.indexOf(slugB);
+              if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+              if (idxA !== -1) return -1;
+              if (idxB !== -1) return 1;
+              return 0;
+            });
+            return sorted;
+          });
+        }
+      } catch (err) {
+        console.error("Load showcase order error:", err);
+      }
+    };
+    loadShowcaseOrder();
+  }, [adminEmail]);
+
+  const handleMoveTemplate = async (index: number, direction: "up" | "down") => {
+    const updated = [...templateList];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= updated.length) return;
+    
+    [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
+    setTemplateList(updated);
+
+    try {
+      const showcaseOrder = updated.map(t => TEMPLATE_SHOWCASE_SLUGS[t.id]);
+      await fetch("/api/admin/site-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail,
+          settings: {
+            showcase_order: showcaseOrder
+          }
+        })
+      });
+    } catch (err) {
+      console.error("Save showcase order error:", err);
+    }
+  };
   const [selectedEditSlug, setSelectedEditSlug] = useState("");
   const [editPageSlug, setEditPageSlug] = useState("");
   
@@ -432,57 +502,86 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                       {/* Şablon Seç */}
                       <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "12px", fontWeight: 500 }}>Şablon Seç</p>
                       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
-                        {[
-                          { id: "klasik-retro", title: "Koyu Gül Kurusu", color: "#C9897A" },
-                          { id: "romantik-kirmizi", title: "Romantik Kırmızı", color: "#E63946" },
-                          { id: "modern-minimal", title: "Modern Minimal", color: "#8C7E6C" },
-                          { id: "sinematik-ask", title: "Sinematik Aşk", color: "#B8A9D4" },
-                          { id: "premium-emerald", title: "Zümrüt Yeşili", color: "#D4AF37" },
-                          { id: "sablon-oyun", title: "Oyuncu Şablonu", color: "#CBFF3E" },
-                          { id: "sablon-lavanta", title: "Lavanta Rüyası", color: "#D8B4FE" },
-                          { id: "sablon-amber", title: "Günbatımı Amberi", color: "#F59E0B" },
-                          { id: "sablon-rose", title: "Gül Kurusu", color: "#FCA5A5" },
-                          { id: "sablon-indigo", title: "Gece Yarısı İndigo", color: "#818CF8" },
-                          { id: "sablon-siyah", title: "Karanlık Gece (Siyah)", color: "#1A1A1A" },
-                        ].map((tpl) => (
-                          <div key={tpl.id} style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
-                            <button
-                              type="button"
-                              onClick={() => setNewTemplateId(tpl.id)}
-                              style={{
-                                flex: 1,
-                                padding: "10px 14px", borderRadius: "12px",
-                                border: `1px solid ${newTemplateId === tpl.id ? tpl.color : "rgba(255,255,255,0.06)"}`,
-                                background: newTemplateId === tpl.id ? `${tpl.color}15` : "rgba(255,255,255,0.03)",
-                                color: newTemplateId === tpl.id ? tpl.color : C.text,
-                                cursor: "pointer", transition: "all 0.2s", textAlign: "left",
-                                fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tpl.id ? 600 : 400,
-                                display: "flex", alignItems: "center", gap: "10px",
-                              }}
-                            >
-                              <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: tpl.color, flexShrink: 0 }} />
-                              {tpl.title}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => loadPageSettings(TEMPLATE_SHOWCASE_SLUGS[tpl.id])}
-                              style={{
-                                padding: "0 14px", borderRadius: "12px",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                background: "rgba(255,255,255,0.03)",
-                                color: C.muted,
-                                cursor: "pointer", transition: "all 0.2s",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
-                              title="Şablonu Düzenle"
-                            >
-                              Düzenle
-                            </button>
-                          </div>
-                        ))}
+                        {templateList.map((tpl, index) => {
+                          const showcasePage = allPages.find(p => p.pageSlug === TEMPLATE_SHOWCASE_SLUGS[tpl.id]);
+                          const displayColor = showcasePage?.config?.showcaseAccentColor || showcasePage?.config?.accentColor || tpl.color;
+                          return (
+                            <div key={tpl.id} style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
+                              <button
+                                type="button"
+                                onClick={() => setNewTemplateId(tpl.id)}
+                                style={{
+                                  flex: 1,
+                                  padding: "10px 14px", borderRadius: "12px",
+                                  border: `1px solid ${newTemplateId === tpl.id ? displayColor : "rgba(255,255,255,0.06)"}`,
+                                  background: newTemplateId === tpl.id ? `${displayColor}15` : "rgba(255,255,255,0.03)",
+                                  color: newTemplateId === tpl.id ? displayColor : C.text,
+                                  cursor: "pointer", transition: "all 0.2s", textAlign: "left",
+                                  fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tpl.id ? 600 : 400,
+                                  display: "flex", alignItems: "center", gap: "10px",
+                                }}
+                              >
+                                <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", background: displayColor, flexShrink: 0 }} />
+                                {tpl.title}
+                              </button>
+
+                              {/* Sıralama Kontrolleri */}
+                              <div style={{ display: "flex", gap: "2px" }}>
+                                <button
+                                  type="button"
+                                  disabled={index === 0}
+                                  onClick={() => handleMoveTemplate(index, "up")}
+                                  style={{
+                                    padding: "0 8px", borderRadius: "8px",
+                                    border: "1px solid rgba(255,255,255,0.06)",
+                                    background: "rgba(255,255,255,0.02)",
+                                    color: index === 0 ? "rgba(255,255,255,0.08)" : C.muted,
+                                    cursor: index === 0 ? "not-allowed" : "pointer",
+                                    fontSize: "11px", display: "flex", alignItems: "center", justifyContent: "center"
+                                  }}
+                                  title="Yukarı Taşı"
+                                >
+                                  ▲
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={index === templateList.length - 1}
+                                  onClick={() => handleMoveTemplate(index, "down")}
+                                  style={{
+                                    padding: "0 8px", borderRadius: "8px",
+                                    border: "1px solid rgba(255,255,255,0.06)",
+                                    background: "rgba(255,255,255,0.02)",
+                                    color: index === templateList.length - 1 ? "rgba(255,255,255,0.08)" : C.muted,
+                                    cursor: index === templateList.length - 1 ? "not-allowed" : "pointer",
+                                    fontSize: "11px", display: "flex", alignItems: "center", justifyContent: "center"
+                                  }}
+                                  title="Aşağı Taşı"
+                                >
+                                  ▼
+                                </button>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => loadPageSettings(TEMPLATE_SHOWCASE_SLUGS[tpl.id])}
+                                style={{
+                                  padding: "0 14px", borderRadius: "12px",
+                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  background: "rgba(255,255,255,0.03)",
+                                  color: C.muted,
+                                  cursor: "pointer", transition: "all 0.2s",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
+                                title="Şablonu Düzenle"
+                              >
+                                Düzenle
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Özel Şablonlar */}
@@ -491,30 +590,54 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "8px", marginTop: "16px", fontWeight: 500 }}>
                             🎨 Özel Şablonlarım
                           </p>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px", maxHeight: "200px", overflowY: "auto", paddingRight: "4px" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxHeight: "200px", overflowY: "auto", paddingRight: "4px" }}>
                             {customTemplates.map((tpl) => {
                               const tplId = `custom-${tpl.id}`;
                               return (
-                                <button
-                                  key={tpl.id}
-                                  type="button"
-                                  onClick={() => setNewTemplateId(tplId)}
-                                  style={{
-                                    padding: "12px", borderRadius: "12px",
-                                    border: `1px solid ${newTemplateId === tplId ? tpl.preview_color : "rgba(255,255,255,0.06)"}`,
-                                    background: newTemplateId === tplId ? `${tpl.preview_color}15` : "rgba(255,255,255,0.03)",
-                                    color: newTemplateId === tplId ? tpl.preview_color : C.text,
-                                    cursor: "pointer", transition: "all 0.2s", textAlign: "left",
-                                    fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tplId ? 600 : 400,
-                                    display: "flex", flexDirection: "column", gap: "6px",
-                                  }}
-                                >
-                                  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                                    <span style={{ width: "12px", height: "12px", borderRadius: "50%", background: tpl.preview_color, display: "inline-block" }} />
-                                    <span style={{ fontSize: "9px", opacity: 0.5, letterSpacing: "0.12em" }}>ÖZEL</span>
-                                  </span>
-                                  {tpl.name}
-                                </button>
+                                <div key={tpl.id} style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
+                                  <button
+                                    key={tpl.id}
+                                    type="button"
+                                    onClick={() => setNewTemplateId(tplId)}
+                                    style={{
+                                      flex: 1,
+                                      padding: "10px 14px", borderRadius: "12px",
+                                      border: `1px solid ${newTemplateId === tplId ? tpl.preview_color : "rgba(255,255,255,0.06)"}`,
+                                      background: newTemplateId === tplId ? `${tpl.preview_color}15` : "rgba(255,255,255,0.03)",
+                                      color: newTemplateId === tplId ? tpl.preview_color : C.text,
+                                      cursor: "pointer", transition: "all 0.2s", textAlign: "left",
+                                      fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tplId ? 600 : 400,
+                                      display: "flex", alignItems: "center", gap: "10px",
+                                    }}
+                                  >
+                                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                                      <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: tpl.preview_color, display: "inline-block" }} />
+                                      <span style={{ fontSize: "8px", opacity: 0.5, letterSpacing: "0.1em" }}>ÖZEL</span>
+                                    </span>
+                                    {tpl.name}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      localStorage.setItem("edit_custom_template_id", tpl.id);
+                                      if (setActiveTab) setActiveTab("template_builder");
+                                    }}
+                                    style={{
+                                      padding: "0 14px", borderRadius: "12px",
+                                      border: "1px solid rgba(255,255,255,0.08)",
+                                      background: "rgba(255,255,255,0.03)",
+                                      color: C.muted,
+                                      cursor: "pointer", transition: "all 0.2s",
+                                      display: "flex", alignItems: "center", justifyContent: "center",
+                                      fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
+                                    title="Şablonu Düzenle"
+                                  >
+                                    Düzenle
+                                  </button>
+                                </div>
                               );
                             })}
                           </div>
@@ -1207,6 +1330,127 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                             )}
                           </div>
                         </div>
+
+                        {/* Şablon Kartı Ayarları (Sadece Şablonlar ve Özel Şablonlar için) */}
+                        {(SHOWCASE_SLUGS.includes(selectedEditSlug) || (editTemplateId && editTemplateId.startsWith("custom-"))) && (
+                          <div style={{ ...cardStyle, padding: "28px", display: "flex", flexDirection: "column", gap: "20px", marginBottom: "20px" }}>
+                            <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.gold, borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px", margin: 0 }}>
+                              🎴 Şablon Vitrin Kartı Ayarları
+                            </h3>
+                            <p style={{ fontSize: "12px", color: C.muted, margin: 0, lineHeight: 1.5 }}>
+                              Bu bölümdeki ayarlar sadece <code>/sablonlar</code> vitrin sayfasındaki kartta görünecek başlık, açıklama ve özellikleri belirler. Sayfanın kendi içeriğini etkilemez.
+                            </p>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Başlığı (Şablon Adı)</label>
+                              <input
+                                value={editConfig.showcaseTitle || ""}
+                                onChange={(e) => setEditConfig({ ...editConfig, showcaseTitle: e.target.value })}
+                                placeholder="Boş bırakılırsa varsayılan şablon adı gösterilir"
+                                style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                              />
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Alt Başlığı (Özel Tarih / Etiket)</label>
+                              <input
+                                value={editConfig.showcaseSubtitle || ""}
+                                onChange={(e) => setEditConfig({ ...editConfig, showcaseSubtitle: e.target.value })}
+                                placeholder="Örn: 14 ŞUBAT 2025 veya Özel Tasarım (Boşsa Yıldönümü Tarihinden alır)"
+                                style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                              />
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Etiketi (Sol Üst Köşe)</label>
+                              <input
+                                value={editConfig.showcaseTag === undefined ? "" : editConfig.showcaseTag}
+                                onChange={(e) => setEditConfig({ ...editConfig, showcaseTag: e.target.value })}
+                                placeholder="Boş bırakılırsa 'VİTRİN' gösterilir (Gizlemek için tek boşluk bırakabilirsiniz)"
+                                style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                              />
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Renk Teması (Vurgu Rengi)</label>
+                              <div style={{ display: "flex", gap: "10px" }}>
+                                <input
+                                  type="color"
+                                  value={editConfig.showcaseAccentColor || "#C9A84C"}
+                                  onChange={(e) => setEditConfig({ ...editConfig, showcaseAccentColor: e.target.value })}
+                                  style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }}
+                                />
+                                <input
+                                  value={editConfig.showcaseAccentColor || ""}
+                                  onChange={(e) => setEditConfig({ ...editConfig, showcaseAccentColor: e.target.value })}
+                                  placeholder="Varsayılan: Altın Sarısı (#C9A84C) veya Şablon Rengi"
+                                  style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                                />
+                              </div>
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Açıklaması</label>
+                              <textarea
+                                value={editConfig.showcaseDescription || ""}
+                                onChange={(e) => setEditConfig({ ...editConfig, showcaseDescription: e.target.value })}
+                                placeholder="Kart üzerinde görünecek kısa açıklama metni"
+                                rows={2}
+                                style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px", resize: "vertical" }}
+                              />
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Kart Özellik Maddeleri (Tikler)</label>
+                              
+                              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                {(editConfig.showcaseFeatures || []).map((feat: string, fIdx: number) => (
+                                  <div key={fIdx} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                                    <span style={{ color: C.gold, fontSize: "12px", fontWeight: "bold" }}>✓</span>
+                                    <input
+                                      value={feat}
+                                      onChange={(e) => {
+                                        const updatedFeats = [...(editConfig.showcaseFeatures || [])];
+                                        updatedFeats[fIdx] = e.target.value;
+                                        setEditConfig({ ...editConfig, showcaseFeatures: updatedFeats });
+                                      }}
+                                      placeholder="Özellik maddesi girin"
+                                      style={{ flex: 1, padding: "8px 12px", borderRadius: "8px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const updatedFeats = (editConfig.showcaseFeatures || []).filter((_: any, idx: number) => idx !== fIdx);
+                                        setEditConfig({ ...editConfig, showcaseFeatures: updatedFeats });
+                                      }}
+                                      style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(232,160,160,0.15)", background: "rgba(232,160,160,0.05)", color: C.error, cursor: "pointer", fontSize: "12px" }}
+                                    >
+                                      Sil
+                                    </button>
+                                  </div>
+                                ))}
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentFeats = editConfig.showcaseFeatures || [];
+                                    setEditConfig({ ...editConfig, showcaseFeatures: [...currentFeats, ""] });
+                                  }}
+                                  style={{
+                                    alignSelf: "flex-start", padding: "6px 12px", borderRadius: "8px",
+                                    border: `1px solid ${C.gold}44`, background: "rgba(201,168,76,0.05)",
+                                    color: C.gold, fontSize: "12px", fontWeight: 500, cursor: "pointer",
+                                    transition: "all 0.2s"
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(201,168,76,0.12)"}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(201,168,76,0.05)"}
+                                >
+                                  + Yeni Madde Ekle
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         {/* 2. Kısım: Hikayeler / Anılar Listesi */}
                         <div style={{ ...cardStyle, padding: "28px" }}>

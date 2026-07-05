@@ -429,10 +429,9 @@ function CountdownBlock({ memory, accentColor, bodyFont, headingFont, textColor 
 function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textColor }: { memory: any; accentColor: string; bodyFont: string; headingFont: string; pageSlug?: string; textColor?: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   const handleSelect = async (option: string) => {
-    if (selected !== null) return; // once answered, locked
+    if (selected === option) return;
     setSelected(option);
     setSaving(true);
     try {
@@ -446,7 +445,6 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textC
           selectedOption: option,
         }),
       });
-      setSaved(true);
     } catch { /* noop */ } finally {
       setSaving(false);
     }
@@ -480,15 +478,15 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textC
               variants={fadeUp}
               type="button"
               onClick={() => handleSelect(opt)}
-              disabled={selected !== null}
-              whileHover={selected === null ? { scale: 1.01 } : {}}
-              whileTap={selected === null ? { scale: 0.99 } : {}}
+              disabled={saving}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               style={{
                 padding: "14px 20px", border: `1px solid ${isSelected ? accentColor : `${accentColor}33`}`,
                 borderRadius: "4px", background: isSelected ? `${accentColor}18` : "transparent",
                 color: isSelected ? accentColor : (textColor || "rgba(255,255,255,0.65)"),
                 fontFamily: bodyFont, fontSize: "0.9rem", textAlign: "left",
-                cursor: selected !== null ? "default" : "pointer",
+                cursor: saving ? "default" : "pointer",
                 transition: "all 0.2s ease",
                 display: "flex", alignItems: "center", gap: "12px",
               }}
@@ -508,17 +506,6 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textC
           );
         })}
       </motion.div>
-
-      {/* Teşekkür mesajı */}
-      {saved && (
-        <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-          style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: `${accentColor}99`, textAlign: "center", letterSpacing: "0.06em" }}>
-          Cevabın kaydedildi ♡
-        </motion.p>
-      )}
-      {saving && (
-        <p style={{ fontFamily: bodyFont, fontSize: "0.8rem", color: "rgba(255,255,255,0.3)", textAlign: "center" }}>Kaydediliyor...</p>
-      )}
     </motion.div>
   );
 }

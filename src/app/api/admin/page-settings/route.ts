@@ -112,6 +112,7 @@ export async function GET(request: Request) {
            p.template_id, 
            p.is_published,
            p.is_showcase,
+           p.config,
            up.created_at AS "activatedAt",
            up.package_name AS "packageName"
          FROM page_settings p
@@ -157,6 +158,7 @@ export async function GET(request: Request) {
           templateId: row.template_id,
           isPublished: row.is_published,
           isShowcase: row.is_showcase,
+          config: row.config,
           activatedAt: row.activatedAt,
           packageName: row.packageName,
           remainingTime: calculateRemainingTime(row.activatedAt, row.packageName),
