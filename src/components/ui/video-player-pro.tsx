@@ -131,7 +131,11 @@ export default function VideoPlayerPro({ src }: VideoPlayerProProps) {
         className="w-full h-full object-cover block"
         loop
         playsInline
+        autoPlay
         muted={isMuted}
+        preload="metadata"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onTimeUpdate={handleTimeUpdate}
         onLoadedData={() => setIsLoaded(true)}
       />
