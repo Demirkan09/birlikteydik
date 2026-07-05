@@ -166,11 +166,23 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                   <input
                     type="checkbox"
                     checked={siteSettings?.maintenance_mode || false}
-                    onChange={(e) => setSiteSettings((prev: any) => ({ ...prev, maintenance_mode: e.target.checked }))}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+                      setSiteSettings((prev: any) => ({
+                        ...prev,
+                        maintenance_mode: isChecked,
+                        maintenance_start_time: isChecked ? new Date().toISOString() : null
+                      }));
+                    }}
                     style={{ accentColor: C.gold, width: "16px", height: "16px" }}
                   />
                   <span style={{ fontSize: "13px", color: C.text }}>Siteyi Bakım Moduna Al</span>
                 </label>
+                {siteSettings?.maintenance_mode && siteSettings?.maintenance_start_time && (
+                  <p style={{ fontSize: "11px", color: C.muted, marginTop: "8px" }}>
+                    Bakım başlangıcı: {new Date(siteSettings.maintenance_start_time).toLocaleString("tr-TR")}
+                  </p>
+                )}
               </div>
 
               <div style={{ flex: 1, padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}` }}>

@@ -408,11 +408,30 @@ export default function TemplatesPage() {
   const mergedTemplates = [...dbShowcases, ...fallbackTemplates];
 
   if (siteSettings.maintenance_mode) {
+    let formattedTime = "";
+    if (siteSettings.maintenance_start_time) {
+      try {
+        const date = new Date(siteSettings.maintenance_start_time);
+        formattedTime = date.toLocaleString("tr-TR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      } catch { /* ignore */ }
+    }
+
     return (
       <div style={{ minHeight: "100vh", background: "#0B0F1A", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center", fontFamily: "'Inter', sans-serif", color: "#F0EDE8" }}>
         <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>Bakım Modundayız</h1>
         <p style={{ maxWidth: "460px", color: "rgba(240,237,232,0.6)", fontSize: "14px", lineHeight: 1.6, marginBottom: "32px" }}>
           Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.
+          {formattedTime && (
+            <span style={{ display: "block", marginTop: "12px", fontSize: "12px", color: "rgba(240,237,232,0.45)" }}>
+              Bakım Başlangıcı: {formattedTime}
+            </span>
+          )}
         </p>
         <a href={`https://wa.me/${siteSettings.whatsapp_number || "905349829940"}`}
            style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
