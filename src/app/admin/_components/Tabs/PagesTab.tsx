@@ -11,6 +11,20 @@ const SHOWCASE_SLUGS = [
   "sablon-rose", "sablon-indigo", "sablon-siyah"
 ];
 
+const SHOWCASE_SLUGS_WITH_NAMES = [
+  { slug: "sablon-retro", title: "Koyu Gül Kurusu (Retro)" },
+  { slug: "sablon-kirmizi", title: "Romantik Kırmızı" },
+  { slug: "sablon-minimal", title: "Modern Minimal" },
+  { slug: "sablon-sinematik", title: "Sinematik Aşk" },
+  { slug: "sablon-emerald", title: "Zümrüt Yeşili" },
+  { slug: "sablon-oyun", title: "Oyuncu Şablonu" },
+  { slug: "sablon-lavanta", title: "Lavanta Rüyası" },
+  { slug: "sablon-amber", title: "Günbatımı Amberi" },
+  { slug: "sablon-rose", title: "Gül Kurusu" },
+  { slug: "sablon-indigo", title: "Gece Yarısı İndigo" },
+  { slug: "sablon-siyah", title: "Karanlık Gece (Siyah)" },
+];
+
 const TEMPLATE_SHOWCASE_SLUGS: Record<string, string> = {
   "klasik-retro": "sablon-retro",
   "romantik-kirmizi": "sablon-kirmizi",
@@ -63,6 +77,13 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [newTemplateId, setNewTemplateId] = useState("klasik-retro");
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState("");
+
+  // Integrate memories states
+  const [showIntegrateModal, setShowIntegrateModal] = useState(false);
+  const [selectedIntegrateSlugs, setSelectedIntegrateSlugs] = useState<string[]>([]);
+  const [integrateLoading, setIntegrateLoading] = useState(false);
+  const [integrateSuccess, setIntegrateSuccess] = useState("");
+  const [integrateError, setIntegrateError] = useState("");
 
   // Custom (özel) şablonlar
   const [customTemplates, setCustomTemplates] = useState<{ id: string; name: string; preview_color: string }[]>([]);
@@ -312,6 +333,40 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
       setEditorError("Sunucuya bağlanılamadı.");
     } finally {
       setEditorSaving(false);
+    }
+  };
+
+  const handleIntegrateMemories = async () => {
+    if (selectedIntegrateSlugs.length === 0) return;
+    setIntegrateLoading(true);
+    setIntegrateSuccess("");
+    setIntegrateError("");
+    try {
+      const res = await fetch("/api/admin/integrate-memories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail,
+          sourceSlug: selectedEditSlug,
+          targetSlugs: selectedIntegrateSlugs
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIntegrateSuccess("Anılar seçilen şablonlara başarıyla kopyalandı!");
+        setTimeout(() => {
+          setShowIntegrateModal(false);
+          setIntegrateSuccess("");
+          setSelectedIntegrateSlugs([]);
+        }, 1500);
+      } else {
+        setIntegrateError(data.error || "Entegrasyon sırasında bir hata oluştu.");
+      }
+    } catch (err) {
+      console.error(err);
+      setIntegrateError("Sunucu bağlantı hatası.");
+    } finally {
+      setIntegrateLoading(false);
     }
   };
 
@@ -1160,6 +1215,22 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               Hikayelerimiz & Anılar
                             </h3>
                             <div style={{ display: "flex", gap: "8px", alignItems: "center", position: "relative" }}>
+                              {SHOWCASE_SLUGS.includes(selectedEditSlug) && (
+                                <button
+                                  type="button"
+                                  onClick={() => setShowIntegrateModal(true)}
+                                  style={{
+                                    padding: "6px 14px", borderRadius: "8px",
+                                    border: `1px solid rgba(255,255,255,0.15)`, background: "rgba(255,255,255,0.04)",
+                                    color: C.text, fontSize: "12px", fontWeight: 500, cursor: "pointer",
+                                    transition: "all 0.2s", marginRight: "4px"
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = C.text; }}
+                                >
+                                  🔗 Diğer Şablonlara Entegre Et
+                                </button>
+                              )}
                               {/* + Yeni Bileşen Ekle */}
                               <button
                                 type="button"
@@ -1253,6 +1324,11 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               const MoveDeleteControls = (
                                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
                                   <button type="button" disabled={isFirst}
+                                    onClick={() => setEditMemories((prev) => { const u = [...prev]; const item = u.splice(index, 1)[0]; u.unshift(item); return u; })}
+                                    style={{ padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)", color: isFirst ? "rgba(255,255,255,0.1)" : C.muted, fontSize: "11px", cursor: isFirst ? "not-allowed" : "pointer" }}
+                                    title="En Üste Taşı"
+                                  >⇈ En Üste</button>
+                                  <button type="button" disabled={isFirst}
                                     onClick={() => setEditMemories((prev) => { const u = [...prev]; [u[index], u[index-1]] = [u[index-1], u[index]]; return u; })}
                                     style={{ padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)", color: isFirst ? "rgba(255,255,255,0.1)" : C.muted, fontSize: "11px", cursor: isFirst ? "not-allowed" : "pointer" }}
                                   >↑ Yukarı</button>
@@ -1260,6 +1336,11 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                     onClick={() => setEditMemories((prev) => { const u = [...prev]; [u[index], u[index+1]] = [u[index+1], u[index]]; return u; })}
                                     style={{ padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)", color: isLast ? "rgba(255,255,255,0.1)" : C.muted, fontSize: "11px", cursor: isLast ? "not-allowed" : "pointer" }}
                                   >↓ Aşağı</button>
+                                  <button type="button" disabled={isLast}
+                                    onClick={() => setEditMemories((prev) => { const u = [...prev]; const item = u.splice(index, 1)[0]; u.push(item); return u; })}
+                                    style={{ padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`, background: "rgba(255,255,255,0.03)", color: isLast ? "rgba(255,255,255,0.1)" : C.muted, fontSize: "11px", cursor: isLast ? "not-allowed" : "pointer" }}
+                                    title="En Alta Taşı"
+                                  >⇊ En Alta</button>
                                   <button type="button"
                                     onClick={() => { if (confirm("Bu öğeyi silmek istediğinize emin misiniz?")) setEditMemories(editMemories.filter((_, idx) => idx !== index)); }}
                                     style={{ padding: "4px 10px", borderRadius: "6px", border: "1px solid rgba(232,160,160,0.2)", background: "rgba(232,160,160,0.05)", color: C.error, fontSize: "11px", cursor: "pointer" }}
@@ -1777,6 +1858,28 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                     <span style={{ fontSize: "11px", color: "rgba(240,237,232,0.2)" }}>Görsel: {memory.image}</span>
 
                                     <div style={{ display: "flex", gap: "8px" }}>
+                                      {/* En Üste Taşı */}
+                                      <button
+                                        type="button"
+                                        disabled={index === 0}
+                                        onClick={() => {
+                                          if (index === 0) return;
+                                          setEditMemories((prev) => {
+                                            const updated = [...prev];
+                                            const item = updated.splice(index, 1)[0];
+                                            updated.unshift(item);
+                                            return updated;
+                                          });
+                                        }}
+                                        style={{
+                                          padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`,
+                                          background: "rgba(255,255,255,0.03)", color: index === 0 ? "rgba(255,255,255,0.1)" : C.muted,
+                                          fontSize: "11px", cursor: index === 0 ? "not-allowed" : "pointer"
+                                        }}
+                                        title="En Üste Taşı"
+                                      >
+                                        ⇈ En Üste
+                                      </button>
                                       {/* Yukarı Taşı */}
                                       <button
                                         type="button"
@@ -1820,6 +1923,28 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         }}
                                       >
                                         ↓ Aşağı
+                                      </button>
+                                      {/* En Alta Taşı */}
+                                      <button
+                                        type="button"
+                                        disabled={index === editMemories.length - 1}
+                                        onClick={() => {
+                                          if (index === editMemories.length - 1) return;
+                                          setEditMemories((prev) => {
+                                            const updated = [...prev];
+                                            const item = updated.splice(index, 1)[0];
+                                            updated.push(item);
+                                            return updated;
+                                          });
+                                        }}
+                                        style={{
+                                          padding: "4px 8px", borderRadius: "6px", border: `1px solid ${C.border}`,
+                                          background: "rgba(255,255,255,0.03)", color: index === editMemories.length - 1 ? "rgba(255,255,255,0.1)" : C.muted,
+                                          fontSize: "11px", cursor: index === editMemories.length - 1 ? "not-allowed" : "pointer"
+                                        }}
+                                        title="En Alta Taşı"
+                                      >
+                                        ⇊ En Alta
                                       </button>
                                       {/* Sil */}
                                       <button
@@ -2003,6 +2128,124 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
                       </div>
                     )}
+                  </div>
+                )}
+
+                {showIntegrateModal && (
+                  <div style={{
+                    position: "fixed", inset: 0, zIndex: 9999,
+                    background: "rgba(11,15,26,0.8)", backdropFilter: "blur(12px)",
+                    display: "flex", alignItems: "center", justifyContent: "center", padding: "20px"
+                  }}>
+                    <div style={{
+                      background: "#160408", border: `1px solid ${C.border}`,
+                      borderRadius: "24px", padding: "32px", width: "100%", maxWidth: "500px",
+                      boxShadow: "0 24px 64px rgba(0,0,0,0.8)",
+                      fontFamily: "var(--font-inter), sans-serif",
+                    }}>
+                      <h3 style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "24px", color: C.text, marginBottom: "12px", fontWeight: 600 }}>
+                        Anıları Şablonlara Entegre Et
+                      </h3>
+                      <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.6, marginBottom: "20px" }}>
+                        Şu an düzenlemekte olduğunuz <strong>/{selectedEditSlug}</strong> sayfasındaki tüm anıları ve bileşenleri seçtiğiniz diğer vitrin şablonlarına da kopyalayabilirsiniz. Mevcut tasarımları etkilenmeyecektir.
+                      </p>
+
+                      {integrateError && (
+                        <div style={{ padding: "12px 16px", borderRadius: "12px", background: `${C.error}12`, border: `1px solid ${C.error}44`, color: C.error, fontSize: "13px", marginBottom: "16px" }}>
+                          {integrateError}
+                        </div>
+                      )}
+                      {integrateSuccess && (
+                        <div style={{ padding: "12px 16px", borderRadius: "12px", background: `${C.success}12`, border: `1px solid ${C.success}44`, color: C.success, fontSize: "13px", marginBottom: "16px" }}>
+                          {integrateSuccess}
+                        </div>
+                      )}
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <span style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 600 }}>Şablon Seçin</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const targetSlugs = SHOWCASE_SLUGS.filter(s => s !== selectedEditSlug);
+                            setSelectedIntegrateSlugs(
+                              selectedIntegrateSlugs.length === targetSlugs.length ? [] : targetSlugs
+                            );
+                          }}
+                          style={{ background: "transparent", border: "none", color: C.gold, fontSize: "12px", fontWeight: 500, cursor: "pointer" }}
+                        >
+                          {selectedIntegrateSlugs.length === SHOWCASE_SLUGS.filter(s => s !== selectedEditSlug).length ? "Tümünü Kaldır" : "Tümünü Seç"}
+                        </button>
+                      </div>
+
+                      <div style={{ maxHeight: "220px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px", paddingRight: "4px", marginBottom: "24px" }}>
+                        {SHOWCASE_SLUGS_WITH_NAMES
+                          .filter(item => item.slug !== selectedEditSlug)
+                          .map(item => {
+                            const isChecked = selectedIntegrateSlugs.includes(item.slug);
+                            return (
+                              <label
+                                key={item.slug}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: "10px", padding: "12px",
+                                  borderRadius: "10px", background: isChecked ? "rgba(201,168,76,0.06)" : "rgba(255,255,255,0.02)",
+                                  border: `1px solid ${isChecked ? C.gold + "55" : "rgba(255,255,255,0.05)"}`,
+                                  cursor: "pointer", transition: "all 0.2s"
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={() => {
+                                    setSelectedIntegrateSlugs(prev =>
+                                      prev.includes(item.slug) ? prev.filter(s => s !== item.slug) : [...prev, item.slug]
+                                    );
+                                  }}
+                                  style={{ accentColor: C.gold }}
+                                />
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                  <span style={{ fontSize: "13px", color: C.text, fontWeight: 500 }}>{item.title}</span>
+                                  <span style={{ fontSize: "11px", color: C.muted }}>/{item.slug}</span>
+                                </div>
+                              </label>
+                            );
+                          })}
+                      </div>
+
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (integrateLoading) return;
+                            setShowIntegrateModal(false);
+                            setIntegrateSuccess("");
+                            setIntegrateError("");
+                          }}
+                          style={{
+                            flex: 1, padding: "12px", borderRadius: "30px", border: "1px solid rgba(255,255,255,0.1)",
+                            background: "transparent", color: C.text, fontSize: "13px", fontWeight: 500, cursor: "pointer",
+                            transition: "all 0.2s"
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                          onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                        >
+                          Vazgeç
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleIntegrateMemories}
+                          disabled={integrateLoading || selectedIntegrateSlugs.length === 0}
+                          style={{
+                            flex: 1, padding: "12px", borderRadius: "30px", border: "none",
+                            background: (integrateLoading || selectedIntegrateSlugs.length === 0) ? "rgba(201,168,76,0.4)" : C.gold,
+                            color: "#0B0F1A", fontSize: "13px", fontWeight: 600,
+                            cursor: (integrateLoading || selectedIntegrateSlugs.length === 0) ? "not-allowed" : "pointer",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          {integrateLoading ? "Entegre Ediliyor..." : "Entegre Et"}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </motion.div>

@@ -83,6 +83,12 @@
       "namedRegex": "^/api/admin/generate\\-code(?:/)?$"
     },
     {
+      "page": "/api/admin/integrate-memories",
+      "regex": "^/api/admin/integrate\\-memories(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/integrate\\-memories(?:/)?$"
+    },
+    {
       "page": "/api/admin/page-settings",
       "regex": "^/api/admin/page\\-settings(?:/)?$",
       "routeKeys": {},
