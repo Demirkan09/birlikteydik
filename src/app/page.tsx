@@ -905,7 +905,7 @@ const featuredTemplates = [
     accentColor: "#E63946",
     tag: "Popüler",
     description: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim... Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
-    demoUrl: "/sablonlar/sablon-kirmizi",
+    demoUrl: "/sablon-kirmizi",
     features: [
       "Parıldayan Kalp Parçacıkları",
       "Sıcak Kırmızı Geçiş Efektleri",
@@ -920,7 +920,7 @@ const featuredTemplates = [
     accentColor: "#50c878",
     tag: "Özel Tasarım",
     description: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki aşk hikayeniz... Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
-    demoUrl: "/sablonlar/sablon-emerald",
+    demoUrl: "/sablon-emerald",
     features: [
       "Derin Orman Yeşili ve Altın Teması",
       "Lüks Zümrüt Efektli Geçişler",
@@ -935,7 +935,7 @@ const featuredTemplates = [
     accentColor: "#818CF8",
     tag: null,
     description: "Sonsuz gece gökyüzünün altında, seninle parıldayan iki yıldız gibi... Derin gece mavisi arka plan üzerinde parıldayan indigo tonları, mistik dikey akış ve modern estetiğin sınırlarını zorlayan tasarım.",
-    demoUrl: "/sablonlar/sablon-indigo",
+    demoUrl: "/sablon-indigo",
     features: [
       "Gece Mavisi Kalp Parçacıkları",
       "Yıldızlı Gökyüzü Işıltısı",
@@ -950,7 +950,7 @@ const featuredTemplates = [
     accentColor: "#F59E0B",
     tag: "Yeni",
     description: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum... Sıcak amber tonlarında radial ışıltılar, altın esintili çerçeveler ve samimi anılarınızı en iyi yansıtan dikey albüm tasarımı.",
-    demoUrl: "/sablonlar/sablon-amber",
+    demoUrl: "/sablon-amber",
     features: [
       "Uçuşan Sıcak Amber Ateşböcekleri",
       "Gelişmiş Estetik Müzik Çalar",
