@@ -147,16 +147,21 @@ export default function VideoPlayerPro({ src }: VideoPlayerProProps) {
         playsInline
         autoPlay
         muted={isMuted}
-        preload="metadata"
-        onPlay={() => setIsPlaying(true)}
+        preload="auto"
+        onPlay={() => {
+          setIsPlaying(true);
+          setIsLoaded(true);
+        }}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={handleTimeUpdate}
         onLoadedData={() => setIsLoaded(true)}
+        onLoadedMetadata={() => setIsLoaded(true)}
+        onCanPlay={() => setIsLoaded(true)}
       />
 
       {/* Loading Overlay */}
       {!isLoaded && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.6)", zIndex: 5, pointerEvents: "none" }}>
           <div style={{ width: "32px", height: "32px", border: "2px solid rgba(245,158,11,0.2)", borderTopColor: "#f59e0b", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
         </div>
       )}
