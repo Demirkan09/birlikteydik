@@ -1,7 +1,7 @@
 [
   {
     "route": "/admin",
-    "firstLoadUncompressedJsBytes": 867611,
+    "firstLoadUncompressedJsBytes": 867626,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\20kk_vhpu_jmg.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
@@ -9,7 +9,7 @@
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\0np8nitqtvt9t.js",
       ".next\\static\\chunks\\1tfrjxo5cbyep.js",
-      ".next\\static\\chunks\\2vokwger77wfj.js",
+      ".next\\static\\chunks\\3igmmy2j_ciya.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
@@ -19,7 +19,7 @@
   },
   {
     "route": "/[slug]",
-    "firstLoadUncompressedJsBytes": 757313,
+    "firstLoadUncompressedJsBytes": 759090,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\20kk_vhpu_jmg.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
@@ -27,7 +27,7 @@
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\0np8nitqtvt9t.js",
       ".next\\static\\chunks\\3tzvv3b7scx8c.js",
-      ".next\\static\\chunks\\31h981q_27-va.js",
+      ".next\\static\\chunks\\277zf4qd5em1s.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
@@ -37,7 +37,7 @@
   },
   {
     "route": "/sablonlar/[slug]",
-    "firstLoadUncompressedJsBytes": 757313,
+    "firstLoadUncompressedJsBytes": 759090,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\20kk_vhpu_jmg.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
@@ -45,7 +45,7 @@
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\0np8nitqtvt9t.js",
       ".next\\static\\chunks\\3tzvv3b7scx8c.js",
-      ".next\\static\\chunks\\31h981q_27-va.js",
+      ".next\\static\\chunks\\277zf4qd5em1s.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
@@ -55,7 +55,7 @@
   },
   {
     "route": "/sablonlar/sablon-bos",
-    "firstLoadUncompressedJsBytes": 750262,
+    "firstLoadUncompressedJsBytes": 752039,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\20kk_vhpu_jmg.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
@@ -63,7 +63,7 @@
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\0np8nitqtvt9t.js",
       ".next\\static\\chunks\\22mbz1oun621k.js",
-      ".next\\static\\chunks\\31h981q_27-va.js",
+      ".next\\static\\chunks\\277zf4qd5em1s.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { motion, Variants } from "framer-motion";
 import { ChevronDown, Volume2, VolumeX, Heart } from "lucide-react";
 import VideoPlayerPro from "@/components/ui/video-player-pro";
+import { Backlight } from "@/components/magicui/backlight";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ⚙️  ŞABLON AYARLARI (statik varsayılanlar — admin panelinden override edilir)
@@ -218,33 +219,91 @@ function RosePetalsCanvas({ accentColor, density }: { accentColor: string; densi
 // ─────────────────────────────────────────────────────────────────────────────
 function StarsCanvas({ accentColor, density }: { accentColor: string; density: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    resize(); window.addEventListener("resize", resize);
-    const stars = Array.from({ length: density }, () => ({
-      x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
-      size: Math.random() * 2 + 0.5, opacity: Math.random() * 0.6 + 0.2,
-      twinkleSpeed: Math.random() * 0.02 + 0.005, phase: Math.random() * Math.PI * 2,
-    }));
-    let t = 0; let raf: number;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const count = density || 28;
+    const cols = Math.ceil(Math.sqrt(count * 0.55));
+    const rows = Math.ceil(count / cols);
+    const stars: any[] = [];
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (stars.length >= count) break;
+        const pctX = (c + 0.15 + Math.random() * 0.7) / cols;
+        const pctY = (r + 0.15 + Math.random() * 0.7) / rows;
+        stars.push({
+          pctX,
+          pctY,
+          size: Math.random() * 2.2 + 1.3, // 1.3px to 3.5px
+          maxOpacity: Math.random() * 0.5 + 0.4, // 0.4 to 0.9 opacity
+          twinkleSpeed: Math.random() * 0.02 + 0.01,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+
+    let t = 0;
+    let raf: number;
+
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); t += 0.01;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t += 0.5;
+
       stars.forEach((s) => {
-        const alpha = s.opacity * (0.5 + 0.5 * Math.sin(t * s.twinkleSpeed * 60 + s.phase));
-        ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = accentColor;
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        // Twinkle (sine wave)
+        const alpha = s.maxOpacity * (0.3 + 0.7 * Math.sin(t * s.twinkleSpeed + s.phase));
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        
+        // Glow effect
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = accentColor;
+        ctx.fillStyle = accentColor;
+
+        ctx.beginPath();
+        ctx.arc(s.pctX * canvas.width, s.pctY * canvas.height, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       });
+
       raf = requestAnimationFrame(draw);
     };
+
     draw();
-    return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(raf); };
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(raf);
+    };
   }, [accentColor, density]);
-  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 1 }} />;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        inset: 0,
+        pointerEvents: "none",
+        zIndex: 1,
+        width: "100%",
+        height: "100%",
+      }}
+    />
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -642,20 +701,30 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
   const dColor = memory.dateColor || textColor || accentColor;
   const tColor = memory.titleColor || textColor || accentColor;
   const descColor = memory.descriptionColor || textColor || accentColor;
+  const mediaContent = (
+    <div style={{ position: "relative", overflow: "hidden", background: "#111113", border: `1px solid ${accentColor}22`, width: "100%" }}>
+      {memory.video ? (
+        <VideoPlayerPro src={memory.video} />
+      ) : (
+        <>
+          <img src={memory.image} alt={memory.title} draggable={false} className="w-full h-auto block" style={{ pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 55%, rgba(10,10,12,0.35) 100%)", pointerEvents: "none" }} />
+        </>
+      )}
+    </div>
+  );
+
   return (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "28px" }}>
       <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, borderRadius: "2px", background: accentColor, filter: "blur(24px)", opacity: 0.06, pointerEvents: "none" }} />
-        <div style={{ position: "relative", overflow: "hidden", background: "#111113", border: `1px solid ${accentColor}22`, width: "100%" }}>
-          {memory.video ? (
-            <VideoPlayerPro src={memory.video} />
-          ) : (
-            <>
-              <img src={memory.image} alt={memory.title} draggable={false} className="w-full h-auto block" style={{ pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 55%, rgba(10,10,12,0.35) 100%)", pointerEvents: "none" }} />
-            </>
-          )}
-        </div>
+        {memory.backlightEnabled ? (
+          <Backlight blur={35} className="w-full" style={{ "--backlight-color": `${accentColor}a0` } as any}>
+            {mediaContent}
+          </Backlight>
+        ) : (
+          mediaContent
+        )}
       </motion.div>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: "320px", gap: "12px" }}>
         <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -679,32 +748,42 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
   const dColor = memory.dateColor || textColor || accentColor;
   const tColor = memory.titleColor || textColor || accentColor;
   const descColor = memory.descriptionColor || textColor || accentColor;
-  return (
-    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
-      <motion.div
-        variants={fadeUp}
-        whileHover={{ scale: 1.02 }}
-        style={{
-          transform: `rotate(${rotateDeg}deg)`,
-          background: "#ffffff", padding: "10px 10px 44px 10px",
-          border: `1px solid ${accentColor}33`,
-          boxShadow: "0 16px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02)",
-          width: "100%", maxWidth: "290px", position: "relative", borderRadius: "2px",
-          transition: "transform 0.3s ease",
-        }}
-      >
-        {/* Bant dekal */}
-        <div style={{ position: "absolute", top: "-8px", left: "50%", transform: "translateX(-50%) rotate(2deg)", width: "44px", height: "18px", background: `${accentColor}33`, border: `1px solid ${accentColor}22`, boxShadow: "0 2px 8px rgba(0,0,0,0.3)", backdropFilter: "blur(1px)", borderRadius: "1px" }} />
-        <div style={{ overflow: "hidden", position: "relative", width: "100%" }}>
-          {memory.video ? (
-            <VideoPlayerPro src={memory.video} />
-          ) : (
-            <>
-              <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "brightness(0.92) contrast(1.02) saturate(0.95)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-              <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)", pointerEvents: "none" }} />
-            </>
-          )}
-        </div>
+        const mediaContent = (
+          <div style={{ overflow: "hidden", position: "relative", width: "100%" }}>
+            {memory.video ? (
+              <VideoPlayerPro src={memory.video} />
+            ) : (
+              <>
+                <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "brightness(0.92) contrast(1.02) saturate(0.95)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+                <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)", pointerEvents: "none" }} />
+              </>
+            )}
+          </div>
+        );
+
+        return (
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+            <motion.div
+              variants={fadeUp}
+              whileHover={{ scale: 1.02 }}
+              style={{
+                transform: `rotate(${rotateDeg}deg)`,
+                background: "#ffffff", padding: "10px 10px 44px 10px",
+                border: `1px solid ${accentColor}33`,
+                boxShadow: "0 16px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02)",
+                width: "100%", maxWidth: "290px", position: "relative", borderRadius: "2px",
+                transition: "transform 0.3s ease",
+              }}
+            >
+              {/* Bant dekal */}
+              <div style={{ position: "absolute", top: "-8px", left: "50%", transform: "translateX(-50%) rotate(2deg)", width: "44px", height: "18px", background: `${accentColor}33`, border: `1px solid ${accentColor}22`, boxShadow: "0 2px 8px rgba(0,0,0,0.3)", backdropFilter: "blur(1px)", borderRadius: "1px" }} />
+              {memory.backlightEnabled ? (
+                <Backlight blur={30} className="w-full" style={{ "--backlight-color": `${accentColor}a0` } as any}>
+                  {mediaContent}
+                </Backlight>
+              ) : (
+                mediaContent
+              )}
         <div style={{ paddingTop: "14px", paddingLeft: "6px" }}>
           <div style={{ fontFamily: headingFont, fontSize: "22px", color: tColor, lineHeight: 1.2 }}>
             {memory.caption || memory.title}
@@ -728,23 +807,35 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textC
   const dColor = memory.dateColor || textColor || accentColor;
   const tColor = memory.titleColor || textColor || accentColor;
   const descColor = memory.descriptionColor || textColor || accentColor;
+  const mediaContent = (
+    <div style={{ position: "relative", overflow: "hidden", borderRadius: "4px" }}>
+      {memory.video ? (
+        <VideoPlayerPro src={memory.video} />
+      ) : (
+        <>
+          <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "contrast(1.08) saturate(0.85)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent 40%, ${accentColor}22 70%, rgba(0,0,0,0.75) 100%)`, pointerEvents: "none" }} />
+          {/* Sinema şeridi */}
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
+          <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px" }}>
+            <div style={{ fontFamily: bodyFont, fontSize: "8px", color: dColor, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "4px" }}>{memory.date}</div>
+            <div style={{ fontFamily: headingFont, fontSize: "1.4rem", color: tColor, lineHeight: 1.2 }}>{memory.title}</div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+
   return (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <motion.div variants={fadeUp} style={{ position: "relative", overflow: "hidden", borderRadius: "4px" }}>
-        {memory.video ? (
-          <VideoPlayerPro src={memory.video} />
+      <motion.div variants={fadeUp} style={{ position: "relative" }}>
+        {memory.backlightEnabled ? (
+          <Backlight blur={35} className="w-full" style={{ "--backlight-color": `${accentColor}a0` } as any}>
+            {mediaContent}
+          </Backlight>
         ) : (
-          <>
-            <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "contrast(1.08) saturate(0.85)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-            <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent 40%, ${accentColor}22 70%, rgba(0,0,0,0.75) 100%)`, pointerEvents: "none" }} />
-            {/* Sinema şeridi */}
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
-            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
-            <div style={{ position: "absolute", bottom: "14px", left: "14px", right: "14px" }}>
-              <div style={{ fontFamily: bodyFont, fontSize: "8px", color: dColor, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "4px" }}>{memory.date}</div>
-              <div style={{ fontFamily: headingFont, fontSize: "1.4rem", color: tColor, lineHeight: 1.2 }}>{memory.title}</div>
-            </div>
-          </>
+          mediaContent
         )}
       </motion.div>
       {memory.description && (

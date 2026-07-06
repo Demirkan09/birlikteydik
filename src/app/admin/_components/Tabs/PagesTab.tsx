@@ -125,7 +125,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
     DEFAULT_TEMPLATES.forEach((tpl) => {
       const slug = TEMPLATE_SHOWCASE_SLUGS[tpl.id];
       const dbPage = allPages.find((p) => p.pageSlug === slug);
-      const isShowcased = dbPage ? dbPage.isShowcase : true; // default templates showcase by default
+      const isShowcased = dbPage ? dbPage.isShowcase : false;
 
       const item = {
         id: tpl.id,
@@ -308,6 +308,47 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
       console.error("Toggle showcase error:", err);
     }
   };
+
+  const handleLoadOrRegisterShowcasePage = async (tpl: any) => {
+    const slug = tpl.slug || `sablon-${tpl.id}`;
+    if (!tpl.dbPageExists) {
+      try {
+        const config = {
+          showcaseTitle: tpl.title || "Özel Şablon",
+          showcaseAccentColor: tpl.color || "#C9A84C",
+          showcaseFeatures: [],
+          coupleNames: tpl.title || "Özel Şablon",
+          tagline: "",
+          accentColor: tpl.color || "#C9A84C",
+        };
+        const createRes = await fetch("/api/admin/page-settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            adminEmail,
+            action: "create",
+            pageSlug: slug,
+            templateId: tpl.id,
+            isPublished: true,
+            isShowcase: false,
+            config,
+            memories: []
+          })
+        });
+        if (!createRes.ok) {
+          const createData = await createRes.json();
+          alert(createData.error || "Şablon sayfası oluşturulamadı.");
+          return;
+        }
+        await fetchAllPages();
+      } catch (err) {
+        console.error("Create template page error:", err);
+        return;
+      }
+    }
+    await loadPageSettings(slug);
+  };
+
   const [selectedEditSlug, setSelectedEditSlug] = useState("");
   const [editPageSlug, setEditPageSlug] = useState("");
   
@@ -630,7 +671,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
     WebkitBackdropFilter: "blur(16px)",
   };
 
-  const displayPages = allPages.filter(p => !SHOWCASE_SLUGS.includes(p.pageSlug));
+  const displayPages = allPages.filter(p => !p.isShowcase);
 
   return (
               <motion.div
@@ -718,7 +759,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
                               <button
                                 type="button"
-                                onClick={() => loadPageSettings(tpl.slug)}
+                                onClick={() => handleLoadOrRegisterShowcasePage(tpl)}
                                 style={{
                                   padding: "0 14px", borderRadius: "12px",
                                   border: "1px solid rgba(255,255,255,0.08)",
@@ -733,26 +774,6 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 title="Şablon Vitrin Kartını & Ayarlarını Düzenle"
                               >
                                 Düzenle
-                              </button>
-
-                              {/* Vitrinden Kaldır Butonu */}
-                              <button
-                                type="button"
-                                onClick={() => handleToggleShowcase(tpl, false)}
-                                style={{
-                                  padding: "0 12px", borderRadius: "12px",
-                                  border: "1px solid rgba(239, 68, 68, 0.2)",
-                                  background: "rgba(239, 68, 68, 0.05)",
-                                  color: "#EF4444",
-                                  cursor: "pointer", transition: "all 0.2s",
-                                  display: "flex", alignItems: "center", justifyContent: "center",
-                                  fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
-                                }}
-                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#EF4444"; e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)"; e.currentTarget.style.background = "rgba(239, 68, 68, 0.05)"; }}
-                                title="Şablonu Vitrinden Kaldır"
-                              >
-                                Kaldır
                               </button>
                             </div>
                           );
@@ -792,49 +813,24 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                     {tpl.title}
                                   </button>
 
-                                  {/* Tasarla (Sadece Özel Şablonlar için) */}
-                                  {tpl.isCustom && (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        localStorage.setItem("edit_custom_template_id", tpl.id.replace("custom-", ""));
-                                        if (setActiveTab) setActiveTab("template_builder");
-                                      }}
-                                      style={{
-                                        padding: "0 14px", borderRadius: "12px",
-                                        border: "1px solid rgba(255,255,255,0.08)",
-                                        background: "rgba(255,255,255,0.03)",
-                                        color: C.muted,
-                                        cursor: "pointer", transition: "all 0.2s",
-                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                        fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
-                                      }}
-                                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
-                                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
-                                      title="Şablon Tasarımını Düzenle"
-                                    >
-                                      Tasarla
-                                    </button>
-                                  )}
-
-                                  {/* Vitrine Al Butonu */}
+                                  {/* Tasarla/Düzenle (Şablon ayarları editörünü açar) */}
                                   <button
                                     type="button"
-                                    onClick={() => handleToggleShowcase(tpl, true)}
+                                    onClick={() => handleLoadOrRegisterShowcasePage(tpl)}
                                     style={{
                                       padding: "0 14px", borderRadius: "12px",
-                                      border: `1px solid ${C.gold}33`,
-                                      background: `${C.gold}12`,
-                                      color: C.gold,
+                                      border: "1px solid rgba(255,255,255,0.08)",
+                                      background: "rgba(255,255,255,0.03)",
+                                      color: C.muted,
                                       cursor: "pointer", transition: "all 0.2s",
                                       display: "flex", alignItems: "center", justifyContent: "center",
                                       fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
                                     }}
-                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = `${C.gold}22`; }}
-                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${C.gold}33`; e.currentTarget.style.background = `${C.gold}12`; }}
-                                    title="Sayfayı Vitrine Ekle"
+                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
+                                    title={tpl.isCustom ? "Şablon Vitrin Kartını ve Ayarlarını Düzenle" : "Şablon Ayarlarını Düzenle"}
                                   >
-                                    Vitrine Al
+                                    {tpl.isCustom ? "Tasarla" : "Düzenle"}
                                   </button>
                                 </div>
                               );
@@ -2293,6 +2289,32 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         {memory._videoError}
                                       </span>
                                     )}
+                                    {/* Backlight (Geri Işık) Efekti */}
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "10px" }}>
+                                      <span style={{ fontSize: "11px", color: C.muted, fontWeight: 500, textTransform: "uppercase" }}>Geri Işık (Backlight):</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditMemories((prev) => {
+                                            const updated = [...prev];
+                                            updated[index] = {
+                                              ...updated[index],
+                                              backlightEnabled: !updated[index].backlightEnabled
+                                            };
+                                            return updated;
+                                          });
+                                        }}
+                                        style={{
+                                          padding: "6px 14px", borderRadius: "8px", border: "none",
+                                          background: memory.backlightEnabled ? C.gold : "rgba(255,255,255,0.06)",
+                                          color: memory.backlightEnabled ? "#0B0F1A" : C.text,
+                                          fontSize: "11px", fontWeight: 600, cursor: "pointer",
+                                          transition: "all 0.2s"
+                                        }}
+                                      >
+                                        {memory.backlightEnabled ? "Backlight Aktif 🌟" : "Backlight Pasif"}
+                                      </button>
+                                    </div>
                                   </div>
 
                                   {/* Sıralama & Sil Butonları */}
@@ -2513,7 +2535,26 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                  const data = await res.json();
                                  if (res.ok) {
                                    setEditorSuccess(newShowcaseState ? "Sayfa başarıyla vitrine eklendi! 🌟" : "Sayfa vitrinden kaldırıldı.");
-                                   await fetchAllPages();
+                                    try {
+                                      let newOrder = [...showcaseOrder];
+                                      if (newShowcaseState) {
+                                        newOrder = [...newOrder.filter(s => s !== editPageSlug), editPageSlug];
+                                      } else {
+                                        newOrder = newOrder.filter(s => s !== editPageSlug);
+                                      }
+                                      setShowcaseOrder(newOrder);
+                                      await fetch("/api/admin/site-settings", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                          adminEmail,
+                                          settings: { showcase_order: newOrder }
+                                        })
+                                      });
+                                    } catch (err) {
+                                      console.error("Save showcase order error:", err);
+                                    }
+                                    await fetchAllPages();
                                  } else {
                                    setEditorError(data.error || "Vitrin durumu güncellenemedi.");
                                  }
@@ -2691,6 +2732,55 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                         </button>
                       </div>
                     </div>
+                  </div>
+                )}
+                {selectedEditSlug && (
+                  <div style={{
+                    position: "fixed",
+                    bottom: "24px",
+                    right: "24px",
+                    zIndex: 9999,
+                    background: "rgba(22, 4, 8, 0.8)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
+                    border: `1px solid ${C.gold}33`,
+                    borderRadius: "20px",
+                    padding: "10px 16px",
+                    display: "flex",
+                    gap: "10px",
+                    alignItems: "center",
+                    boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
+                  }}>
+                    <button
+                      type="button"
+                      disabled={editorSaving}
+                      onClick={() => handleSavePageSettings(false)}
+                      style={{
+                        padding: "10px 18px", borderRadius: "14px", border: `1px solid rgba(255,255,255,0.1)`,
+                        background: "rgba(255,255,255,0.03)", color: C.text, fontFamily: "var(--font-inter), sans-serif",
+                        fontSize: "12px", fontWeight: 600, letterSpacing: "0.02em", cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
+                      onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
+                    >
+                      {editIsPublished ? (editorSaving ? "Taslağa..." : "Taslağa Al") : (editorSaving ? "Kaydediliyor..." : "Taslağı Güncelle")}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={editorSaving}
+                      onClick={() => handleSavePageSettings(true)}
+                      style={{
+                        padding: "10px 22px", borderRadius: "14px", border: "none",
+                        background: C.gold, color: "#0B0F1A", fontFamily: "var(--font-inter), sans-serif",
+                        fontSize: "12px", fontWeight: 600, letterSpacing: "0.02em", cursor: "pointer",
+                        transition: "opacity 0.2s"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.opacity = "0.85"}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                    >
+                      {editIsPublished ? (editorSaving ? "Güncelleniyor..." : "Güncelle") : (editorSaving ? "Yayına..." : "Yayına Al")}
+                    </button>
                   </div>
                 )}
               </motion.div>
