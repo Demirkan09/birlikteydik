@@ -11,7 +11,7 @@ type BacklightProps = {
 export function Backlight({ blur = 32, children, className, imageUrl, style }: BacklightProps) {
   return (
     <div className={className} style={{ position: "relative", ...style }}>
-      {/* Silky-smooth GPU-accelerated Ambilight or solid fallback */}
+      {/* Silky-smooth GPU-accelerated Ambilight or solid fallback with Safari fixes */}
       {imageUrl ? (
         <div
           style={{
@@ -21,7 +21,14 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
             backgroundImage: `url(${imageUrl})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            // GPU Promotion and Safari Blur Discard Bug Fixes
             filter: `blur(${blur}px) saturate(2.5) brightness(0.95)`,
+            WebkitFilter: `blur(${blur}px) saturate(2.5) brightness(0.95)`,
+            transform: "translate3d(0, 0, 0) scale(1.02)",
+            WebkitTransform: "translate3d(0, 0, 0) scale(1.02)",
+            willChange: "filter, transform",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
             pointerEvents: "none",
             zIndex: 0,
             opacity: 0.85,
@@ -34,7 +41,14 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
             inset: "-30px",
             borderRadius: "16px",
             background: "radial-gradient(circle at center, var(--backlight-color, rgba(255,255,255,0.15)) 0%, transparent 75%)",
+            // GPU Promotion and Safari Blur Discard Bug Fixes
             filter: `blur(${blur}px)`,
+            WebkitFilter: `blur(${blur}px)`,
+            transform: "translate3d(0, 0, 0) scale(1.02)",
+            WebkitTransform: "translate3d(0, 0, 0) scale(1.02)",
+            willChange: "filter, transform",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
             pointerEvents: "none",
             zIndex: 0,
             opacity: 0.9,
