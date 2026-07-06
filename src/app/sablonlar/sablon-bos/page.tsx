@@ -719,7 +719,7 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
       <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, borderRadius: "2px", background: accentColor, filter: "blur(24px)", opacity: 0.06, pointerEvents: "none" }} />
         {memory.backlightEnabled ? (
-          <Backlight blur={35} className="w-full" style={{ "--backlight-color": `${accentColor}a0` } as any}>
+          <Backlight blur={35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
             {mediaContent}
           </Backlight>
         ) : (
@@ -778,7 +778,7 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
               {/* Bant dekal */}
               <div style={{ position: "absolute", top: "-8px", left: "50%", transform: "translateX(-50%) rotate(2deg)", width: "44px", height: "18px", background: `${accentColor}33`, border: `1px solid ${accentColor}22`, boxShadow: "0 2px 8px rgba(0,0,0,0.3)", backdropFilter: "blur(1px)", borderRadius: "1px" }} />
               {memory.backlightEnabled ? (
-                <Backlight blur={30} className="w-full" style={{ "--backlight-color": `${accentColor}a0` } as any}>
+                <Backlight blur={30} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
                   {mediaContent}
                 </Backlight>
               ) : (
@@ -831,7 +831,7 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textC
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <motion.div variants={fadeUp} style={{ position: "relative" }}>
         {memory.backlightEnabled ? (
-          <Backlight blur={35} className="w-full" style={{ "--backlight-color": `${accentColor}a0` } as any}>
+          <Backlight blur={35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
             {mediaContent}
           </Backlight>
         ) : (
