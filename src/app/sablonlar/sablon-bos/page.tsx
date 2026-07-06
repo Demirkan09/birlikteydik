@@ -865,6 +865,17 @@ export default function BosTemplate({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const search = new URLSearchParams(window.location.search);
+      
+      // Inject Eruda mobile console dynamically if ?debug=true is present
+      if (search.get("debug") === "true") {
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/eruda";
+        script.onload = () => {
+          (window as any).eruda.init();
+        };
+        document.body.appendChild(script);
+      }
+
       if (search.get("preview") === "true") {
         const c = search.get("config");
         const m = search.get("memories");
