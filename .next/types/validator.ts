@@ -137,6 +137,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/sablonlar/[slug]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/[slug]">> = Specific
+  const handler = {} as typeof import("../../src/app/sablonlar/[slug]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/sablonlar/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/sablonlar">> = Specific
@@ -146,118 +155,10 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
-// Validate ../../src/app/sablonlar/sablon-amber/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-amber">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-amber/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
 // Validate ../../src/app/sablonlar/sablon-bos/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-bos">> = Specific
   const handler = {} as typeof import("../../src/app/sablonlar/sablon-bos/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-emerald/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-emerald">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-emerald/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-indigo/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-indigo">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-indigo/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-kirmizi/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-kirmizi">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-kirmizi/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-lacivert/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-lacivert">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-lacivert/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-lavanta/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-lavanta">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-lavanta/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-minimal/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-minimal">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-minimal/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-oyun/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-oyun">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-oyun/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-retro/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-retro">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-retro/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-rose/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-rose">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-rose/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-sinematik/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-sinematik">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-sinematik/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/sablonlar/sablon-siyah/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sablonlar/sablon-siyah">> = Specific
-  const handler = {} as typeof import("../../src/app/sablonlar/sablon-siyah/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

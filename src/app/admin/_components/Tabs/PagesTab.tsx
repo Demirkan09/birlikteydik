@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiOutlineExternalLink, HiOutlineCheck, HiOutlineTrash, HiOutlineUpload, HiOutlineLink, HiOutlineRefresh, HiOutlineMail, HiOutlineClipboardCopy, HiOutlineChevronDown, HiOutlineSearch } from "react-icons/hi";
 import { C } from "../../_utils/constants";
@@ -64,7 +64,40 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; isShowcase?: boolean; activatedAt?: string; remainingTime?: string; config?: any }[]>([]);
   const [pagesTab, setPagesTab] = useState<"published" | "drafts">("published");
   const [pagesLoading, setPagesLoading] = useState(false);
-  const [templateList, setTemplateList] = useState(DEFAULT_TEMPLATES);
+  const [customTemplates, setCustomTemplates] = useState<{ id: string; name: string; preview_color: string }[]>([]);
+
+  const fetchCustomTemplates = useCallback(async () => {
+    if (!adminEmail) return;
+    try {
+      const res = await fetch(`/api/admin/custom-templates?adminEmail=${encodeURIComponent(adminEmail)}`);
+      const data = await res.json();
+      if (res.ok && data.templates) setCustomTemplates(data.templates);
+    } catch { /* ignore */ }
+  }, [adminEmail]);
+
+  const fetchAllPages = useCallback(async () => {
+    if (!adminEmail) return;
+    setPagesLoading(true);
+    try {
+      const res = await fetch(`/api/admin/page-settings?adminEmail=${encodeURIComponent(adminEmail)}`);
+      const data = await res.json();
+      if (res.ok && data.pages) {
+        setAllPages(data.pages);
+      }
+    } catch (err) {
+      console.error("Pages load error:", err);
+    } finally {
+      setPagesLoading(false);
+    }
+  }, [adminEmail]);
+
+  useEffect(() => {
+    fetch("/api/admin/setup-db").catch(() => {});
+    fetchAllPages();
+    fetchCustomTemplates();
+  }, [fetchAllPages, fetchCustomTemplates]);
+
+  const [showcaseOrder, setShowcaseOrder] = useState<string[]>([]);
 
   // Load showcase order
   useEffect(() => {
@@ -74,20 +107,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
         const res = await fetch(`/api/admin/site-settings?adminEmail=${encodeURIComponent(adminEmail)}`);
         const data = await res.json();
         if (res.ok && data.settings && data.settings.showcase_order) {
-          const order: string[] = data.settings.showcase_order;
-          setTemplateList((prev) => {
-            const sorted = [...prev].sort((a, b) => {
-              const slugA = TEMPLATE_SHOWCASE_SLUGS[a.id];
-              const slugB = TEMPLATE_SHOWCASE_SLUGS[b.id];
-              const idxA = order.indexOf(slugA);
-              const idxB = order.indexOf(slugB);
-              if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-              if (idxA !== -1) return -1;
-              if (idxB !== -1) return 1;
-              return 0;
-            });
-            return sorted;
-          });
+          setShowcaseOrder(data.settings.showcase_order);
         }
       } catch (err) {
         console.error("Load showcase order error:", err);
@@ -96,28 +116,196 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
     loadShowcaseOrder();
   }, [adminEmail]);
 
+  // Dynamically compute showcased templates and private templates
+  const { showcasedTemplates, privateTemplates } = useMemo(() => {
+    const showcased: any[] = [];
+    const privateTemplatesList: any[] = [];
+
+    // Process default templates
+    DEFAULT_TEMPLATES.forEach((tpl) => {
+      const slug = TEMPLATE_SHOWCASE_SLUGS[tpl.id];
+      const dbPage = allPages.find((p) => p.pageSlug === slug);
+      const isShowcased = dbPage ? dbPage.isShowcase : true; // default templates showcase by default
+
+      const item = {
+        id: tpl.id,
+        slug,
+        title: dbPage?.config?.showcaseTitle || tpl.title,
+        color: dbPage?.config?.showcaseAccentColor || dbPage?.config?.accentColor || tpl.color,
+        isCustom: false,
+        dbPageExists: !!dbPage,
+      };
+
+      if (isShowcased) {
+        showcased.push(item);
+      } else {
+        privateTemplatesList.push(item);
+      }
+    });
+
+    // Process custom templates
+    customTemplates.forEach((ct) => {
+      const tplId = `custom-${ct.id}`;
+      const dbPage = allPages.find((p) => p.templateId === tplId && p.isShowcase);
+      
+      if (dbPage) {
+        showcased.push({
+          id: tplId,
+          slug: dbPage.pageSlug,
+          title: dbPage.config?.showcaseTitle || ct.name,
+          color: dbPage.config?.showcaseAccentColor || dbPage.config?.accentColor || ct.preview_color || "#C9A84C",
+          isCustom: true,
+          dbPageExists: true,
+        });
+      } else {
+        privateTemplatesList.push({
+          id: tplId,
+          title: ct.name,
+          color: ct.preview_color || "#C9A84C",
+          isCustom: true,
+          dbPageExists: false,
+          rawTpl: ct,
+        });
+      }
+    });
+
+    // Sort showcased based on showcaseOrder
+    showcased.sort((a, b) => {
+      const idxA = showcaseOrder.indexOf(a.slug);
+      const idxB = showcaseOrder.indexOf(b.slug);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.title.localeCompare(b.title);
+    });
+
+    return { showcasedTemplates: showcased, privateTemplates: privateTemplatesList };
+  }, [allPages, customTemplates, showcaseOrder]);
+
   const handleMoveTemplate = async (index: number, direction: "up" | "down") => {
-    const updated = [...templateList];
+    const sortedShowcased = [...showcasedTemplates];
     const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= updated.length) return;
+    if (targetIndex < 0 || targetIndex >= sortedShowcased.length) return;
+
+    [sortedShowcased[index], sortedShowcased[targetIndex]] = [sortedShowcased[targetIndex], sortedShowcased[index]];
     
-    [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
-    setTemplateList(updated);
+    const newOrder = sortedShowcased.map(t => t.slug);
+    setShowcaseOrder(newOrder);
 
     try {
-      const showcaseOrder = updated.map(t => TEMPLATE_SHOWCASE_SLUGS[t.id]);
       await fetch("/api/admin/site-settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           adminEmail,
           settings: {
-            showcase_order: showcaseOrder
+            showcase_order: newOrder
           }
         })
       });
     } catch (err) {
       console.error("Save showcase order error:", err);
+    }
+  };
+
+  const handleToggleShowcase = async (tpl: any, targetState: boolean) => {
+    const slug = tpl.slug || `sablon-${tpl.id}`;
+    
+    try {
+      if (targetState) {
+        // Adding to showcase
+        if (tpl.dbPageExists) {
+          const getRes = await fetch(`/api/admin/page-settings?adminEmail=${encodeURIComponent(adminEmail)}&pageSlug=${encodeURIComponent(slug)}`);
+          const getData = await getRes.json();
+          if (getRes.ok && !getData.notFound) {
+            await fetch("/api/admin/page-settings", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                adminEmail,
+                action: "update",
+                pageSlug: slug,
+                templateId: tpl.id,
+                config: getData.config,
+                memories: getData.memories,
+                isPublished: true,
+                isShowcase: true
+              })
+            });
+          }
+        } else {
+          // If custom template, prefill showcase configs
+          const config = {
+            showcaseTitle: tpl.title || "Özel Şablon",
+            showcaseAccentColor: tpl.color || "#C9A84C",
+            showcaseFeatures: [],
+            coupleNames: tpl.title || "Özel Şablon",
+            tagline: "",
+            accentColor: tpl.color || "#C9A84C",
+          };
+          await fetch("/api/admin/page-settings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              adminEmail,
+              action: "create",
+              pageSlug: slug,
+              templateId: tpl.id,
+              isPublished: true,
+              isShowcase: true,
+              config,
+              memories: []
+            })
+          });
+        }
+
+        const newOrder = [...showcaseOrder.filter(s => s !== slug), slug];
+        setShowcaseOrder(newOrder);
+        await fetch("/api/admin/site-settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            adminEmail,
+            settings: { showcase_order: newOrder }
+          })
+        });
+
+      } else {
+        // Removing from showcase
+        const getRes = await fetch(`/api/admin/page-settings?adminEmail=${encodeURIComponent(adminEmail)}&pageSlug=${encodeURIComponent(slug)}`);
+        const getData = await getRes.json();
+        if (getRes.ok && !getData.notFound) {
+          await fetch("/api/admin/page-settings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              adminEmail,
+              action: "update",
+              pageSlug: slug,
+              templateId: tpl.id,
+              config: getData.config,
+              memories: getData.memories,
+              isPublished: getData.isPublished,
+              isShowcase: false
+            })
+          });
+        }
+
+        const newOrder = showcaseOrder.filter(s => s !== slug);
+        setShowcaseOrder(newOrder);
+        await fetch("/api/admin/site-settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            adminEmail,
+            settings: { showcase_order: newOrder }
+          })
+        });
+      }
+
+      fetchAllPages();
+    } catch (err) {
+      console.error("Toggle showcase error:", err);
     }
   };
   const [selectedEditSlug, setSelectedEditSlug] = useState("");
@@ -156,38 +344,6 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [integrateError, setIntegrateError] = useState("");
 
   // Custom (özel) şablonlar
-  const [customTemplates, setCustomTemplates] = useState<{ id: string; name: string; preview_color: string }[]>([]);
-  const fetchCustomTemplates = useCallback(async () => {
-    if (!adminEmail) return;
-    try {
-      const res = await fetch(`/api/admin/custom-templates?adminEmail=${encodeURIComponent(adminEmail)}`);
-      const data = await res.json();
-      if (res.ok && data.templates) setCustomTemplates(data.templates);
-    } catch { /* ignore */ }
-  }, [adminEmail]);
-
-  // Sayfaları Yükle
-  const fetchAllPages = useCallback(async () => {
-    if (!adminEmail) return;
-    setPagesLoading(true);
-    try {
-      const res = await fetch(`/api/admin/page-settings?adminEmail=${encodeURIComponent(adminEmail)}`);
-      const data = await res.json();
-      if (res.ok && data.pages) {
-        setAllPages(data.pages);
-      }
-    } catch (err) {
-      console.error("Pages load error:", err);
-    } finally {
-      setPagesLoading(false);
-    }
-  }, [adminEmail]);
-
-  useEffect(() => {
-    fetch("/api/admin/setup-db").catch(() => {});
-    fetchAllPages();
-    fetchCustomTemplates();
-  }, [fetchAllPages, fetchCustomTemplates]);
   const TEMPLATE_DEFAULTS: Record<string, any> = {
     "klasik-retro": { bgColor: "#160C0E", accentColor: "#e5c2ba", particlesEnabled: true, particlesType: "rose-petals", memoryCardStyle: "polaroid", headingFont: "cormorant", bodyFont: "lato", polaroidTilt: true },
     "romantik-kirmizi": { bgColor: "#160408", accentColor: "#e63946", particlesEnabled: true, particlesType: "hearts", memoryCardStyle: "plain", headingFont: "cormorant", bodyFont: "inter" },
@@ -499,12 +655,11 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                         </div>
                       )}
 
-                      {/* Şablon Seç */}
-                      <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "12px", fontWeight: 500 }}>Şablon Seç</p>
+                      {/* VİTRİN ŞABLONLARI */}
+                      <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "12px", fontWeight: 500 }}>VİTRİN ŞABLONLARI</p>
                       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
-                        {templateList.map((tpl, index) => {
-                          const showcasePage = allPages.find(p => p.pageSlug === TEMPLATE_SHOWCASE_SLUGS[tpl.id]);
-                          const displayColor = showcasePage?.config?.showcaseAccentColor || showcasePage?.config?.accentColor || tpl.color;
+                        {showcasedTemplates.map((tpl, index) => {
+                          const displayColor = tpl.color;
                           return (
                             <div key={tpl.id} style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
                               <button
@@ -545,14 +700,14 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 </button>
                                 <button
                                   type="button"
-                                  disabled={index === templateList.length - 1}
+                                  disabled={index === showcasedTemplates.length - 1}
                                   onClick={() => handleMoveTemplate(index, "down")}
                                   style={{
                                     padding: "0 8px", borderRadius: "8px",
                                     border: "1px solid rgba(255,255,255,0.06)",
                                     background: "rgba(255,255,255,0.02)",
-                                    color: index === templateList.length - 1 ? "rgba(255,255,255,0.08)" : C.muted,
-                                    cursor: index === templateList.length - 1 ? "not-allowed" : "pointer",
+                                    color: index === showcasedTemplates.length - 1 ? "rgba(255,255,255,0.08)" : C.muted,
+                                    cursor: index === showcasedTemplates.length - 1 ? "not-allowed" : "pointer",
                                     fontSize: "11px", display: "flex", alignItems: "center", justifyContent: "center"
                                   }}
                                   title="Aşağı Taşı"
@@ -563,7 +718,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
                               <button
                                 type="button"
-                                onClick={() => loadPageSettings(TEMPLATE_SHOWCASE_SLUGS[tpl.id])}
+                                onClick={() => loadPageSettings(tpl.slug)}
                                 style={{
                                   padding: "0 14px", borderRadius: "12px",
                                   border: "1px solid rgba(255,255,255,0.08)",
@@ -575,67 +730,111 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 }}
                                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
-                                title="Şablonu Düzenle"
+                                title="Şablon Vitrin Kartını & Ayarlarını Düzenle"
                               >
                                 Düzenle
+                              </button>
+
+                              {/* Vitrinden Kaldır Butonu */}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleShowcase(tpl, false)}
+                                style={{
+                                  padding: "0 12px", borderRadius: "12px",
+                                  border: "1px solid rgba(239, 68, 68, 0.2)",
+                                  background: "rgba(239, 68, 68, 0.05)",
+                                  color: "#EF4444",
+                                  cursor: "pointer", transition: "all 0.2s",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#EF4444"; e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)"; e.currentTarget.style.background = "rgba(239, 68, 68, 0.05)"; }}
+                                title="Şablonu Vitrinden Kaldır"
+                              >
+                                Kaldır
                               </button>
                             </div>
                           );
                         })}
                       </div>
 
-                      {/* Özel Şablonlar */}
-                      {customTemplates.length > 0 && (
+                      {/* Özel Şablonlar (Vitrin Dışı Şablonlar) */}
+                      {privateTemplates.length > 0 && (
                         <>
                           <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "8px", marginTop: "16px", fontWeight: 500 }}>
                             🎨 Özel Şablonlarım
                           </p>
                           <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxHeight: "200px", overflowY: "auto", paddingRight: "4px" }}>
-                            {customTemplates.map((tpl) => {
-                              const tplId = `custom-${tpl.id}`;
+                            {privateTemplates.map((tpl) => {
                               return (
                                 <div key={tpl.id} style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
                                   <button
-                                    key={tpl.id}
                                     type="button"
-                                    onClick={() => setNewTemplateId(tplId)}
+                                    onClick={() => setNewTemplateId(tpl.id)}
                                     style={{
                                       flex: 1,
                                       padding: "10px 14px", borderRadius: "12px",
-                                      border: `1px solid ${newTemplateId === tplId ? tpl.preview_color : "rgba(255,255,255,0.06)"}`,
-                                      background: newTemplateId === tplId ? `${tpl.preview_color}15` : "rgba(255,255,255,0.03)",
-                                      color: newTemplateId === tplId ? tpl.preview_color : C.text,
+                                      border: `1px solid ${newTemplateId === tpl.id ? tpl.color : "rgba(255,255,255,0.06)"}`,
+                                      background: newTemplateId === tpl.id ? `${tpl.color}15` : "rgba(255,255,255,0.03)",
+                                      color: newTemplateId === tpl.id ? tpl.color : C.text,
                                       cursor: "pointer", transition: "all 0.2s", textAlign: "left",
-                                      fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tplId ? 600 : 400,
+                                      fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", fontWeight: newTemplateId === tpl.id ? 600 : 400,
                                       display: "flex", alignItems: "center", gap: "10px",
                                     }}
                                   >
                                     <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
-                                      <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: tpl.preview_color, display: "inline-block" }} />
-                                      <span style={{ fontSize: "8px", opacity: 0.5, letterSpacing: "0.1em" }}>ÖZEL</span>
+                                      <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: tpl.color, display: "inline-block" }} />
+                                      <span style={{ fontSize: "8px", opacity: 0.5, letterSpacing: "0.1em" }}>
+                                        {tpl.isCustom ? "ÖZEL" : "STATİK"}
+                                      </span>
                                     </span>
-                                    {tpl.name}
+                                    {tpl.title}
                                   </button>
+
+                                  {/* Tasarla (Sadece Özel Şablonlar için) */}
+                                  {tpl.isCustom && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        localStorage.setItem("edit_custom_template_id", tpl.id.replace("custom-", ""));
+                                        if (setActiveTab) setActiveTab("template_builder");
+                                      }}
+                                      style={{
+                                        padding: "0 14px", borderRadius: "12px",
+                                        border: "1px solid rgba(255,255,255,0.08)",
+                                        background: "rgba(255,255,255,0.03)",
+                                        color: C.muted,
+                                        cursor: "pointer", transition: "all 0.2s",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
+                                      }}
+                                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
+                                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
+                                      title="Şablon Tasarımını Düzenle"
+                                    >
+                                      Tasarla
+                                    </button>
+                                  )}
+
+                                  {/* Vitrine Al Butonu */}
                                   <button
                                     type="button"
-                                    onClick={() => {
-                                      localStorage.setItem("edit_custom_template_id", tpl.id);
-                                      if (setActiveTab) setActiveTab("template_builder");
-                                    }}
+                                    onClick={() => handleToggleShowcase(tpl, true)}
                                     style={{
                                       padding: "0 14px", borderRadius: "12px",
-                                      border: "1px solid rgba(255,255,255,0.08)",
-                                      background: "rgba(255,255,255,0.03)",
-                                      color: C.muted,
+                                      border: `1px solid ${C.gold}33`,
+                                      background: `${C.gold}12`,
+                                      color: C.gold,
                                       cursor: "pointer", transition: "all 0.2s",
                                       display: "flex", alignItems: "center", justifyContent: "center",
                                       fontSize: "11px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 500,
                                     }}
-                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.color = C.gold; }}
-                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = C.muted; }}
-                                    title="Şablonu Düzenle"
+                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = `${C.gold}22`; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${C.gold}33`; e.currentTarget.style.background = `${C.gold}12`; }}
+                                    title="Sayfayı Vitrine Ekle"
                                   >
-                                    Düzenle
+                                    Vitrine Al
                                   </button>
                                 </div>
                               );
@@ -2410,19 +2609,21 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                         <button
                           type="button"
                           onClick={() => {
-                            const targetSlugs = SHOWCASE_SLUGS.filter(s => s !== selectedEditSlug);
+                            const targetSlugs = showcasedTemplates
+                              .filter(item => item.slug !== selectedEditSlug)
+                              .map(item => item.slug);
                             setSelectedIntegrateSlugs(
                               selectedIntegrateSlugs.length === targetSlugs.length ? [] : targetSlugs
                             );
                           }}
                           style={{ background: "transparent", border: "none", color: C.gold, fontSize: "12px", fontWeight: 500, cursor: "pointer" }}
                         >
-                          {selectedIntegrateSlugs.length === SHOWCASE_SLUGS.filter(s => s !== selectedEditSlug).length ? "Tümünü Kaldır" : "Tümünü Seç"}
+                          {selectedIntegrateSlugs.length === showcasedTemplates.filter(item => item.slug !== selectedEditSlug).length ? "Tümünü Kaldır" : "Tümünü Seç"}
                         </button>
                       </div>
 
                       <div style={{ maxHeight: "220px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px", paddingRight: "4px", marginBottom: "24px" }}>
-                        {SHOWCASE_SLUGS_WITH_NAMES
+                        {showcasedTemplates
                           .filter(item => item.slug !== selectedEditSlug)
                           .map(item => {
                             const isChecked = selectedIntegrateSlugs.includes(item.slug);

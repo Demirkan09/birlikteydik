@@ -31,6 +31,14 @@
       "namedRegex": "^/api/uploads/(?<nxtPfilename>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/sablonlar/[slug]",
+      "regex": "^/sablonlar/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/sablonlar/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/[slug]",
       "regex": "^/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -293,82 +301,10 @@
       "namedRegex": "^/sablonlar(?:/)?$"
     },
     {
-      "page": "/sablonlar/sablon-amber",
-      "regex": "^/sablonlar/sablon\\-amber(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-amber(?:/)?$"
-    },
-    {
       "page": "/sablonlar/sablon-bos",
       "regex": "^/sablonlar/sablon\\-bos(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/sablonlar/sablon\\-bos(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-emerald",
-      "regex": "^/sablonlar/sablon\\-emerald(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-emerald(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-indigo",
-      "regex": "^/sablonlar/sablon\\-indigo(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-indigo(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-kirmizi",
-      "regex": "^/sablonlar/sablon\\-kirmizi(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-kirmizi(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-lacivert",
-      "regex": "^/sablonlar/sablon\\-lacivert(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-lacivert(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-lavanta",
-      "regex": "^/sablonlar/sablon\\-lavanta(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-lavanta(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-minimal",
-      "regex": "^/sablonlar/sablon\\-minimal(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-minimal(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-oyun",
-      "regex": "^/sablonlar/sablon\\-oyun(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-oyun(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-retro",
-      "regex": "^/sablonlar/sablon\\-retro(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-retro(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-rose",
-      "regex": "^/sablonlar/sablon\\-rose(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-rose(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-sinematik",
-      "regex": "^/sablonlar/sablon\\-sinematik(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-sinematik(?:/)?$"
-    },
-    {
-      "page": "/sablonlar/sablon-siyah",
-      "regex": "^/sablonlar/sablon\\-siyah(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sablonlar/sablon\\-siyah(?:/)?$"
     },
     {
       "page": "/sayfa-olustur",

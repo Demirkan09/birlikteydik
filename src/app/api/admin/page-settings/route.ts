@@ -266,9 +266,9 @@ export async function POST(request: Request) {
       }
 
       await pool.query(
-        `INSERT INTO page_settings (page_slug, template_id, config, memories, is_published)
-         VALUES ($1, $2, $3, $4, FALSE)`,
-        [cleanSlug, templateId, JSON.stringify(defaults.config), JSON.stringify(defaults.memories)]
+        `INSERT INTO page_settings (page_slug, template_id, config, memories, is_published, is_showcase)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [cleanSlug, templateId, JSON.stringify(defaults.config), JSON.stringify(defaults.memories), !!isPublished, !!isShowcase]
       );
 
       try {

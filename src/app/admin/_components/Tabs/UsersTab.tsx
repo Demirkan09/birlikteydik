@@ -528,8 +528,9 @@ export function UsersTab({ adminEmail, adminRole }: UsersTabProps) {
                                     border: `1px solid ${C.border}`, color: "white", outline: "none", fontSize: "12px"
                                   }}
                                 >
+                                  <option value="temel" style={{ color: "black" }}>Temel Paket</option>
                                   <option value="premium" style={{ color: "black" }}>Premium Paket</option>
-                                  <option value="standart" style={{ color: "black" }}>Standart Paket</option>
+                                  <option value="premium+" style={{ color: "black" }}>Premium+ Paket</option>
                                 </select>
                               </div>
                             </div>
