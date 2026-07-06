@@ -399,13 +399,7 @@ export default function TemplatesPage() {
       .catch(err => console.error("Load settings error:", err));
   }, []);
 
-  const dbIds = new Set(dbShowcases.map(t => t.id));
-  const fallbackTemplates = templates.filter(t => {
-    const slug = t.demoUrl.replace("/sablonlar/", "");
-    return !dbIds.has(slug);
-  });
-
-  const mergedTemplates = [...dbShowcases, ...fallbackTemplates];
+  const mergedTemplates = dbShowcases;
 
   if (siteSettings.maintenance_mode) {
     let formattedTime = "";
