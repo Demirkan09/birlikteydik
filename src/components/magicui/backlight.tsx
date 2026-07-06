@@ -10,7 +10,7 @@ type BacklightProps = {
 
 export function Backlight({ blur = 32, children, className, imageUrl, style }: BacklightProps) {
   return (
-    <div className={className} style={{ position: "relative", ...style }}>
+    <div className={className} style={{ position: "relative", isolation: "isolate", ...style }}>
       {/* Silky-smooth GPU-accelerated Ambilight or solid fallback with Safari fixes */}
       {imageUrl ? (
         <div
@@ -24,13 +24,13 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
             // GPU Promotion and Safari Blur Discard Bug Fixes
             filter: `blur(${blur}px) saturate(2.5) brightness(0.95)`,
             WebkitFilter: `blur(${blur}px) saturate(2.5) brightness(0.95)`,
-            transform: "translate3d(0, 0, 0) scale(1.02)",
-            WebkitTransform: "translate3d(0, 0, 0) scale(1.02)",
+            transform: "translate3d(0, 0, -1px) scale(1.02)",
+            WebkitTransform: "translate3d(0, 0, -1px) scale(1.02)",
             willChange: "filter, transform",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             pointerEvents: "none",
-            zIndex: 0,
+            zIndex: -1,
             opacity: 0.85,
           }}
         />
@@ -44,18 +44,18 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
             // GPU Promotion and Safari Blur Discard Bug Fixes
             filter: `blur(${blur}px)`,
             WebkitFilter: `blur(${blur}px)`,
-            transform: "translate3d(0, 0, 0) scale(1.02)",
-            WebkitTransform: "translate3d(0, 0, 0) scale(1.02)",
+            transform: "translate3d(0, 0, -1px) scale(1.02)",
+            WebkitTransform: "translate3d(0, 0, -1px) scale(1.02)",
             willChange: "filter, transform",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             pointerEvents: "none",
-            zIndex: 0,
+            zIndex: -1,
             opacity: 0.9,
           }}
         />
       )}
-      <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+      {children}
     </div>
   )
 }
