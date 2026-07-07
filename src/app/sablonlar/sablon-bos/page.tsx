@@ -31,6 +31,8 @@ export const defaultConfig = {
   memoryCardStyle: "plain" as "plain" | "polaroid" | "cinematic",
   memoryCardLayout: "vertical" as "vertical" | "grid",
   polaroidTilt: true,
+  roundCornersEnabled: false,
+  photoBorderRadius: 12,
   // Tipografi
   headingFont: "cormorant" as "cormorant" | "playfair" | "cinzel" | "pinyon" | "vt323" | "press-start",
   bodyFont: "inter" as "inter" | "lato" | "dm-sans" | "vt323" | "press-start",
@@ -698,16 +700,20 @@ const TemplateContext = createContext<{ config: TemplateConfig; memories: typeof
 // 📸  PLAIN KART (sablon-bos orijinal stili)
 // ─────────────────────────────────────────────────────────────────────────────
 function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; textColor: string }) {
+  const context = useContext(TemplateContext);
+  const config = context?.config;
+  const borderRadiusStyle = config?.roundCornersEnabled ? `${config.photoBorderRadius ?? 12}px` : "0px";
+
   const dColor = memory.dateColor || textColor || accentColor;
   const tColor = memory.titleColor || textColor || accentColor;
   const descColor = memory.descriptionColor || textColor || accentColor;
   const mediaContent = (
-    <div style={{ position: "relative", overflow: "hidden", background: "#111113", border: `1px solid ${accentColor}22`, width: "100%" }}>
+    <div style={{ position: "relative", overflow: "hidden", borderRadius: borderRadiusStyle, background: "#111113", border: `1px solid ${accentColor}22`, width: "100%" }}>
       {memory.video ? (
         <VideoPlayerPro src={memory.video} />
       ) : (
         <>
-          <img src={memory.image} alt={memory.title} draggable={false} className="w-full h-auto block" style={{ pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          <img src={memory.image} alt={memory.title} draggable={false} className="w-full h-auto block" style={{ borderRadius: borderRadiusStyle, pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 55%, rgba(10,10,12,0.35) 100%)", pointerEvents: "none" }} />
         </>
       )}
@@ -719,7 +725,7 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
       <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, borderRadius: "2px", background: accentColor, filter: "blur(24px)", opacity: 0.06, pointerEvents: "none" }} />
         {memory.backlightEnabled ? (
-          <Backlight blur={35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
+          <Backlight blur={memory.backlightBlur ?? 35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
             {mediaContent}
           </Backlight>
         ) : (
@@ -744,22 +750,26 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
 // 📸  POLAROİD KART
 // ─────────────────────────────────────────────────────────────────────────────
 function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEnabled, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; tiltEnabled: boolean; textColor: string }) {
+  const context = useContext(TemplateContext);
+  const config = context?.config;
+  const borderRadiusStyle = config?.roundCornersEnabled ? `${config.photoBorderRadius ?? 12}px` : "0px";
+
   const rotateDeg = tiltEnabled ? (memory.rotate ?? 0) : 0;
   const dColor = memory.dateColor || textColor || accentColor;
   const tColor = memory.titleColor || textColor || accentColor;
   const descColor = memory.descriptionColor || textColor || accentColor;
-        const mediaContent = (
-          <div style={{ overflow: "hidden", position: "relative", width: "100%" }}>
-            {memory.video ? (
-              <VideoPlayerPro src={memory.video} />
-            ) : (
-              <>
-                <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "brightness(0.92) contrast(1.02) saturate(0.95)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-                <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)", pointerEvents: "none" }} />
-              </>
-            )}
-          </div>
-        );
+  const mediaContent = (
+    <div style={{ overflow: "hidden", position: "relative", borderRadius: borderRadiusStyle, width: "100%" }}>
+      {memory.video ? (
+        <VideoPlayerPro src={memory.video} />
+      ) : (
+        <>
+          <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", borderRadius: borderRadiusStyle, filter: "brightness(0.92) contrast(1.02) saturate(0.95)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)", pointerEvents: "none" }} />
+        </>
+      )}
+    </div>
+  );
 
         return (
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
@@ -778,7 +788,7 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
               {/* Bant dekal */}
               <div style={{ position: "absolute", top: "-8px", left: "50%", transform: "translateX(-50%) rotate(2deg)", width: "44px", height: "18px", background: `${accentColor}33`, border: `1px solid ${accentColor}22`, boxShadow: "0 2px 8px rgba(0,0,0,0.3)", backdropFilter: "blur(1px)", borderRadius: "1px" }} />
               {memory.backlightEnabled ? (
-                <Backlight blur={30} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
+                <Backlight blur={memory.backlightBlur ?? 30} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
                   {mediaContent}
                 </Backlight>
               ) : (
@@ -804,16 +814,20 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
 // 🎬  SİNEMATİK KART
 // ─────────────────────────────────────────────────────────────────────────────
 function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; textColor: string }) {
+  const context = useContext(TemplateContext);
+  const config = context?.config;
+  const borderRadiusStyle = config?.roundCornersEnabled ? `${config.photoBorderRadius ?? 12}px` : "4px"; // defaults to 4px in cinematic
+
   const dColor = memory.dateColor || textColor || accentColor;
   const tColor = memory.titleColor || textColor || accentColor;
   const descColor = memory.descriptionColor || textColor || accentColor;
   const mediaContent = (
-    <div style={{ position: "relative", overflow: "hidden", borderRadius: "4px" }}>
+    <div style={{ position: "relative", overflow: "hidden", borderRadius: borderRadiusStyle }}>
       {memory.video ? (
         <VideoPlayerPro src={memory.video} />
       ) : (
         <>
-          <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", filter: "contrast(1.08) saturate(0.85)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
+          <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", borderRadius: borderRadiusStyle, filter: "contrast(1.08) saturate(0.85)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
           <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent 40%, ${accentColor}22 70%, rgba(0,0,0,0.75) 100%)`, pointerEvents: "none" }} />
           {/* Sinema şeridi */}
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
@@ -831,7 +845,7 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textC
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <motion.div variants={fadeUp} style={{ position: "relative" }}>
         {memory.backlightEnabled ? (
-          <Backlight blur={35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
+          <Backlight blur={memory.backlightBlur ?? 35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
             {mediaContent}
           </Backlight>
         ) : (

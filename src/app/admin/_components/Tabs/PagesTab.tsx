@@ -1461,12 +1461,45 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   <option value="grid">⊞ Grid (2 sütun)</option>
                                 </select>
                               </div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Fotoğraf Köşelerini Yuvarla</label>
+                                <button type="button" onClick={() => setEditConfig({ ...editConfig, roundCornersEnabled: !editConfig.roundCornersEnabled })} style={{ padding: "12px", borderRadius: "10px", border: "none", background: editConfig.roundCornersEnabled ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.roundCornersEnabled ? "#0B0F1A" : C.text, fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                                  {editConfig.roundCornersEnabled ? "Köşeleri Yuvarlama Aktif 🔘" : "Düz Köşeler ⬜"}
+                                </button>
+                              </div>
                               {editConfig.memoryCardStyle === "polaroid" && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                                   <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Polaroid Eğim Efekti</label>
                                   <button type="button" onClick={() => setEditConfig({ ...editConfig, polaroidTilt: !editConfig.polaroidTilt })} style={{ padding: "12px", borderRadius: "10px", border: "none", background: editConfig.polaroidTilt !== false ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.polaroidTilt !== false ? "#0B0F1A" : C.text, fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
                                     {editConfig.polaroidTilt !== false ? "Eğik Polaroid Aktif" : "Düz Polaroid"}
                                   </button>
+                                </div>
+                              )}
+                              {editConfig.roundCornersEnabled && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px", gridColumn: "1 / -1", marginTop: "6px", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "12px" }}>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ fontSize: "11px", color: C.muted, fontWeight: 500 }}>KÖŞE YUVARLAKLIĞI (BORD-RADIUS):</span>
+                                    <span style={{ fontSize: "11px", color: C.gold, fontWeight: 600 }}>{editConfig.photoBorderRadius ?? 12}px</span>
+                                  </div>
+                                  <input
+                                    type="range"
+                                    min="0"
+                                    max="40"
+                                    value={editConfig.photoBorderRadius ?? 12}
+                                    onChange={(e) => {
+                                      const val = parseInt(e.target.value, 10);
+                                      setEditConfig({ ...editConfig, photoBorderRadius: val });
+                                    }}
+                                    style={{
+                                      width: "100%",
+                                      accentColor: C.gold,
+                                      height: "6px",
+                                      background: "rgba(255,255,255,0.08)",
+                                      borderRadius: "3px",
+                                      outline: "none",
+                                      cursor: "pointer"
+                                    }}
+                                  />
                                 </div>
                               )}
                             </div>
@@ -2315,6 +2348,40 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         {memory.backlightEnabled ? "Backlight Aktif 🌟" : "Backlight Pasif"}
                                       </button>
                                     </div>
+                                    {memory.backlightEnabled && (
+                                      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "12px", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "10px" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                          <span style={{ fontSize: "11px", color: C.muted, fontWeight: 500 }}>GERİ IŞIK SEVİYESİ (YANSIMA):</span>
+                                          <span style={{ fontSize: "11px", color: C.gold, fontWeight: 600 }}>{memory.backlightBlur ?? 35}px</span>
+                                        </div>
+                                        <input
+                                          type="range"
+                                          min="10"
+                                          max="80"
+                                          value={memory.backlightBlur ?? 35}
+                                          onChange={(e) => {
+                                            const val = parseInt(e.target.value, 10);
+                                            setEditMemories((prev) => {
+                                              const updated = [...prev];
+                                              updated[index] = {
+                                                ...updated[index],
+                                                backlightBlur: val
+                                              };
+                                              return updated;
+                                            });
+                                          }}
+                                          style={{
+                                            width: "100%",
+                                            accentColor: C.gold,
+                                            height: "6px",
+                                            background: "rgba(255,255,255,0.08)",
+                                            borderRadius: "3px",
+                                            outline: "none",
+                                            cursor: "pointer"
+                                          }}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
 
                                   {/* Sıralama & Sil Butonları */}
