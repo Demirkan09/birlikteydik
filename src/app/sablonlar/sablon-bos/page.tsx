@@ -714,7 +714,7 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
       ) : (
         <>
           <img src={memory.image} alt={memory.title} draggable={false} className="w-full h-auto block" style={{ borderRadius: borderRadiusStyle, pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 55%, rgba(10,10,12,0.35) 100%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: borderRadiusStyle, background: "linear-gradient(to bottom, transparent 55%, rgba(10,10,12,0.35) 100%)", pointerEvents: "none" }} />
         </>
       )}
     </div>
@@ -765,7 +765,7 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
       ) : (
         <>
           <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", borderRadius: borderRadiusStyle, filter: "brightness(0.92) contrast(1.02) saturate(0.95)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: borderRadiusStyle, background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)", pointerEvents: "none" }} />
         </>
       )}
     </div>
@@ -828,7 +828,7 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textC
       ) : (
         <>
           <img src={memory.image} alt={memory.title} draggable={false} style={{ width: "100%", display: "block", borderRadius: borderRadiusStyle, filter: "contrast(1.08) saturate(0.85)", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none" }} />
-          <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent 40%, ${accentColor}22 70%, rgba(0,0,0,0.75) 100%)`, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: borderRadiusStyle, background: `linear-gradient(to bottom, transparent 40%, ${accentColor}22 70%, rgba(0,0,0,0.75) 100%)`, pointerEvents: "none" }} />
           {/* Sinema şeridi */}
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "6px", background: "repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.7) 8px, rgba(0,0,0,0.7) 10px)" }} />
