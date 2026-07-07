@@ -5,9 +5,10 @@ import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
 interface VideoPlayerProProps {
   src: string;
+  style?: React.CSSProperties;
 }
 
-export default function VideoPlayerPro({ src }: VideoPlayerProProps) {
+export default function VideoPlayerPro({ src, style }: VideoPlayerProProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -130,7 +131,8 @@ export default function VideoPlayerPro({ src }: VideoPlayerProProps) {
         border: "1px solid rgba(255,255,255,0.05)",
         cursor: "pointer",
         aspectRatio: "16 / 9",
-        display: "block"
+        display: "block",
+        ...style
       }}
     >
       {/* Video Element */}

@@ -1475,6 +1475,21 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   </button>
                                 </div>
                               )}
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Görsel Çerçevesi (Border)</label>
+                                <button type="button" onClick={() => setEditConfig({ ...editConfig, photoBorderEnabled: editConfig.photoBorderEnabled !== false ? false : true })} style={{ padding: "12px", borderRadius: "10px", border: "none", background: editConfig.photoBorderEnabled !== false ? C.gold : "rgba(255,255,255,0.1)", color: editConfig.photoBorderEnabled !== false ? "#0B0F1A" : C.text, fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+                                  {editConfig.photoBorderEnabled !== false ? "Çerçeve Aktif 🔘" : "Çerçeve Pasif ⬜"}
+                                </button>
+                              </div>
+                              {editConfig.photoBorderEnabled !== false && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Çerçeve Rengi</label>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                    <input type="color" value={editConfig.photoBorderColor || editConfig.accentColor || "#C9A84C"} onChange={(e) => setEditConfig({ ...editConfig, photoBorderColor: e.target.value })} style={{ width: "42px", height: "42px", padding: 0, border: "none", borderRadius: "8px", background: "transparent", cursor: "pointer" }} />
+                                    <input value={editConfig.photoBorderColor || ""} onChange={(e) => setEditConfig({ ...editConfig, photoBorderColor: e.target.value })} placeholder="HEX (#C9A84C)" style={{ flex: 1, padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px" }} />
+                                  </div>
+                                </div>
+                              )}
                               {editConfig.roundCornersEnabled && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: "6px", gridColumn: "1 / -1", marginTop: "6px", borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: "12px" }}>
                                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
