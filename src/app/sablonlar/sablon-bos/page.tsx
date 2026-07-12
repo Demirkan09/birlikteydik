@@ -940,26 +940,20 @@ export default function BosTemplate({
     if (typeof window === "undefined") return false;
     const search = new URLSearchParams(window.location.search);
     if (search.get("preview") === "true") return false; // önizlemede entrance yok
-    return true; // gerçek değer config gelince belirlenir
+    const isEnabled = propConfig?.entranceEnabled ?? defaultConfig.entranceEnabled;
+    return Boolean(isEnabled);
   });
-  const entranceReady = useRef(false);
 
   // Entrance özelliği config'den okunuyor; config değiştiğinde senkronize et
   useEffect(() => {
-    if (!entranceReady.current) {
-      // İlk mount: search param preview=true ise entrance'ı devre dışı bırak
-      if (typeof window !== "undefined") {
-        const search = new URLSearchParams(window.location.search);
-        if (search.get("preview") === "true") {
-          setEntranceVisible(false);
-          entranceReady.current = true;
-          return;
-        }
+    if (typeof window !== "undefined") {
+      const search = new URLSearchParams(window.location.search);
+      if (search.get("preview") === "true") {
+        setEntranceVisible(false);
+        return;
       }
-      setEntranceVisible(Boolean(config.entranceEnabled));
-      entranceReady.current = true;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setEntranceVisible(Boolean(config.entranceEnabled));
   }, [config.entranceEnabled]);
 
   const handleEnter = () => {
