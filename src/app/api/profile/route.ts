@@ -39,7 +39,16 @@ export async function GET(request: Request) {
     }
 
     function calculateRemainingTime(createdAt: string | Date, packageName: string) {
-      const p = packageName.toLowerCase();
+      const lowerPkg = packageName.toLowerCase().trim();
+      let p = "premium";
+      if (lowerPkg.includes("temel")) p = "temel";
+      else if (lowerPkg.includes("standart")) p = "premium";
+      else if (lowerPkg.includes("premium+")) p = "premium+";
+      else if (lowerPkg.includes("premium")) {
+        p = lowerPkg.includes("paket") ? "premium+" : "premium";
+      } else {
+        p = lowerPkg;
+      }
       const durationMonths = packageDurations[p]?.new || 12;
       
       const start = new Date(createdAt);

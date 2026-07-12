@@ -65,16 +65,28 @@ export async function POST(request: Request) {
 
     const code = generateActivationCode();
 
+    // Normalize packageName (e.g., "Temel Paket" -> "temel", "Standart Paket" -> "premium", "Premium Paket" -> "premium+")
+    const lowerPkg = packageName.toLowerCase().trim();
+    let dbPackageName = "premium";
+    if (lowerPkg.includes("temel")) dbPackageName = "temel";
+    else if (lowerPkg.includes("standart")) dbPackageName = "premium";
+    else if (lowerPkg.includes("premium+")) dbPackageName = "premium+";
+    else if (lowerPkg.includes("premium")) {
+      dbPackageName = lowerPkg.includes("paket") ? "premium+" : "premium";
+    } else {
+      dbPackageName = packageName;
+    }
+
     await pool.query(
       `INSERT INTO activation_codes (code, page_slug, package_name, created_by)
        VALUES ($1, $2, $3, $4)`,
-      [code, pageSlug, packageName, admin.id]
+      [code, pageSlug, dbPackageName, admin.id]
     );
 
     return NextResponse.json({
       code,
       pageSlug,
-      packageName,
+      packageName: dbPackageName,
       message: "Aktivasyon kodu oluşturuldu.",
     });
   } catch (err) {

@@ -54,12 +54,25 @@ export async function POST(request: Request) {
       );
     }
 
+    // Normalize packageName (fallback for older generated codes)
+    const rawPkg = activation.package_name || "premium";
+    const lowerPkg = rawPkg.toLowerCase().trim();
+    let dbPackageName = "premium";
+    if (lowerPkg.includes("temel")) dbPackageName = "temel";
+    else if (lowerPkg.includes("standart")) dbPackageName = "premium";
+    else if (lowerPkg.includes("premium+")) dbPackageName = "premium+";
+    else if (lowerPkg.includes("premium")) {
+      dbPackageName = lowerPkg.includes("paket") ? "premium+" : "premium";
+    } else {
+      dbPackageName = rawPkg;
+    }
+
     // Insert into user_pages
     const insertRes = await pool.query(
       `INSERT INTO user_pages (user_id, page_slug, package_name)
        VALUES ($1, $2, $3)
        RETURNING id, page_slug, package_name, created_at`,
-      [userId, activation.page_slug, activation.package_name]
+      [userId, activation.page_slug, dbPackageName]
     );
 
     const newPage = insertRes.rows[0];
