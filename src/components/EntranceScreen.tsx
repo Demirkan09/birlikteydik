@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-export type EntranceType = "curtain" | "envelope" | "light-gate";
+export type EntranceType = "curtain" | "envelope" | "light-gate" | "frosted-glass";
 
 interface EntranceScreenProps {
   type: EntranceType;
@@ -370,33 +370,76 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
   );
 }
 
-// ─── RISING CURTAIN — Yükselen Perde ─────────────────────────────────────────
-// Sahnenin altından koyu bir kadife perde yukarı kalkarak sayfayı ortaya çıkarır
-function RisingCurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
+// ─── POLAROID FLASH — Polaroid Flaş ─────────────────────────────────────────
+// Kamera vizöründen bakar, tıklandığında flaş patlar ve şipşak ses çıkar
+function PolaroidFlashEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
   const [phase, setPhase] = useState<"idle" | "rising" | "done">("idle");
-  const [shimmer, setShimmer] = useState(0);
 
-  useEffect(() => {
-    if (reduced) return;
-    const id = setInterval(() => setShimmer((v) => (v + 1) % 360), 50);
-    return () => clearInterval(id);
-  }, [reduced]);
+  if (phase === "done") return null;
+  const acc = accentColor || "#C9A84C";
 
   const handleClick = () => {
     if (phase !== "idle") return;
     setPhase("rising");
+    playCameraSound();
     if (reduced) {
-      setTimeout(() => { setPhase("done"); onEnter(); }, 400);
+      setTimeout(() => { setPhase("done"); onEnter(); }, 300);
     } else {
-      setTimeout(() => { setPhase("done"); onEnter(); }, 1400);
+      setTimeout(() => { setPhase("done"); onEnter(); }, 1200);
     }
   };
 
-  if (phase === "done") return null;
-
-  const acc = accentColor || "#C9A84C";
-  // Curtain slides up: translateY(100%) -> translateY(-100%)
-  const curtainY = phase === "rising" && !reduced ? "-102%" : "0%";
+  // Polaroid Camera Shutter Sound Synthesizer
+  const playCameraSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      // High-pitched shutter blade click
+      const osc = ctx.createOscillator();
+      const oscGain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1500, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.06);
+      oscGain.gain.setValueAtTime(0.35, ctx.currentTime);
+      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.06);
+      
+      osc.connect(oscGain);
+      oscGain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.07);
+      
+      // Mechanical shutter body/spring noise
+      const bufferSize = ctx.sampleRate * 0.12;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      
+      const filter = ctx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.value = 1100;
+      filter.Q.value = 3;
+      
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.25, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      
+      noise.start(ctx.currentTime + 0.015);
+      noise.stop(ctx.currentTime + 0.13);
+    } catch (e) {
+      console.error("Camera audio synthesis failed", e);
+    }
+  };
 
   return (
     <div
@@ -404,127 +447,192 @@ function RisingCurtainEntrance({ accentColor, onEnter, reduced }: { accentColor:
       style={{
         position: "fixed", inset: 0, zIndex: 9999, cursor: "pointer",
         overflow: "hidden", userSelect: "none",
-        // Background: the "stage" that will be revealed
-        background: `radial-gradient(ellipse 80% 60% at 50% 40%, ${acc}18 0%, transparent 70%), linear-gradient(to bottom, #0B0F1A, #160408)`,
+        background: "#080B11",
+        display: "flex", alignItems: "center", justifyContent: "center",
       }}
     >
-      {/* Stage floor glow (always visible beneath curtain) */}
+      {/* ── Viewfinder Lines ── */}
+      {/* Top Left Corner */}
+      <div style={{ position: "absolute", top: "40px", left: "40px", width: "32px", height: "32px", borderTop: "2px solid rgba(255,255,255,0.18)", borderLeft: "2px solid rgba(255,255,255,0.18)" }} />
+      {/* Top Right Corner */}
+      <div style={{ position: "absolute", top: "40px", right: "40px", width: "32px", height: "32px", borderTop: "2px solid rgba(255,255,255,0.18)", borderRight: "2px solid rgba(255,255,255,0.18)" }} />
+      {/* Bottom Left Corner */}
+      <div style={{ position: "absolute", bottom: "40px", left: "40px", width: "32px", height: "32px", borderBottom: "2px solid rgba(255,255,255,0.18)", borderLeft: "2px solid rgba(255,255,255,0.18)" }} />
+      {/* Bottom Right Corner */}
+      <div style={{ position: "absolute", bottom: "40px", right: "40px", width: "32px", height: "32px", borderBottom: "2px solid rgba(255,255,255,0.18)", borderRight: "2px solid rgba(255,255,255,0.18)" }} />
+      
+      {/* Center Viewfinder Circle */}
       <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, height: "3px",
-        background: `linear-gradient(to right, transparent, ${acc}88, ${acc}, ${acc}88, transparent)`,
-        boxShadow: `0 0 30px 8px ${acc}44`,
-        zIndex: 5,
-      }} />
-
-      {/* Spotlight cones (behind curtain) */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1 }}>
-        {[30, 50, 70].map((x, i) => (
-          <div key={i} style={{
-            position: "absolute", top: 0, left: `${x}%`,
-            transform: "translateX(-50%)",
-            width: "1px", height: "100%",
-            background: `linear-gradient(to bottom, ${acc}22 0%, ${acc}08 60%, transparent 100%)`,
-            filter: "blur(20px)",
-            animation: `spotSway${i} ${4 + i * 1.5}s ease-in-out infinite`,
-          }} />
-        ))}
-      </div>
-
-      {/* The curtain — rises from bottom */}
-      <div style={{
-        position: "absolute", left: 0, right: 0, bottom: 0,
-        height: "100%",
-        transform: `translateY(${curtainY})`,
-        transition: phase === "rising" ? "transform 1.2s cubic-bezier(0.4, 0, 0.15, 1)" : "none",
-        zIndex: 3,
-        willChange: "transform",
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "140px", height: "140px",
+        borderRadius: "50%",
+        border: "1.5px dashed rgba(255,255,255,0.08)",
+        display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        {/* Main curtain body */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: `linear-gradient(to right,
-            #12080A 0%, #1E0C0E 8%, #2C1015 14%,
-            #200D10 22%, #1A0A0D 30%, #2A1013 38%,
-            #1E0C0E 46%, #12080A 50%,
-            #1E0C0E 54%, #2A1013 62%, #1A0A0D 70%,
-            #200D10 78%, #2C1015 86%, #1E0C0E 92%, #12080A 100%)`,
-        }}>
-          {/* Vertical fold shadows — fabric texture */}
-          {[10, 25, 40, 60, 75, 90].map((pct) => (
-            <div key={pct} style={{
-              position: "absolute", top: 0, bottom: 0, left: `${pct}%`, width: "2px",
-              background: "rgba(0,0,0,0.3)",
-              filter: "blur(1px)",
-            }} />
-          ))}
-          {/* Gold trim at bottom of curtain */}
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: "6px",
-            background: `linear-gradient(to right, ${acc}44, ${acc}99, ${acc}, ${acc}99, ${acc}44)`,
-            boxShadow: `0 0 20px 4px ${acc}55`,
-          }}>
-            {/* Fringe tassels */}
-            {[...Array(16)].map((_, i) => (
-              <div key={i} style={{
-                position: "absolute", bottom: 0, left: `${(i + 0.5) * 100 / 16}%`,
-                transform: "translateX(-50%)",
-                width: "3px", height: "14px",
-                background: `linear-gradient(to bottom, ${acc}, ${acc}66)`,
-                borderRadius: "0 0 2px 2px",
-              }} />
-            ))}
-          </div>
-        </div>
+        {/* Tiny center dot */}
+        <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "rgba(255,255,255,0.2)" }} />
       </div>
 
-      {/* Center content — visible through "stage" above curtain before it rises */}
+      {/* ── Content ── */}
       <div style={{
-        position: "relative", zIndex: 2,
-        display: "flex", flexDirection: "column", alignItems: "center", gap: "20px",
-        textAlign: "center", padding: "0 24px",
+        position: "relative", zIndex: 5,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "24px",
+        textAlign: "center",
         opacity: phase === "idle" ? 1 : 0,
-        transition: "opacity 0.3s ease",
+        transition: "opacity 0.2s ease",
       }}>
-        {/* Pulsing ring */}
-        <div style={{
-          width: "72px", height: "72px", borderRadius: "50%",
-          border: `1px solid ${acc}44`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: `0 0 40px ${acc}22`,
-          animation: "risingPulse 2.6s ease-in-out infinite",
-        }}>
-          <HeartIcon color={acc} size={28} />
-        </div>
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <div style={{
             fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif",
             fontSize: "clamp(2rem, 6vw, 3rem)",
             fontWeight: 400, color: "#F0EDE8",
-            letterSpacing: "0.04em", lineHeight: 1.15, marginBottom: "10px",
+            letterSpacing: "0.04em",
           }}>
-            Perdeyi Kaldır
+            Kamera Hazır
           </div>
           <div style={{
             fontFamily: "var(--font-inter), 'Inter', sans-serif",
-            fontSize: "10px", letterSpacing: "0.32em", textTransform: "uppercase",
-            color: `${acc}88`,
+            fontSize: "10px", letterSpacing: "0.25em", textTransform: "uppercase",
+            color: `${acc}aa`,
           }}>
-            Dokunmak İçin Tıkla
+            Objektife Odaklan
+          </div>
+        </div>
+
+        {/* Shutter Button representation */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClick();
+          }}
+          style={{
+            width: "80px", height: "80px", borderRadius: "50%",
+            background: `radial-gradient(circle, #E03E3E 0%, #B81D1D 100%)`,
+            border: "4px solid #ffffff",
+            boxShadow: "0 10px 30px rgba(184, 29, 29, 0.4), inset 0 4px 8px rgba(255,255,255,0.3)",
+            cursor: "pointer",
+            outline: "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "var(--font-inter), sans-serif",
+            fontSize: "9px", fontWeight: 700, color: "#ffffff",
+            textTransform: "uppercase", letterSpacing: "0.08em",
+            transition: "transform 0.1s, box-shadow 0.1s",
+          }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.92)"; }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+          onTouchStart={(e) => { e.currentTarget.style.transform = "scale(0.92)"; }}
+          onTouchEnd={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+        >
+          ANAYI BAŞLAT
+        </button>
+      </div>
+
+      {/* ── White Flash Overlay ── */}
+      {phase === "rising" && (
+        <div
+          style={{
+            position: "fixed", inset: 0,
+            background: "#ffffff",
+            zIndex: 10000,
+            animation: "polaroidFlashAnim 1.3s cubic-bezier(0.1, 0.8, 0.2, 1) forwards",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      <style>{`
+        @keyframes polaroidFlashAnim {
+          0% { opacity: 1; }
+          30% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── FROSTED GLASS — Buzlu Cam ────────────────────────────────────────────────
+// Arka planı tamamen bulanıklaştırır ve tıklandığında/dokunulduğunda buğu eriyormuş gibi netleştirir.
+function FrostedGlassEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
+  const [phase, setPhase] = useState<"idle" | "melting" | "done">("idle");
+
+  const handleClick = () => {
+    if (phase !== "idle") return;
+    setPhase("melting");
+    if (reduced) {
+      setTimeout(() => { setPhase("done"); onEnter(); }, 300);
+    } else {
+      // 1.8 seconds melting animation
+      setTimeout(() => { setPhase("done"); onEnter(); }, 1800);
+    }
+  };
+
+  if (phase === "done") return null;
+
+  const acc = accentColor || "#C9A84C";
+
+  return (
+    <div
+      onClick={handleClick}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999, cursor: "pointer",
+        overflow: "hidden", userSelect: "none",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        // Transition for frosted glass melting effect
+        backdropFilter: phase === "melting" ? "blur(0px)" : "blur(40px)",
+        background: phase === "melting" ? "rgba(9, 9, 11, 0)" : "rgba(9, 9, 11, 0.65)",
+        transition: phase === "melting" ? "backdrop-filter 1.6s cubic-bezier(0.25, 1, 0.5, 1), background 1.6s cubic-bezier(0.25, 1, 0.5, 1)" : "none",
+      }}
+    >
+      {/* Center glowing button */}
+      <div style={{
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "22px",
+        textAlign: "center",
+        opacity: phase === "melting" ? 0 : 1,
+        transform: phase === "melting" ? "scale(0.9)" : "scale(1)",
+        transition: "opacity 0.5s ease, transform 0.5s ease",
+      }}>
+        {/* Highly glowing heart button */}
+        <div style={{
+          width: "84px", height: "84px", borderRadius: "50%",
+          background: `rgba(9, 9, 11, 0.6)`,
+          border: `1.5px solid ${acc}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: `0 0 35px 5px ${acc}55, inset 0 0 15px ${acc}22`,
+          animation: "glassPulse 2.8s ease-in-out infinite",
+        }}>
+          <HeartIcon color={acc} size={30} />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{
+            fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif",
+            fontSize: "clamp(2rem, 6vw, 3rem)",
+            fontWeight: 400, color: "#F0EDE8",
+            letterSpacing: "0.04em",
+          }}>
+            Bizim Dünyamız
+          </div>
+          <div style={{
+            fontFamily: "var(--font-inter), 'Inter', sans-serif",
+            fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase",
+            color: `${acc}99`,
+            fontWeight: 400,
+          }}>
+            Kalbe Dokun
           </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes risingPulse {
-          0%, 100% { box-shadow: 0 0 40px ${acc}22; transform: scale(1); }
-          50% { box-shadow: 0 0 60px ${acc}44; transform: scale(1.05); }
+        @keyframes glassPulse {
+          0%, 100% { box-shadow: 0 0 35px 5px ${acc}33, inset 0 0 15px ${acc}11; transform: scale(1); }
+          50% { box-shadow: 0 0 55px 12px ${acc}77, inset 0 0 25px ${acc}33; transform: scale(1.05); }
         }
-        @keyframes spotSway0 { 0%,100%{ transform:translateX(-50%) rotate(-3deg); } 50%{ transform:translateX(-50%) rotate(3deg); } }
-        @keyframes spotSway1 { 0%,100%{ transform:translateX(-50%) rotate(2deg); } 50%{ transform:translateX(-50%) rotate(-2deg); } }
-        @keyframes spotSway2 { 0%,100%{ transform:translateX(-50%) rotate(-1deg); } 50%{ transform:translateX(-50%) rotate(4deg); } }
         @media (prefers-reduced-motion: reduce) {
-          @keyframes risingPulse { 0%,100%{ opacity:1; } }
-          @keyframes spotSway0, @keyframes spotSway1, @keyframes spotSway2 { 0%,100%{ opacity:1; } }
+          @keyframes glassPulse { 0%, 100% { opacity: 1; } }
         }
       `}</style>
     </div>
@@ -543,7 +651,10 @@ export default function EntranceScreen({ type, accentColor, coupleNames, onEnter
     return <EnvelopeEntrance accentColor={acc} coupleNames={coupleNames} onEnter={onEnter} reduced={reduced} />;
   }
   if (type === "light-gate") {
-    return <RisingCurtainEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
+    return <PolaroidFlashEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
+  }
+  if (type === "frosted-glass") {
+    return <FrostedGlassEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
   }
   return null;
 }

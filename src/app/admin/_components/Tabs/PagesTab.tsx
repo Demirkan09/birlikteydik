@@ -1652,10 +1652,17 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   },
                                   {
                                     id: "light-gate",
-                                    emoji: "🎪",
-                                    label: "Yükselen Perde",
-                                    desc: "Koyu bir sahne perdesi yukarı kalkarak sayfayı açar",
-                                    preview: "linear-gradient(to bottom, #12080A 0%, #2A1013 70%, #C9A84C 100%)",
+                                    emoji: "📸",
+                                    label: "Polaroid Flaş",
+                                    desc: "Kamera vizörü ve tıklandığında patlayan şipşak flaş efekti",
+                                    preview: "#080B11",
+                                  },
+                                  {
+                                    id: "frosted-glass",
+                                    emoji: "❄️",
+                                    label: "Buzlu Cam",
+                                    desc: "Bulanık ekran; tıklandığında buğu eriyerek sayfayı netleştirir",
+                                    preview: "linear-gradient(135deg, #C9A84C 0%, #160408 100%)",
                                   },
                                 ].map((opt) => {
                                   const isSelected = (editConfig.entranceType || "curtain") === opt.id;
@@ -1689,9 +1696,16 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         )}
                                         {opt.id === "light-gate" && (
                                           <div style={{
-                                            position: "absolute", bottom: 0, left: 0, right: 0,
-                                            height: "2px",
-                                            background: `${C.gold}dd`,
+                                            position: "absolute", inset: "12px",
+                                            border: "1px dashed rgba(255,255,255,0.25)",
+                                            borderRadius: "50%",
+                                          }} />
+                                        )}
+                                        {opt.id === "frosted-glass" && (
+                                          <div style={{
+                                            position: "absolute", inset: 0,
+                                            backdropFilter: "blur(3px)",
+                                            background: "rgba(255,255,255,0.08)",
                                           }} />
                                         )}
                                       </div>
