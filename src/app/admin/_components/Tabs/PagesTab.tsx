@@ -1268,6 +1268,36 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                             </div>
                           </div>
 
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
+                            {/* Anılar Bölüm Başlığı Üst Yazı */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Anılar Bölüm Başlığı Üst Yazı (Eyebrow)</label>
+                              <input
+                                value={editConfig.storyTitlePrefix === undefined ? "Birlikte Yazdığımız" : editConfig.storyTitlePrefix}
+                                onChange={(e) => setEditConfig({ ...editConfig, storyTitlePrefix: e.target.value })}
+                                placeholder="Örn: Birlikte Yazdığımız (Boş bırakırsanız gizlenir)"
+                                style={{
+                                  padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)",
+                                  border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
+                                }}
+                              />
+                            </div>
+
+                            {/* Anılar Bölüm Başlığı Ana Başlık */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>Anılar Bölüm Başlığı Ana Başlık (Title)</label>
+                              <input
+                                value={editConfig.storyTitleSuffix === undefined ? "Hikayemiz" : editConfig.storyTitleSuffix}
+                                onChange={(e) => setEditConfig({ ...editConfig, storyTitleSuffix: e.target.value })}
+                                placeholder="Örn: Hikayemiz (Boş bırakırsanız gizlenir)"
+                                style={{
+                                  padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.03)",
+                                  border: `1px solid ${C.border}`, color: C.text, outline: "none", fontSize: "13px"
+                                }}
+                              />
+                            </div>
+                          </div>
+
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px", alignItems: "end" }}>
                             {/* Müzik Seçimi */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>

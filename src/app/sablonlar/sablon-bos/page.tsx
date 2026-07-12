@@ -12,6 +12,8 @@ import { Backlight } from "@/components/magicui/backlight";
 export const defaultConfig = {
   coupleNames: "Sen\n&\nBen",
   tagline: "Birlikte geçen her anın değerini ve sonsuzluğa uzanan hikayemizi kutluyoruz...",
+  storyTitlePrefix: "Birlikte Yazdığımız",
+  storyTitleSuffix: "Hikayemiz",
   accentColor: "#C9A84C",
   bgColor: "#09090b",
   specialDate: "26 Ekim 2026",
@@ -1084,18 +1086,24 @@ export default function BosTemplate({
           </section>
 
           {/* ── BÖLÜM BAŞLIĞI ─────────────────────────────────────────────── */}
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b" }}
-          >
-            <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: config.headingEyebrowColor || config.textColor || `${ac}99`, marginBottom: "12px" }}>
-              Birlikte Yazdığımız
-            </motion.span>
-            <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: config.headingTitleColor || config.textColor || ac, letterSpacing: "0.04em", lineHeight: 1.2 }}>
-              Hikayemiz
-            </motion.h2>
-            <motion.div variants={fadeIn} style={{ width: "28px", height: "1px", marginTop: "20px", background: `${ac}55` }} />
-          </motion.div>
+          {(config.storyTitlePrefix || config.storyTitleSuffix) && (
+            <motion.div
+              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b" }}
+            >
+              {config.storyTitlePrefix && (
+                <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: config.headingEyebrowColor || config.textColor || `${ac}99`, marginBottom: "12px" }}>
+                  {config.storyTitlePrefix}
+                </motion.span>
+              )}
+              {config.storyTitleSuffix && (
+                <motion.h2 variants={fadeUp} style={{ fontFamily: hFont, fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: 400, color: config.headingTitleColor || config.textColor || ac, letterSpacing: "0.04em", lineHeight: 1.2 }}>
+                  {config.storyTitleSuffix}
+                </motion.h2>
+              )}
+              <motion.div variants={fadeIn} style={{ width: "28px", height: "1px", marginTop: "20px", background: `${ac}55` }} />
+            </motion.div>
+          )}
 
           {/* ── FOTOĞRAF KARTLARI ──────────────────────────────────────────── */}
           <div style={{
