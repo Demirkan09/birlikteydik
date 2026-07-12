@@ -156,7 +156,7 @@ function CurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: strin
             letterSpacing: "0.04em",
             lineHeight: 1.1,
           }}>
-            Seni Bekliyordum
+            Sahne Hazır
           </span>
           <span style={{
             fontFamily: "var(--font-inter), 'Inter', sans-serif",
@@ -166,21 +166,10 @@ function CurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: strin
             color: `${acc}99`,
             fontWeight: 400,
           }}>
-            Dokunmak İçin Tıkla
+            Açmak İçin Dokun
           </span>
         </div>
 
-        {/* Animated chevrons */}
-        <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} style={{
-              width: "6px", height: "6px", borderRight: `1.5px solid ${acc}`,
-              borderBottom: `1.5px solid ${acc}`, transform: "rotate(45deg)",
-              animation: `curtainChevron 1.6s ease-in-out ${i * 0.2}s infinite`,
-              opacity: 0.7,
-            }} />
-          ))}
-        </div>
       </div>
 
       <style>{`
@@ -311,12 +300,12 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
             </div>
           </div>
 
-          {/* Envelope interior */}
+          {/* Envelope interior — sadece klasik V katlama çizgisi */}
           <div style={{
             padding: "clamp(50px, 14vw, 65px) clamp(20px, 6vw, 32px) clamp(24px, 6vw, 32px)",
             minHeight: "clamp(160px, 42vw, 200px)",
             display: "flex", flexDirection: "column", alignItems: "center",
-            justifyContent: "flex-end", gap: "12px",
+            justifyContent: "flex-end",
             textAlign: "center",
             background: "linear-gradient(to bottom, #EDE5D8, #F5F0E8)",
             borderRadius: "0 0 8px 8px",
@@ -333,57 +322,32 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
                 clipPath: "polygon(0 100%, 50% 0, 100% 100%)",
               }} />
             </div>
-
-            <div style={{ position: "relative", zIndex: 2 }}>
-              <div style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(1rem, 4vw, 1.3rem)",
-                color: "#2D1F0A",
-                fontWeight: 500,
-                letterSpacing: "0.06em",
-                fontStyle: "italic",
-                marginBottom: "4px",
-              }}>
-                {names}
-              </div>
-              <div style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: "9px",
-                letterSpacing: "0.28em",
-                textTransform: "uppercase",
-                color: "#8B7355",
-              }}>
-                Sana Özel · Aç Beni
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Call-to-action below */}
+        {/* Call-to-action below — isimler + zarfı aç */}
         <div style={{
-          marginTop: "32px", textAlign: "center",
+          marginTop: "28px", textAlign: "center",
           opacity: phase === "idle" ? 1 : 0,
           transition: "opacity 0.3s",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
         }}>
           <div style={{
-            fontFamily: "var(--font-inter), 'Inter', sans-serif",
-            fontSize: "11px", letterSpacing: "0.3em", textTransform: "uppercase",
-            color: `${acc}88`,
+            fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif",
+            fontSize: "clamp(1.1rem, 4vw, 1.5rem)",
+            color: "#F0EDE8",
+            fontWeight: 400,
+            letterSpacing: "0.04em",
+            fontStyle: "italic",
           }}>
-            Zarfı Aç
+            {names}
           </div>
           <div style={{
-            display: "flex", justifyContent: "center", gap: "6px", marginTop: "10px",
+            fontFamily: "var(--font-inter), 'Inter', sans-serif",
+            fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase",
+            color: `${acc}77`,
           }}>
-            {[0, 1, 2].map((i) => (
-              <div key={i} style={{
-                width: "5px", height: "5px",
-                borderRight: `1.5px solid ${acc}`, borderBottom: `1.5px solid ${acc}`,
-                transform: "rotate(45deg)",
-                animation: `curtainChevron 1.6s ease-in-out ${i * 0.22}s infinite`,
-                opacity: 0.6,
-              }} />
-            ))}
+            Zarfı Aç
           </div>
         </div>
       </div>
@@ -406,178 +370,161 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
   );
 }
 
-// ─── LIGHT GATE — Işık Kapısı ─────────────────────────────────────────────────
-function LightGateEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
-  const [opening, setOpening] = useState(false);
-  const [done, setDone] = useState(false);
-  const [flicker, setFlicker] = useState(false);
+// ─── RISING CURTAIN — Yükselen Perde ─────────────────────────────────────────
+// Sahnenin altından koyu bir kadife perde yukarı kalkarak sayfayı ortaya çıkarır
+function RisingCurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
+  const [phase, setPhase] = useState<"idle" | "rising" | "done">("idle");
+  const [shimmer, setShimmer] = useState(0);
 
   useEffect(() => {
     if (reduced) return;
-    // Subtle ambient flicker on the glow
-    const id = setInterval(() => {
-      setFlicker((v) => !v);
-    }, 1800 + Math.random() * 1200);
+    const id = setInterval(() => setShimmer((v) => (v + 1) % 360), 50);
     return () => clearInterval(id);
   }, [reduced]);
 
   const handleClick = () => {
-    if (opening) return;
-    setOpening(true);
+    if (phase !== "idle") return;
+    setPhase("rising");
     if (reduced) {
-      setTimeout(() => { setDone(true); onEnter(); }, 400);
+      setTimeout(() => { setPhase("done"); onEnter(); }, 400);
     } else {
-      setTimeout(() => { setDone(true); onEnter(); }, 1300);
+      setTimeout(() => { setPhase("done"); onEnter(); }, 1400);
     }
   };
 
-  if (done) return null;
+  if (phase === "done") return null;
 
   const acc = accentColor || "#C9A84C";
+  // Curtain slides up: translateY(100%) -> translateY(-100%)
+  const curtainY = phase === "rising" && !reduced ? "-102%" : "0%";
 
   return (
     <div
       onClick={handleClick}
       style={{
         position: "fixed", inset: 0, zIndex: 9999, cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center",
         overflow: "hidden", userSelect: "none",
-        background: "#020408",
+        // Background: the "stage" that will be revealed
+        background: `radial-gradient(ellipse 80% 60% at 50% 40%, ${acc}18 0%, transparent 70%), linear-gradient(to bottom, #0B0F1A, #160408)`,
       }}
     >
-      {/* Left panel */}
+      {/* Stage floor glow (always visible beneath curtain) */}
       <div style={{
-        position: "absolute", top: 0, left: 0, width: "50%", height: "100%",
-        background: "linear-gradient(to right, #020408 0%, #0D1120 85%, #141928 100%)",
-        transformOrigin: "left center",
-        transform: opening && !reduced ? "translateX(-100%)" : "translateX(0)",
-        transition: opening ? "transform 1.0s cubic-bezier(0.6, 0, 0.4, 1)" : "none",
-        zIndex: 2,
-        boxShadow: opening ? "none" : `inset -1px 0 0 ${acc}22, inset -20px 0 60px rgba(0,0,0,0.4)`,
-      }}>
-        {/* Door detail — vertical panel line */}
-        <div style={{
-          position: "absolute", top: "10%", bottom: "10%", right: "15%",
-          width: "1px",
-          background: `linear-gradient(to bottom, transparent, ${acc}33, ${acc}55, ${acc}33, transparent)`,
-        }} />
-        <div style={{
-          position: "absolute", top: "35%", bottom: "35%", right: "18%",
-          width: "1px",
-          background: `linear-gradient(to bottom, transparent, ${acc}22, transparent)`,
-        }} />
-        {/* Door handle */}
-        <div style={{
-          position: "absolute", top: "50%", right: "8%",
-          transform: "translateY(-50%)",
-          width: "8px", height: "28px", borderRadius: "4px",
-          background: `linear-gradient(to bottom, ${acc}44, ${acc}88, ${acc}44)`,
-          boxShadow: `0 0 12px ${acc}33`,
-        }} />
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "3px",
+        background: `linear-gradient(to right, transparent, ${acc}88, ${acc}, ${acc}88, transparent)`,
+        boxShadow: `0 0 30px 8px ${acc}44`,
+        zIndex: 5,
+      }} />
+
+      {/* Spotlight cones (behind curtain) */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1 }}>
+        {[30, 50, 70].map((x, i) => (
+          <div key={i} style={{
+            position: "absolute", top: 0, left: `${x}%`,
+            transform: "translateX(-50%)",
+            width: "1px", height: "100%",
+            background: `linear-gradient(to bottom, ${acc}22 0%, ${acc}08 60%, transparent 100%)`,
+            filter: "blur(20px)",
+            animation: `spotSway${i} ${4 + i * 1.5}s ease-in-out infinite`,
+          }} />
+        ))}
       </div>
 
-      {/* Right panel */}
+      {/* The curtain — rises from bottom */}
       <div style={{
-        position: "absolute", top: 0, right: 0, width: "50%", height: "100%",
-        background: "linear-gradient(to left, #020408 0%, #0D1120 85%, #141928 100%)",
-        transformOrigin: "right center",
-        transform: opening && !reduced ? "translateX(100%)" : "translateX(0)",
-        transition: opening ? "transform 1.0s cubic-bezier(0.6, 0, 0.4, 1)" : "none",
-        zIndex: 2,
-        boxShadow: opening ? "none" : `inset 1px 0 0 ${acc}22, inset 20px 0 60px rgba(0,0,0,0.4)`,
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        height: "100%",
+        transform: `translateY(${curtainY})`,
+        transition: phase === "rising" ? "transform 1.2s cubic-bezier(0.4, 0, 0.15, 1)" : "none",
+        zIndex: 3,
+        willChange: "transform",
       }}>
+        {/* Main curtain body */}
         <div style={{
-          position: "absolute", top: "10%", bottom: "10%", left: "15%",
-          width: "1px",
-          background: `linear-gradient(to bottom, transparent, ${acc}33, ${acc}55, ${acc}33, transparent)`,
-        }} />
-        <div style={{
-          position: "absolute", top: "35%", bottom: "35%", left: "18%",
-          width: "1px",
-          background: `linear-gradient(to bottom, transparent, ${acc}22, transparent)`,
-        }} />
-        <div style={{
-          position: "absolute", top: "50%", left: "8%",
-          transform: "translateY(-50%)",
-          width: "8px", height: "28px", borderRadius: "4px",
-          background: `linear-gradient(to bottom, ${acc}44, ${acc}88, ${acc}44)`,
-          boxShadow: `0 0 12px ${acc}33`,
-        }} />
+          position: "absolute", inset: 0,
+          background: `linear-gradient(to right,
+            #12080A 0%, #1E0C0E 8%, #2C1015 14%,
+            #200D10 22%, #1A0A0D 30%, #2A1013 38%,
+            #1E0C0E 46%, #12080A 50%,
+            #1E0C0E 54%, #2A1013 62%, #1A0A0D 70%,
+            #200D10 78%, #2C1015 86%, #1E0C0E 92%, #12080A 100%)`,
+        }}>
+          {/* Vertical fold shadows — fabric texture */}
+          {[10, 25, 40, 60, 75, 90].map((pct) => (
+            <div key={pct} style={{
+              position: "absolute", top: 0, bottom: 0, left: `${pct}%`, width: "2px",
+              background: "rgba(0,0,0,0.3)",
+              filter: "blur(1px)",
+            }} />
+          ))}
+          {/* Gold trim at bottom of curtain */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: "6px",
+            background: `linear-gradient(to right, ${acc}44, ${acc}99, ${acc}, ${acc}99, ${acc}44)`,
+            boxShadow: `0 0 20px 4px ${acc}55`,
+          }}>
+            {/* Fringe tassels */}
+            {[...Array(16)].map((_, i) => (
+              <div key={i} style={{
+                position: "absolute", bottom: 0, left: `${(i + 0.5) * 100 / 16}%`,
+                transform: "translateX(-50%)",
+                width: "3px", height: "14px",
+                background: `linear-gradient(to bottom, ${acc}, ${acc}66)`,
+                borderRadius: "0 0 2px 2px",
+              }} />
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Center seam glow */}
-      {!opening && (
-        <div style={{
-          position: "absolute", top: 0, bottom: 0, left: "50%",
-          transform: "translateX(-50%)",
-          width: "2px", zIndex: 3, pointerEvents: "none",
-          background: `linear-gradient(to bottom, transparent 5%, ${acc}${flicker ? "66" : "88"} 20%, ${acc}${flicker ? "44" : "66"} 80%, transparent 95%)`,
-          boxShadow: `0 0 20px 4px ${acc}${flicker ? "22" : "33"}`,
-          transition: "all 0.8s ease",
-        }} />
-      )}
-
-      {/* Center label */}
+      {/* Center content — visible through "stage" above curtain before it rises */}
       <div style={{
-        position: "relative", zIndex: 4,
-        display: "flex", flexDirection: "column", alignItems: "center", gap: "16px",
-        opacity: opening ? 0 : 1,
-        transition: "opacity 0.35s ease",
+        position: "relative", zIndex: 2,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "20px",
         textAlign: "center", padding: "0 24px",
+        opacity: phase === "idle" ? 1 : 0,
+        transition: "opacity 0.3s ease",
       }}>
+        {/* Pulsing ring */}
         <div style={{
-          width: "56px", height: "56px", borderRadius: "50%",
+          width: "72px", height: "72px", borderRadius: "50%",
           border: `1px solid ${acc}44`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          background: `radial-gradient(circle, ${acc}11 0%, transparent 70%)`,
           boxShadow: `0 0 40px ${acc}22`,
-          animation: "gatePulse 2.8s ease-in-out infinite",
+          animation: "risingPulse 2.6s ease-in-out infinite",
         }}>
-          <SparkleIcon color={acc} size={22} />
+          <HeartIcon color={acc} size={28} />
         </div>
         <div>
           <div style={{
             fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif",
-            fontSize: "clamp(1.8rem, 5.5vw, 2.8rem)",
+            fontSize: "clamp(2rem, 6vw, 3rem)",
             fontWeight: 400, color: "#F0EDE8",
-            letterSpacing: "0.04em", lineHeight: 1.15,
-            marginBottom: "10px",
+            letterSpacing: "0.04em", lineHeight: 1.15, marginBottom: "10px",
           }}>
-            Kapıyı Aç
+            Perdeyi Kaldır
           </div>
           <div style={{
             fontFamily: "var(--font-inter), 'Inter', sans-serif",
             fontSize: "10px", letterSpacing: "0.32em", textTransform: "uppercase",
             color: `${acc}88`,
           }}>
-            Tıkla &amp; Keşfet
+            Dokunmak İçin Tıkla
           </div>
-        </div>
-        <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
-          {[0, 1, 2].map((i) => (
-            <div key={i} style={{
-              width: "5px", height: "5px",
-              borderRight: `1.5px solid ${acc}`, borderBottom: `1.5px solid ${acc}`,
-              transform: "rotate(45deg)",
-              animation: `curtainChevron 1.6s ease-in-out ${i * 0.22}s infinite`,
-              opacity: 0.65,
-            }} />
-          ))}
         </div>
       </div>
 
       <style>{`
-        @keyframes gatePulse {
+        @keyframes risingPulse {
           0%, 100% { box-shadow: 0 0 40px ${acc}22; transform: scale(1); }
-          50% { box-shadow: 0 0 60px ${acc}44; transform: scale(1.06); }
+          50% { box-shadow: 0 0 60px ${acc}44; transform: scale(1.05); }
         }
-        @keyframes curtainChevron {
-          0%, 100% { opacity: 0.3; transform: rotate(45deg) translateY(0px); }
-          50% { opacity: 0.9; transform: rotate(45deg) translateY(4px); }
-        }
+        @keyframes spotSway0 { 0%,100%{ transform:translateX(-50%) rotate(-3deg); } 50%{ transform:translateX(-50%) rotate(3deg); } }
+        @keyframes spotSway1 { 0%,100%{ transform:translateX(-50%) rotate(2deg); } 50%{ transform:translateX(-50%) rotate(-2deg); } }
+        @keyframes spotSway2 { 0%,100%{ transform:translateX(-50%) rotate(-1deg); } 50%{ transform:translateX(-50%) rotate(4deg); } }
         @media (prefers-reduced-motion: reduce) {
-          @keyframes gatePulse { 0%,100%{ opacity:1; } }
-          @keyframes curtainChevron { 0%,100%{ opacity:0.6; } }
+          @keyframes risingPulse { 0%,100%{ opacity:1; } }
+          @keyframes spotSway0, @keyframes spotSway1, @keyframes spotSway2 { 0%,100%{ opacity:1; } }
         }
       `}</style>
     </div>
@@ -596,7 +543,7 @@ export default function EntranceScreen({ type, accentColor, coupleNames, onEnter
     return <EnvelopeEntrance accentColor={acc} coupleNames={coupleNames} onEnter={onEnter} reduced={reduced} />;
   }
   if (type === "light-gate") {
-    return <LightGateEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
+    return <RisingCurtainEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
   }
   return null;
 }

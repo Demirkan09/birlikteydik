@@ -1652,10 +1652,10 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   },
                                   {
                                     id: "light-gate",
-                                    emoji: "🚪",
-                                    label: "Işık Kapısı",
-                                    desc: "Siyah kapılar ortadan açılır ve içindeki dünya belirir",
-                                    preview: "linear-gradient(to right, #020408 0%, #0D1120 48%, #0D1120 52%, #020408 100%)",
+                                    emoji: "🎪",
+                                    label: "Yükselen Perde",
+                                    desc: "Koyu bir sahne perdesi yukarı kalkarak sayfayı açar",
+                                    preview: "linear-gradient(to bottom, #12080A 0%, #2A1013 70%, #C9A84C 100%)",
                                   },
                                 ].map((opt) => {
                                   const isSelected = (editConfig.entranceType || "curtain") === opt.id;
@@ -1680,11 +1680,18 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                         fontSize: "22px", position: "relative", overflow: "hidden",
                                       }}>
                                         {opt.emoji}
-                                        {(opt.id === "curtain" || opt.id === "light-gate") && (
+                                        {opt.id === "curtain" && (
                                           <div style={{
                                             position: "absolute", top: 0, bottom: 0, left: "50%",
                                             width: "1px", transform: "translateX(-50%)",
                                             background: `${C.gold}88`,
+                                          }} />
+                                        )}
+                                        {opt.id === "light-gate" && (
+                                          <div style={{
+                                            position: "absolute", bottom: 0, left: 0, right: 0,
+                                            height: "2px",
+                                            background: `${C.gold}dd`,
                                           }} />
                                         )}
                                       </div>
