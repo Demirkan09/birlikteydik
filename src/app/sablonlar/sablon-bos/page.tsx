@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, createContext, useContext } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
+import EntranceScreen, { EntranceType } from "@/components/EntranceScreen";
 import { ChevronDown, Volume2, VolumeX, Heart } from "lucide-react";
 import VideoPlayerPro from "@/components/ui/video-player-pro";
 import { Backlight } from "@/components/magicui/backlight";
@@ -50,6 +51,9 @@ export const defaultConfig = {
   scrollTextColor: "" as string,
   headingEyebrowColor: "" as string,
   headingTitleColor: "" as string,
+  // Giriş Animasyonu
+  entranceEnabled: false,
+  entranceType: "curtain" as EntranceType,
 };
 
 export type TemplateConfig = typeof defaultConfig;
@@ -931,29 +935,69 @@ export default function BosTemplate({
 
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Giriş ekranı — entrance animasyonu aktifse başta göster
+  const [entranceVisible, setEntranceVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const search = new URLSearchParams(window.location.search);
+    if (search.get("preview") === "true") return false; // önizlemede entrance yok
+    return true; // gerçek değer config gelince belirlenir
+  });
+  const entranceReady = useRef(false);
+
+  // Entrance özelliği config'den okunuyor; config değiştiğinde senkronize et
+  useEffect(() => {
+    if (!entranceReady.current) {
+      // İlk mount: search param preview=true ise entrance'ı devre dışı bırak
+      if (typeof window !== "undefined") {
+        const search = new URLSearchParams(window.location.search);
+        if (search.get("preview") === "true") {
+          setEntranceVisible(false);
+          entranceReady.current = true;
+          return;
+        }
+      }
+      setEntranceVisible(Boolean(config.entranceEnabled));
+      entranceReady.current = true;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.entranceEnabled]);
+
+  const handleEnter = () => {
+    setEntranceVisible(false);
+    // Müziği entrance tıklamasında başlat (autoplay politikası gereği)
+    if (audioRef.current && config.musicWidgetEnabled) {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
+  };
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.pause();
     if (config.musicUrl && config.musicWidgetEnabled) {
       audioRef.current = new Audio(config.musicUrl);
       audioRef.current.loop = true;
-      const playAudio = () => {
-        if (audioRef.current) {
-          audioRef.current.play().then(() => { setIsPlaying(true); removeListeners(); }).catch(() => {});
-        }
-      };
-      const removeListeners = () => {
-        window.removeEventListener("click", playAudio);
-        window.removeEventListener("touchstart", playAudio);
-        window.removeEventListener("scroll", playAudio);
-      };
-      playAudio();
-      window.addEventListener("click", playAudio);
-      window.addEventListener("touchstart", playAudio);
-      window.addEventListener("scroll", playAudio);
-      return () => { removeListeners(); audioRef.current?.pause(); };
+      // Entrance aktifse müzik otomatik başlamasın — handleEnter beklesin
+      if (!config.entranceEnabled) {
+        const playAudio = () => {
+          if (audioRef.current) {
+            audioRef.current.play().then(() => { setIsPlaying(true); removeListeners(); }).catch(() => {});
+          }
+        };
+        const removeListeners = () => {
+          window.removeEventListener("click", playAudio);
+          window.removeEventListener("touchstart", playAudio);
+          window.removeEventListener("scroll", playAudio);
+        };
+        playAudio();
+        window.addEventListener("click", playAudio);
+        window.addEventListener("touchstart", playAudio);
+        window.addEventListener("scroll", playAudio);
+        return () => { removeListeners(); audioRef.current?.pause(); };
+      } else {
+        // Entrance aktif — müzik handleEnter'da başlayacak
+        return () => { audioRef.current?.pause(); };
+      }
     }
-  }, [config.musicUrl, config.musicWidgetEnabled]);
+  }, [config.musicUrl, config.musicWidgetEnabled, config.entranceEnabled]);
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -1003,6 +1047,25 @@ export default function BosTemplate({
 
   return (
     <TemplateContext.Provider value={{ config, memories }}>
+      {/* ── GİRİŞ ANİMASYONU ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {entranceVisible && (
+          <motion.div
+            key="entrance"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            style={{ position: "fixed", inset: 0, zIndex: 9999 }}
+          >
+            <EntranceScreen
+              type={config.entranceType ?? "curtain"}
+              accentColor={config.accentColor}
+              coupleNames={config.coupleNames}
+              onEnter={handleEnter}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Google Fonts Import for retro arcade */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');

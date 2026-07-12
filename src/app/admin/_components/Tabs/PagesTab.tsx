@@ -1604,6 +1604,117 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           </div>
                         </div>
 
+                        {/* ── Giriş Animasyonu ──────────────────────────────── */}
+                        <div style={{ ...cardStyle, padding: "28px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "10px" }}>
+                            <div>
+                              <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text, margin: 0, fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif" }}>
+                                🎭 Giriş Animasyonu
+                              </h3>
+                              <p style={{ fontSize: "11.5px", color: C.muted, margin: "4px 0 0", fontFamily: "var(--font-inter), sans-serif", fontWeight: 300 }}>
+                                Ziyaretçi sayfaya ilk girdiğinde bir açılış ekranı gösterilir. Tıkladığında animasyon oynar ve müzik başlar.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setEditConfig({ ...editConfig, entranceEnabled: !editConfig.entranceEnabled })}
+                              style={{
+                                padding: "6px 14px", borderRadius: "8px", border: "none", flexShrink: 0,
+                                background: editConfig.entranceEnabled ? C.gold : "rgba(255,255,255,0.1)",
+                                color: editConfig.entranceEnabled ? "#0B0F1A" : C.text,
+                                fontSize: "11px", fontWeight: 600, cursor: "pointer",
+                              }}
+                            >
+                              {editConfig.entranceEnabled ? "Aktif" : "Kapalı"}
+                            </button>
+                          </div>
+
+                          {editConfig.entranceEnabled && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                              <label style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 500 }}>
+                                Animasyon Tipi Seç
+                              </label>
+                              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px" }}>
+                                {[
+                                  {
+                                    id: "curtain",
+                                    emoji: "🎭",
+                                    label: "Tiyatro Perdesi",
+                                    desc: "İki kadife perde sola ve sağa çekilir, sahne belirir",
+                                    preview: "linear-gradient(to right, #3d1515 0%, #1a0808 48%, #1a0808 52%, #3d1515 100%)",
+                                  },
+                                  {
+                                    id: "envelope",
+                                    emoji: "💌",
+                                    label: "Mektup Zarfı",
+                                    desc: "Mühürlü bir zarf açılır ve sayfa içinden yükselir",
+                                    preview: "linear-gradient(to bottom, #0B0F1A 0%, #160408 100%)",
+                                  },
+                                  {
+                                    id: "light-gate",
+                                    emoji: "🚪",
+                                    label: "Işık Kapısı",
+                                    desc: "Siyah kapılar ortadan açılır ve içindeki dünya belirir",
+                                    preview: "linear-gradient(to right, #020408 0%, #0D1120 48%, #0D1120 52%, #020408 100%)",
+                                  },
+                                ].map((opt) => {
+                                  const isSelected = (editConfig.entranceType || "curtain") === opt.id;
+                                  return (
+                                    <button
+                                      key={opt.id}
+                                      type="button"
+                                      onClick={() => setEditConfig({ ...editConfig, entranceType: opt.id as any })}
+                                      style={{
+                                        display: "flex", flexDirection: "column", gap: "0", padding: 0,
+                                        borderRadius: "12px", border: `2px solid ${isSelected ? C.gold : "rgba(255,255,255,0.08)"}`,
+                                        background: isSelected ? "rgba(201,168,76,0.05)" : "rgba(255,255,255,0.02)",
+                                        cursor: "pointer", overflow: "hidden", textAlign: "left",
+                                        transition: "border-color 0.2s, background 0.2s",
+                                        boxShadow: isSelected ? `0 0 0 1px ${C.gold}44` : "none",
+                                      }}
+                                    >
+                                      <div style={{
+                                        height: "56px", background: opt.preview,
+                                        borderBottom: `1px solid ${isSelected ? C.gold + "44" : "rgba(255,255,255,0.06)"}`,
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        fontSize: "22px", position: "relative", overflow: "hidden",
+                                      }}>
+                                        {opt.emoji}
+                                        {(opt.id === "curtain" || opt.id === "light-gate") && (
+                                          <div style={{
+                                            position: "absolute", top: 0, bottom: 0, left: "50%",
+                                            width: "1px", transform: "translateX(-50%)",
+                                            background: `${C.gold}88`,
+                                          }} />
+                                        )}
+                                      </div>
+                                      <div style={{ padding: "12px 14px" }}>
+                                        <div style={{
+                                          fontSize: "12.5px", fontWeight: 600,
+                                          color: isSelected ? C.gold : C.text,
+                                          fontFamily: "var(--font-inter), sans-serif", marginBottom: "4px",
+                                        }}>
+                                          {opt.label}
+                                        </div>
+                                        <div style={{
+                                          fontSize: "11px", color: C.muted,
+                                          fontFamily: "var(--font-inter), sans-serif",
+                                          fontWeight: 300, lineHeight: 1.5,
+                                        }}>
+                                          {opt.desc}
+                                        </div>
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              <p style={{ fontSize: "11px", color: "rgba(240,237,232,0.25)", fontFamily: "var(--font-inter), sans-serif", fontWeight: 300, marginTop: "4px" }}>
+                                💡 Giriş ekranı, önizlemede ve <code style={{ color: "rgba(240,237,232,0.4)" }}>?preview=true</code> parametresiyle açıldığında gösterilmez.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
                         {/* Şablon Kartı Ayarları (Sadece Şablonlar ve Özel Şablonlar için) */}
                         {(SHOWCASE_SLUGS.includes(selectedEditSlug) || (editTemplateId && editTemplateId.startsWith("custom-"))) && (
                           <div style={{ ...cardStyle, padding: "28px", display: "flex", flexDirection: "column", gap: "20px", marginBottom: "20px" }}>
