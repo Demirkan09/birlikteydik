@@ -14,6 +14,10 @@ export async function GET(request: Request) {
     }, {} as Record<string, any>);
 
     const abandonedSettings = settings.abandoned_cart_settings || {};
+    if (abandonedSettings.enabled === false) {
+      return NextResponse.json({ message: "Terk edilmiş sayfa yönetimi özelliği pasif." });
+    }
+
     const emailDelayHours = abandonedSettings.email_delay_hours || 12;
     const emailSubject = abandonedSettings.email_subject || "Yarım Kalan Bir Hikaye Var... 🤍";
     const emailBodyTemplate = abandonedSettings.email_body || `

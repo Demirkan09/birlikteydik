@@ -27,6 +27,7 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
     faqs: defaultFaqs,
     whatsapp_number: "905555555555",
     abandoned_cart_settings: {
+      enabled: true,
       email_delay_hours: 12,
       email_subject: "Yarım Kalan Bir Hikaye Var... 🤍",
       email_body: "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;\">\n<h2 style=\"color: #C9A84C;\">Merhaba,</h2>\n<p>Birlikteydik sayfanı tasarlamaya başladığını gördük ancak henüz yayına almadın.</p>\n<p>Yarım kalan anılarını tamamlamak ve sayfanı ölümsüzleştirmek için tasarımına geri dön.</p>\n<div style=\"text-align: center; margin: 30px 0;\">\n<a href=\"https://birlikteydik.com/sayfa-olustur\" style=\"background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;\">Tasarımı Tamamla ve Hayata Geçir</a>\n</div>\n</div>",
@@ -437,7 +438,32 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
 
             {/* ABANDONED CART SETTINGS */}
             <div style={{ marginTop: "32px", padding: "24px", background: "rgba(0,0,0,0.2)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.04)" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text, marginBottom: "16px" }}>Terk Edilmiş Sayfa Yönetimi</h3>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                <h3 style={{ fontSize: "16px", fontWeight: 600, color: C.text, margin: 0 }}>Terk Edilmiş Sayfa Yönetimi</h3>
+                <button
+                  type="button"
+                  onClick={() => setSiteSettings({
+                    ...siteSettings,
+                    abandoned_cart_settings: {
+                      ...siteSettings.abandoned_cart_settings,
+                      enabled: siteSettings.abandoned_cart_settings?.enabled !== false ? false : true
+                    }
+                  })}
+                  style={{
+                    padding: "6px 16px",
+                    borderRadius: "20px",
+                    border: "none",
+                    background: siteSettings.abandoned_cart_settings?.enabled !== false ? C.gold : "rgba(255,255,255,0.1)",
+                    color: siteSettings.abandoned_cart_settings?.enabled !== false ? "#0B0F1A" : C.text,
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {siteSettings.abandoned_cart_settings?.enabled !== false ? "Özellik Aktif 🔘" : "Özellik Pasif ⬜"}
+                </button>
+              </div>
               
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
