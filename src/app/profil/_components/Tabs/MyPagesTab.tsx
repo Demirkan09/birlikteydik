@@ -1,9 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { HiOutlineTicket, HiOutlineExternalLink, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff, HiOutlineKey, HiOutlineTrash, HiOutlineCheckCircle } from "react-icons/hi";
 import { C } from "../../_utils/constants";
 import { ProfileInput } from "../ProfileInput";
 import { UserPage } from "../../types";
+
+function useWindowWidth() {
+  const [width, setWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 1024);
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return width;
+}
 
 export function MyPagesTab({
   userPages,
@@ -46,6 +57,7 @@ export function MyPagesTab({
   handleRemovePagePassword: (slug: string) => void;
   pagePassSuccess: Record<string, string>;
 }) {
+  const isMobile = useWindowWidth() < 768;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
       <div>
@@ -65,7 +77,7 @@ export function MyPagesTab({
         <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.muted, fontWeight: 300, lineHeight: 1.6 }}>
           Sipariş sonrası size iletilen kodu aşağıya girin (örn: <strong style={{ color: "rgba(240,237,232,0.6)", letterSpacing: "0.05em" }}>XK-T7M2-9P</strong>).
         </p>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row" }}>
           <div style={{ flex: 1, minWidth: "200px" }}>
             <ProfileInput
               label="Aktivasyon Kodu" value={activationCode}
@@ -77,11 +89,12 @@ export function MyPagesTab({
           <button
             onClick={handleActivate} disabled={activationLoading}
             style={{
-              padding: "12px 24px", borderRadius: "30px", border: "none", alignSelf: "flex-end", marginBottom: activationError ? "22px" : "0",
+              padding: "12px 24px", borderRadius: "30px", border: "none",
+              alignSelf: isMobile ? "stretch" : "flex-end", marginBottom: activationError ? "22px" : "0",
               background: activationLoading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
               fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", letterSpacing: "0.1em",
               textTransform: "uppercase", fontWeight: 600, cursor: activationLoading ? "not-allowed" : "pointer",
-              transition: "all 0.2s", display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap",
+              transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", whiteSpace: "nowrap",
             }}
           >
             {activationLoading ? <span style={{ width: "13px", height: "13px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> : <HiOutlineTicket size={14} />}
@@ -147,7 +160,7 @@ export function MyPagesTab({
                     rightElement={<span onClick={() => setShowPagePass((p) => ({ ...p, [page.pageSlug]: !p[page.pageSlug] }))} style={{ cursor: "pointer", display: "flex" }}>{showPagePass[page.pageSlug] ? <HiOutlineEyeOff size={14} /> : <HiOutlineEye size={14} />}</span>}
                   />
                 </div>
-                <div style={{ display: "flex", gap: "8px", alignSelf: "flex-end", marginBottom: pagePassErrors[page.pageSlug] ? "22px" : "0", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "8px", alignSelf: isMobile ? "stretch" : "flex-end", marginBottom: pagePassErrors[page.pageSlug] ? "22px" : "0", flexWrap: "wrap" }}>
                   <button
                     onClick={() => handleSetPagePassword(page.pageSlug)}
                     disabled={pagePassLoading[page.pageSlug]}

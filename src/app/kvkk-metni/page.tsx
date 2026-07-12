@@ -73,9 +73,9 @@ export default function KvkkMetniPage() {
             <p style={{ marginBottom: "14px" }}>Toplanan kişisel verileriniz, aşağıdaki yasal ve teknik amaçlar dahilinde işlenmektedir:</p>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
               {[
-                "Kullanıcı hesabı oluşturulması ve kimlik doğrulaması yapılması (NextAuth altyapısı ile),",
+                "Kullanıcı hesabı oluşturulması ve kimlik doğrulaması yapılması,",
                 "Sitenin temel fonksiyonlarının yerine getirilmesi, anıların ve dijital kasetlerin doğru kullanıcı profili ile eşleştirilmesi,",
-                "Sunucu güvenliğinin ve siber güvenliğin (Cloudflare koruması dahilinde) sağlanması,",
+                "Sunucu güvenliğinin ve siber güvenliğin sağlanması,",
                 "Olası yasal uyuşmazlıklarda adli makamların resmi taleplerine cevap verilmesi.",
               ].map((item, i) => (
                 <li key={i} style={{ display: "flex", gap: "10px", fontFamily: "'Inter', sans-serif", fontSize: "13.5px", color: C.muted, fontWeight: 300, lineHeight: 1.65 }}>
@@ -168,7 +168,7 @@ export default function KvkkMetniPage() {
             </Section>
 
             <Section number="5" title="Sorumluluğun Sınırlandırılması">
-              birlikteydik.com, sunucu sağlayıcılardan (Hetzner VDS vb.) veya küresel internet hatlarından kaynaklanabilecek geçici kesintilerden, veri tabanı gecikmelerinden veya mücbir sebeplerden ötürü yaşanabilecek veri kayıplarından ötürü doğrudan maddi/manevi tazminat sorumluluğu taşımaz. Kullanıcıya kesintisiz ve kusursuz bir hizmet sunmak için teknik olarak azami gayret gösterilmektedir.
+              birlikteydik.com, sunucu sağlayıcılardan veya küresel internet hatlarından kaynaklanabilecek geçici kesintilerden, veri tabanı gecikmelerinden veya mücbir sebeplerden ötürü yaşanabilecek veri kayıplarından ötürü doğrudan maddi/manevi tazminat sorumluluğu taşımaz. Kullanıcıya kesintisiz ve kusursuz bir hizmet sunmak için teknik olarak azami gayret gösterilmektedir.
             </Section>
 
             <Section number="6" title="Sözleşmenin Feshi ve Değişiklikler">

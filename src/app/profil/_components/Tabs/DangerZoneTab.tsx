@@ -1,9 +1,19 @@
 "use client";
 
 import { HiOutlineTrash, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { C } from "../../_utils/constants";
 import { ProfileInput } from "../ProfileInput";
+
+function useWindowWidth() {
+  const [width, setWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 1024);
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return width;
+}
 
 export function DangerZoneTab({
   deleteConfirmText,
@@ -22,6 +32,7 @@ export function DangerZoneTab({
   loading: boolean;
   errors: Record<string, string>;
 }) {
+  const isMobile = useWindowWidth() < 768;
   const [showDeletePass, setShowDeletePass] = useState(false);
 
   return (
@@ -55,7 +66,7 @@ export function DangerZoneTab({
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="form-row">
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
             <ProfileInput
               label="Onaylama Kelimesi" value={deleteConfirmText} onChange={setDeleteConfirmText}
               placeholder="Devam etmek için 'sil' yazın" icon={<HiOutlineTrash size={15} />} error={errors.deleteConfirmText}
@@ -74,8 +85,8 @@ export function DangerZoneTab({
               background: loading ? "rgba(232,160,160,0.4)" : "#E8A0A0", color: "#0B0F1A",
               fontFamily: "var(--font-inter), sans-serif", fontSize: "12.5px", letterSpacing: "0.08em",
               textTransform: "uppercase", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
-              transition: "all 0.2s", alignSelf: "flex-start", marginTop: "8px",
-              display: "flex", alignItems: "center", gap: "8px",
+              transition: "all 0.2s", alignSelf: isMobile ? "stretch" : "flex-start", marginTop: "8px",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
             }}
             onMouseEnter={(e) => { if (!loading) e.currentTarget.style.opacity = "0.85"; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}

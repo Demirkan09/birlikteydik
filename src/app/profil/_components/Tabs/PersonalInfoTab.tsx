@@ -1,10 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineUser, HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { C } from "../../_utils/constants";
 import { ProfileInput } from "../ProfileInput";
 import { User } from "../../types";
+
+function useWindowWidth() {
+  const [width, setWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 1024);
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return width;
+}
 
 export function PersonalInfoTab({
   user,
@@ -43,6 +53,7 @@ export function PersonalInfoTab({
   verificationLoading: boolean;
   verificationSuccess: string;
 }) {
+  const isMobile = useWindowWidth() < 768;
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const [showPass3, setShowPass3] = useState(false);
@@ -59,7 +70,7 @@ export function PersonalInfoTab({
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="form-row">
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
           <ProfileInput label="Adınız Soyadınız" value={name} onChange={setName} icon={<HiOutlineUser size={15} />} error={errors.name} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <ProfileInput label="E-posta Adresiniz" type="email" value={email} onChange={setEmail} icon={<HiOutlineMail size={15} />} error={errors.email} />
@@ -127,7 +138,7 @@ export function PersonalInfoTab({
               icon={<HiOutlineLockClosed size={15} />} placeholder="••••••••" error={errors.currentPassword}
               rightElement={<span onClick={() => setShowPass1(!showPass1)}>{showPass1 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
             />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="form-row">
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
               <ProfileInput
                 label="Yeni Şifre" type={showPass2 ? "text" : "password"} value={newPassword} onChange={setNewPassword}
                 icon={<HiOutlineLockClosed size={15} />} placeholder="En az 8 karakter" error={errors.newPassword}
@@ -149,8 +160,8 @@ export function PersonalInfoTab({
             background: loading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
             fontFamily: "var(--font-inter), sans-serif", fontSize: "12.5px", letterSpacing: "0.1em",
             textTransform: "uppercase", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
-            transition: "all 0.2s", alignSelf: "flex-start", marginTop: "10px",
-            display: "flex", alignItems: "center", gap: "8px",
+            transition: "all 0.2s", alignSelf: isMobile ? "stretch" : "flex-start", marginTop: "10px",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
           }}
           onMouseEnter={(e) => { if (!loading) e.currentTarget.style.opacity = "0.85"; }}
           onMouseLeave={(e) => { if (!loading) e.currentTarget.style.opacity = "1"; }}

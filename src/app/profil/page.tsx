@@ -1,8 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+
+function useWindowWidth() {
+  const [width, setWidth] = useState<number>(typeof window !== "undefined" ? window.innerWidth : 1024);
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return width;
+}
 import {
   HiOutlineUser,
   HiOutlineShieldCheck,
@@ -26,6 +36,7 @@ import { MyPagesTab } from "./_components/Tabs/MyPagesTab";
 import { DangerZoneTab } from "./_components/Tabs/DangerZoneTab";
 
 export default function ProfilePage() {
+  const isMobile = useWindowWidth() < 768;
   const router = useRouter();
 
   // Auth states
@@ -416,22 +427,22 @@ export default function ProfilePage() {
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 65% 55% at 20% 15%, rgba(201,168,76,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 85% 80%, rgba(184,169,212,0.04) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0c101c 65%, #080b14 100%)" }} />
       <HeartsCanvas />
 
-      <main style={{ position: "relative", zIndex: 1, minHeight: "100vh", padding: "100px 24px 60px" }}>
+      <main style={{ position: "relative", zIndex: 1, minHeight: "100vh", padding: isMobile ? "80px 16px 40px" : "100px 24px 60px" }}>
         <div style={{ maxWidth: "1024px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "32px" }}>
 
           {/* Header Panel */}
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "24px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "20px", padding: "28px clamp(20px, 4vw, 36px)", backdropFilter: "blur(12px)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: isMobile ? "16px" : "24px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "20px", padding: isMobile ? "20px" : "28px clamp(20px, 4vw, 36px)", backdropFilter: "blur(12px)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "14px" : "20px" }}>
               {/* User Avatar with gradient border */}
-              <div style={{ position: "relative", width: "64px", height: "64px", borderRadius: "50%", background: "linear-gradient(135deg, #C9A84C, #B8A9D4)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.3)" }}>
-                <span style={{ fontSize: "22px", color: "#0B0F1A", fontWeight: 700 }}>{user.name?.[0]?.toUpperCase()}</span>
-                <div style={{ position: "absolute", bottom: 0, right: 0, width: "16px", height: "16px", borderRadius: "50%", background: C.success, border: `2px solid ${C.bg}`, display: "flex", alignItems: "center", justifyContent: "center" }} title="Aktif Oturum" />
+              <div style={{ position: "relative", width: isMobile ? "50px" : "64px", height: isMobile ? "50px" : "64px", borderRadius: "50%", background: "linear-gradient(135deg, #C9A84C, #B8A9D4)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.3)", flexShrink: 0 }}>
+                <span style={{ fontSize: isMobile ? "18px" : "22px", color: "#0B0F1A", fontWeight: 700 }}>{user.name?.[0]?.toUpperCase()}</span>
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: "14px", height: "14px", borderRadius: "50%", background: C.success, border: `2px solid ${C.bg}`, display: "flex", alignItems: "center", justifyContent: "center" }} title="Aktif Oturum" />
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.5rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, lineHeight: 1.1 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
+                <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: isMobile ? "1.5rem" : "clamp(1.5rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   Merhaba, <em style={{ color: C.gold, fontStyle: "italic" }}>{user.name}</em>
                 </h1>
-                <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>{user.email}</p>
+                <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: isMobile ? "11px" : "13px", color: C.muted, fontWeight: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
               </div>
             </div>
 
@@ -439,18 +450,19 @@ export default function ProfilePage() {
             <button
               onClick={handleLogout}
               style={{
-                display: "flex", alignItems: "center", gap: "8px", padding: "11px 22px",
+                display: "flex", alignItems: "center", gap: "6px", padding: isMobile ? "8px 16px" : "11px 22px",
                 borderRadius: "30px", border: "1px solid rgba(232,160,160,0.2)",
                 background: "rgba(232,160,160,0.04)", color: "#E8A0A0",
-                fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", letterSpacing: "0.08em",
+                fontFamily: "var(--font-inter), sans-serif", fontSize: isMobile ? "11px" : "12px", letterSpacing: "0.08em",
                 textTransform: "uppercase", fontWeight: 500, cursor: "pointer",
-                transition: "all 0.2s"
+                transition: "all 0.2s", flexShrink: 0
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(232,160,160,0.08)"; e.currentTarget.style.borderColor = "rgba(232,160,160,0.35)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(232,160,160,0.04)"; e.currentTarget.style.borderColor = "rgba(232,160,160,0.2)"; }}
             >
-              <HiOutlineLogout size={15} />
-              <span>Güvenli Çıkış Yap</span>
+              <HiOutlineLogout size={13} />
+              {!isMobile && <span>Güvenli Çıkış Yap</span>}
+              {isMobile && <span>Çıkış</span>}
             </button>
           </div>
 
@@ -472,43 +484,77 @@ export default function ProfilePage() {
             )}
           </AnimatePresence>
 
-          <div style={{ display: "grid", gridTemplateColumns: "clamp(200px, 30%, 280px) 1fr", gap: "28px", alignItems: "start" }} className="profile-grid">
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "clamp(200px, 30%, 280px) 1fr", gap: isMobile ? "12px" : "28px", alignItems: "start" }} className="profile-grid">
 
-            {/* Sidebar navigation */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "20px", padding: "16px" }}>
-              {[
-                { id: "info", label: "Kişisel Bilgiler", icon: <HiOutlineUser size={16} /> },
-                { id: "notifications", label: "İletişim & Onaylar", icon: <HiOutlineShieldCheck size={16} /> },
-                { id: "details", label: "Hesap Bilgileri", icon: <HiOutlineCalendar size={16} /> },
-                { id: "pages", label: "Sayfalarım", icon: <HiOutlineCollection size={16} /> },
-                { id: "danger", label: "Hesabı Kalıcı Olarak Sil", icon: <HiOutlineTrash size={16} />, color: "#E8A0A0" },
-              ].map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => { setActiveTab(tab.id as any); setErrors({}); setSuccessMsg(""); }}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "10px", padding: "12px 16px",
-                      borderRadius: "10px", border: "none",
-                      background: isActive ? "rgba(255,255,255,0.035)" : "transparent",
-                      color: isActive ? (tab.color || C.gold) : "rgba(240,237,232,0.5)",
-                      fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", fontWeight: isActive ? 500 : 300,
-                      cursor: "pointer", textAlign: "left", transition: "all 0.2s"
-                    }}
-                    onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = tab.color || C.text; }}
-                    onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "rgba(240,237,232,0.5)"; }}
-                  >
-                    {tab.icon}
-                    <span style={{ marginRight: "auto" }}>{tab.label}</span>
-                    <HiOutlineChevronRight size={12} style={{ opacity: isActive ? 0.7 : 0, transition: "opacity 0.2s" }} />
-                  </button>
-                );
-              })}
-            </div>
+            {/* Sidebar / Tab navigation */}
+            {isMobile ? (
+              /* Mobile: horizontal scrollable tab bar */
+              <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px", scrollbarWidth: "none", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", padding: "10px" }}>
+                {[
+                  { id: "info", label: "Bilgiler", icon: <HiOutlineUser size={15} /> },
+                  { id: "notifications", label: "İletişim", icon: <HiOutlineShieldCheck size={15} /> },
+                  { id: "details", label: "Hesap", icon: <HiOutlineCalendar size={15} /> },
+                  { id: "pages", label: "Sayfalarım", icon: <HiOutlineCollection size={15} /> },
+                  { id: "danger", label: "Sil", icon: <HiOutlineTrash size={15} />, color: "#E8A0A0" },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id as any); setErrors({}); setSuccessMsg(""); }}
+                      style={{
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
+                        padding: "8px 12px", borderRadius: "10px", border: "none", flexShrink: 0,
+                        background: isActive ? "rgba(255,255,255,0.07)" : "transparent",
+                        color: isActive ? (tab.color || C.gold) : "rgba(240,237,232,0.45)",
+                        fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", fontWeight: isActive ? 500 : 400,
+                        cursor: "pointer", transition: "all 0.2s",
+                        borderBottom: isActive ? `2px solid ${tab.color || C.gold}` : "2px solid transparent"
+                      }}
+                    >
+                      {tab.icon}
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Desktop: vertical sidebar */
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "20px", padding: "16px" }}>
+                {[
+                  { id: "info", label: "Kişisel Bilgiler", icon: <HiOutlineUser size={16} /> },
+                  { id: "notifications", label: "İletişim & Onaylar", icon: <HiOutlineShieldCheck size={16} /> },
+                  { id: "details", label: "Hesap Bilgileri", icon: <HiOutlineCalendar size={16} /> },
+                  { id: "pages", label: "Sayfalarım", icon: <HiOutlineCollection size={16} /> },
+                  { id: "danger", label: "Hesabı Kalıcı Olarak Sil", icon: <HiOutlineTrash size={16} />, color: "#E8A0A0" },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id as any); setErrors({}); setSuccessMsg(""); }}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "10px", padding: "12px 16px",
+                        borderRadius: "10px", border: "none",
+                        background: isActive ? "rgba(255,255,255,0.035)" : "transparent",
+                        color: isActive ? (tab.color || C.gold) : "rgba(240,237,232,0.5)",
+                        fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", fontWeight: isActive ? 500 : 300,
+                        cursor: "pointer", textAlign: "left", transition: "all 0.2s"
+                      }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = tab.color || C.text; }}
+                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "rgba(240,237,232,0.5)"; }}
+                    >
+                      {tab.icon}
+                      <span style={{ marginRight: "auto" }}>{tab.label}</span>
+                      <HiOutlineChevronRight size={12} style={{ opacity: isActive ? 0.7 : 0, transition: "opacity 0.2s" }} />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Content card */}
-            <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "20px", padding: "clamp(24px, 5vw, 36px)", backdropFilter: "blur(12px)", minHeight: "360px" }}>
+            <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "20px", padding: isMobile ? "20px 16px" : "clamp(24px, 5vw, 36px)", backdropFilter: "blur(12px)", minHeight: isMobile ? "auto" : "360px" }}>
 
               {/* Tab 1: Kişisel Bilgiler */}
               {activeTab === "info" && (
