@@ -36,7 +36,7 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     </tr>
   </table>
 </body>
-</html>`}async function o(e){let o=`${a}/reset-password?token=${e.token}&type=account`,n=s(`
+</html>`}function o(e){return e.replace(/<style([\s\S]*?)<\/style>/gi,"").replace(/<script([\s\S]*?)<\/script>/gi,"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim()}let n=e=>{let t=encodeURIComponent(e);return{"List-Unsubscribe":`<${a}/api/unsubscribe?email=${t}>, <mailto:info@birlikteydik.com?subject=unsubscribe&email=${t}>`,"List-Unsubscribe-Post":"List-Unsubscribe=One-Click"}};async function r(e){let r=`${a}/reset-password?token=${e.token}&type=account`,p=s(`
     <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Merhaba, <strong style="color:#F0EDE8;">${e.name}</strong></p>
     <h2 style="margin:0 0 20px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Hesap Şifreni<br/><em style="color:#C9A84C;">Sıfırla</em></h2>
     <p style="margin:0 0 28px;font-size:14px;color:rgba(240,237,232,0.55);line-height:1.7;font-weight:300;">
@@ -46,7 +46,7 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center">
-          <a href="${o}" style="display:inline-block;padding:15px 36px;background:#C9A84C;color:#0B0F1A;text-decoration:none;border-radius:30px;font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;">
+          <a href="${r}" style="display:inline-block;padding:15px 36px;background:#C9A84C;color:#0B0F1A;text-decoration:none;border-radius:30px;font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;">
             Şifremi Sıfırla
           </a>
         </td>
@@ -54,9 +54,9 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     </table>
     <p style="margin:24px 0 0;font-size:11px;color:rgba(240,237,232,0.25);text-align:center;">
       Butona tıklayamıyorsan şu linki kopyala:<br/>
-      <span style="color:rgba(201,168,76,0.6);word-break:break-all;">${o}</span>
+      <span style="color:rgba(201,168,76,0.6);word-break:break-all;">${r}</span>
     </p>
-  `);await t.sendMail({from:i,to:e.to,subject:"Şifre Sıfırlama — birlikteydik.com",html:n})}async function n(e){let o=`${a}/reset-password?token=${e.token}&type=page&slug=${e.pageSlug}`,n=s(`
+  `);await t.sendMail({from:i,to:e.to,subject:"Şifre Sıfırlama — birlikteydik.com",html:p,text:o(p),headers:n(e.to)})}async function p(e){let r=`${a}/reset-password?token=${e.token}&type=page&slug=${e.pageSlug}`,p=s(`
     <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Merhaba, <strong style="color:#F0EDE8;">${e.name}</strong></p>
     <h2 style="margin:0 0 20px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Sayfa Şifreni<br/><em style="color:#C9A84C;">Sıfırla</em></h2>
     <p style="margin:0 0 12px;font-size:13px;color:rgba(240,237,232,0.4);letter-spacing:0.06em;">
@@ -69,7 +69,7 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center">
-          <a href="${o}" style="display:inline-block;padding:15px 36px;background:#C9A84C;color:#0B0F1A;text-decoration:none;border-radius:30px;font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;">
+          <a href="${r}" style="display:inline-block;padding:15px 36px;background:#C9A84C;color:#0B0F1A;text-decoration:none;border-radius:30px;font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;">
             Sayfa Şifremi Sıfırla
           </a>
         </td>
@@ -77,9 +77,9 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     </table>
     <p style="margin:24px 0 0;font-size:11px;color:rgba(240,237,232,0.25);text-align:center;">
       Butona tıklayamıyorsan:<br/>
-      <span style="color:rgba(201,168,76,0.6);word-break:break-all;">${o}</span>
+      <span style="color:rgba(201,168,76,0.6);word-break:break-all;">${r}</span>
     </p>
-  `);await t.sendMail({from:i,to:e.to,subject:`Sayfa Şifre Sıfırlama (/${e.pageSlug}) — birlikteydik.com`,html:n})}async function r(e){let a=s(`
+  `);await t.sendMail({from:i,to:e.to,subject:`Sayfa Şifre Sıfırlama (/${e.pageSlug}) — birlikteydik.com`,html:p,text:o(p),headers:n(e.to)})}async function c(e){let a=s(`
     <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Merhaba, <strong style="color:#F0EDE8;">${e.name}</strong></p>
     <h2 style="margin:0 0 20px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Hesap Doğrulama<br/><em style="color:#C9A84C;">Kodu</em></h2>
     <p style="margin:0 0 28px;font-size:14px;color:rgba(240,237,232,0.55);line-height:1.7;font-weight:300;">
@@ -91,6 +91,6 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.3);text-align:center;">
       Bu kod g\xfcvenlik nedeniyle 15 dakika ge\xe7erlidir.
     </p>
-  `);await t.sendMail({from:i,to:e.to,subject:"E-posta Onay Kodu — birlikteydik.com",html:a})}async function p(e){await t.sendMail({from:i,to:e.to,subject:e.subject,html:e.html})}e.s(["sendAccountPasswordReset",0,o,"sendCustomEmail",0,p,"sendPagePasswordReset",0,n,"sendVerificationCodeEmail",0,r])}];
+  `);await t.sendMail({from:i,to:e.to,subject:"E-posta Onay Kodu — birlikteydik.com",html:a,text:o(a),headers:n(e.to)})}async function l(e){await t.sendMail({from:i,to:e.to,subject:e.subject,html:e.html,text:o(e.html),headers:n(e.to)})}e.s(["sendAccountPasswordReset",0,r,"sendCustomEmail",0,l,"sendPagePasswordReset",0,p,"sendVerificationCodeEmail",0,c])}];
 
 //# sourceMappingURL=%5Broot-of-the-server%5D__1_y4f8w._.js.map

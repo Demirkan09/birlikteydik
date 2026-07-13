@@ -31,6 +31,7 @@
   "/api/reset-password/route": "app/api/reset-password/route.js",
   "/api/showcase/route": "app/api/showcase/route.js",
   "/api/site-settings/route": "app/api/site-settings/route.js",
+  "/api/unsubscribe/route": "app/api/unsubscribe/route.js",
   "/api/uploads/[filename]/route": "app/api/uploads/[filename]/route.js",
   "/api/verify-email/route": "app/api/verify-email/route.js",
   "/demirkanmelis/page": "app/demirkanmelis/page.js",

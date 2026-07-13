@@ -56,6 +56,7 @@ export async function GET(request: Request) {
         JOIN users u ON up.user_id = u.id
         WHERE ps.is_published = false
           AND up.abandoned_email_sent = false
+          AND u.marketing_consent = true
           AND ps.updated_at < NOW() - INTERVAL '${emailDelayHours} hours'
       `);
 

@@ -31,6 +31,7 @@
   "/api/reset-password/route": "/api/reset-password",
   "/api/showcase/route": "/api/showcase",
   "/api/site-settings/route": "/api/site-settings",
+  "/api/unsubscribe/route": "/api/unsubscribe",
   "/api/uploads/[filename]/route": "/api/uploads/[filename]",
   "/api/verify-email/route": "/api/verify-email",
   "/demirkanmelis/page": "/demirkanmelis",

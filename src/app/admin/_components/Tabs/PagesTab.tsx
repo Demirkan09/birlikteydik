@@ -1947,7 +1947,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 type="button"
                                 onClick={() => {
                                   const newId = editMemories.length > 0 ? Math.max(...editMemories.map((m) => m.id || 0)) + 1 : 1;
-                                  setEditMemories([...editMemories, { type: "photo", id: newId, image: "/moment.jpg", title: "Yeni Anı Başlığı", description: "Bu anıya dair açıklama...", date: "Tarih Girin", titleColor: "", descriptionColor: "", dateColor: "" }]);
+                                  setEditMemories([...editMemories, { type: "photo", id: newId, image: "/moment.jpg", title: "Yeni Anı Başlığı", description: "", date: "", titleColor: "", descriptionColor: "", dateColor: "" }]);
                                   setShowComponentPicker(false);
                                 }}
                                 style={{

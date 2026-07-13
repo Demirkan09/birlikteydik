@@ -64,6 +64,26 @@ function baseTemplate(content: string) {
 }
 
 // ─── 1. Hesap Şifre Sıfırlama Maili ──────────────────────────────────────
+// Helper to convert HTML email template to plain text alternative
+function stripHtml(html: string): string {
+  return html
+    .replace(/<style([\s\S]*?)<\/style>/gi, "")
+    .replace(/<script([\s\S]*?)<\/script>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Helper to generate RFC-compliant list unsubscription headers
+const getUnsubscribeHeaders = (toEmail: string) => {
+  const encEmail = encodeURIComponent(toEmail);
+  return {
+    "List-Unsubscribe": `<${SITE_URL}/api/unsubscribe?email=${encEmail}>, <mailto:info@birlikteydik.com?subject=unsubscribe&email=${encEmail}>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
+  };
+};
+
+// ─── 1. Hesap Şifre Sıfırlama Maili ──────────────────────────────────────
 export async function sendAccountPasswordReset(opts: {
   to: string;
   name: string;
@@ -97,6 +117,8 @@ export async function sendAccountPasswordReset(opts: {
     to: opts.to,
     subject: "Şifre Sıfırlama — birlikteydik.com",
     html,
+    text: stripHtml(html),
+    headers: getUnsubscribeHeaders(opts.to),
   });
 }
 
@@ -138,6 +160,8 @@ export async function sendPagePasswordReset(opts: {
     to: opts.to,
     subject: `Sayfa Şifre Sıfırlama (/${opts.pageSlug}) — birlikteydik.com`,
     html,
+    text: stripHtml(html),
+    headers: getUnsubscribeHeaders(opts.to),
   });
 }
 
@@ -166,6 +190,8 @@ export async function sendVerificationCodeEmail(opts: {
     to: opts.to,
     subject: "E-posta Onay Kodu — birlikteydik.com",
     html,
+    text: stripHtml(html),
+    headers: getUnsubscribeHeaders(opts.to),
   });
 }
 
@@ -180,5 +206,7 @@ export async function sendCustomEmail(opts: {
     to: opts.to,
     subject: opts.subject,
     html: opts.html,
+    text: stripHtml(opts.html),
+    headers: getUnsubscribeHeaders(opts.to),
   });
 }

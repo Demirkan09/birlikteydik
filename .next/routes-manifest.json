@@ -241,6 +241,12 @@
       "namedRegex": "^/api/site\\-settings(?:/)?$"
     },
     {
+      "page": "/api/unsubscribe",
+      "regex": "^/api/unsubscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/unsubscribe(?:/)?$"
+    },
+    {
       "page": "/api/verify-email",
       "regex": "^/api/verify\\-email(?:/)?$",
       "routeKeys": {},
