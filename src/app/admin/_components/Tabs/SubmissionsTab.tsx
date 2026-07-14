@@ -50,6 +50,14 @@ export function SubmissionsTab({ adminEmail }: Props) {
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ success?: string; error?: string } | null>(null);
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "submitted" | "imported">("all");
+  const [origin, setOrigin] = useState("https://birlikteydik.com");
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   const fetchSubmissions = useCallback(async () => {
     if (!adminEmail) return;
@@ -237,6 +245,61 @@ export function SubmissionsTab({ adminEmail }: Props) {
                   onClick={() => setSelectedId(null)}
                   style={{ width: "28px", height: "28px", background: "rgba(255,255,255,0.06)", border: `1px solid ${C.border}`, borderRadius: "8px", color: C.muted, cursor: "pointer", fontSize: "15px" }}
                 >×</button>
+              </div>
+
+              {/* Portal Link Section */}
+              <div style={{
+                background: "rgba(255,255,255,0.02)",
+                border: `1px solid ${C.border}`,
+                borderRadius: "12px",
+                padding: "12px 14px",
+                marginBottom: "16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "10px"
+              }}>
+                <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                  <p style={{ margin: "0 0 4px", fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase", color: C.muted }}>
+                    Portal Bağlantısı
+                  </p>
+                  <a
+                    href={`${origin}/portal/${selected.token}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: "12px",
+                      color: C.gold,
+                      textDecoration: "none",
+                      wordBreak: "break-all",
+                      fontWeight: 500
+                    }}
+                  >
+                    {`${origin.replace(/^https?:\/\//, "")}/portal/${selected.token}`}
+                  </a>
+                </div>
+                <button
+                  onClick={() => {
+                    const url = `${origin}/portal/${selected.token}`;
+                    navigator.clipboard.writeText(url);
+                    setCopiedToken(selected.token);
+                    setTimeout(() => setCopiedToken(null), 2000);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    background: copiedToken === selected.token ? "rgba(52,211,153,0.12)" : "rgba(255,255,255,0.06)",
+                    border: copiedToken === selected.token ? "1px solid rgba(52,211,153,0.25)" : `1px solid ${C.border}`,
+                    color: copiedToken === selected.token ? "#34D399" : C.text,
+                    cursor: "pointer",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {copiedToken === selected.token ? "✓ Kopyalandı" : "📋 Kopyala"}
+                </button>
               </div>
 
               {/* Info rows */}
