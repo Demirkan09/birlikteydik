@@ -362,6 +362,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/portal/cleanup/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/cleanup">> = Specific
+  const handler = {} as typeof import("../../src/app/api/portal/cleanup/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/portal/delete-file/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/delete-file">> = Specific
+  const handler = {} as typeof import("../../src/app/api/portal/delete-file/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/api/portal/generate/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/generate">> = Specific

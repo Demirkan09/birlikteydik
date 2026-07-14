@@ -68,9 +68,14 @@ export async function POST(request: Request) {
     };
     const ext = mimeToExt[file.type] ?? "jpg";
 
-    // Generate a unique, collision-resistant filename
-    const randomHex = randomBytes(8).toString("hex");
-    const filename = `portal-${Date.now()}-${randomHex}.${ext}`;
+    // Create unique filename preserving original name but sanitized (matching admin panel format)
+    const originalName = file.name || "portal_image";
+    let fileExt = path.extname(originalName).toLowerCase();
+    if (!fileExt) {
+      fileExt = `.${ext}`;
+    }
+    const nameWithoutExt = path.basename(originalName, fileExt).replace(/[^a-zA-Z0-9]/g, "_");
+    const filename = `portal-${nameWithoutExt}_${Date.now()}${fileExt}`;
 
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     await fs.mkdir(uploadDir, { recursive: true });

@@ -208,6 +208,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
   const [tagline, setTagline] = useState("");
   const [musicUrl, setMusicUrl] = useState("");
   const [memories, setMemories] = useState<Memory[]>([]);
+  const [draftLoaded, setDraftLoaded] = useState(false);
 
   // Upload state
   const [uploadingIds, setUploadingIds] = useState<Set<number>>(new Set());
@@ -244,15 +245,48 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
         setPortalData(data);
         // Pre-fill existing data
         const ex = data.existing;
-        if (ex.coupleNames) setCoupleNames(ex.coupleNames);
-        if (ex.specialDate) setSpecialDate(ex.specialDate);
-        if (ex.tagline) setTagline(ex.tagline);
-        if (ex.musicUrl) setMusicUrl(ex.musicUrl);
-        if (ex.memories && ex.memories.length > 0) setMemories(ex.memories);
+        let cNames = ex.coupleNames || "";
+        let sDate = ex.specialDate || "";
+        let tLine = ex.tagline || "";
+        let mUrl = ex.musicUrl || "";
+        let mems = ex.memories && ex.memories.length > 0 ? ex.memories : [];
+
+        // Check if there is an unsubmitted draft in localStorage
+        try {
+          const saved = localStorage.getItem(`portal_draft_${token}`);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.coupleNames !== undefined) cNames = parsed.coupleNames;
+            if (parsed.specialDate !== undefined) sDate = parsed.specialDate;
+            if (parsed.tagline !== undefined) tLine = parsed.tagline;
+            if (parsed.musicUrl !== undefined) mUrl = parsed.musicUrl;
+            if (parsed.memories !== undefined) mems = parsed.memories;
+          }
+        } catch (e) {
+          console.error("Local draft load error:", e);
+        }
+
+        setCoupleNames(cNames);
+        setSpecialDate(sDate);
+        setTagline(tLine);
+        setMusicUrl(mUrl);
+        setMemories(mems);
         setLoadState("valid");
+        setDraftLoaded(true);
       })
       .catch(() => setLoadState("invalid"));
   }, [token]);
+
+  // Save draft to localStorage when form state changes
+  useEffect(() => {
+    if (!token || !draftLoaded) return;
+    try {
+      const draft = { coupleNames, specialDate, tagline, musicUrl, memories };
+      localStorage.setItem(`portal_draft_${token}`, JSON.stringify(draft));
+    } catch (e) {
+      console.error("Local draft save error:", e);
+    }
+  }, [token, draftLoaded, coupleNames, specialDate, tagline, musicUrl, memories]);
 
   // Upload files
   const uploadFiles = useCallback(async (files: FileList | File[]) => {
@@ -331,9 +365,26 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
     setMemories(prev => prev.map(m => m.id === id ? { ...m, [field]: value } : m));
   }, []);
 
-  const removeMemory = useCallback((id: number) => {
-    setMemories(prev => prev.filter(m => m.id !== id));
-  }, []);
+  const removeMemory = useCallback(async (id: number) => {
+    let imageToDelete = "";
+    setMemories(prev => {
+      const target = prev.find(m => m.id === id);
+      if (target) imageToDelete = target.image;
+      return prev.filter(m => m.id !== id);
+    });
+
+    if (imageToDelete && imageToDelete.startsWith("/api/uploads/portal-")) {
+      try {
+        await fetch("/api/portal/delete-file", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, imageUrl: imageToDelete })
+        });
+      } catch (err) {
+        console.error("Dosya silinemedi:", err);
+      }
+    }
+  }, [token]);
 
   const moveUp = useCallback((index: number) => {
     if (index === 0) return;
@@ -386,6 +437,14 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
         setSubmitError(data.error || "Gönderim sırasında bir hata oluştu.");
         return;
       }
+      
+      // Clear local storage draft upon successful submission
+      try {
+        localStorage.removeItem(`portal_draft_${token}`);
+      } catch (e) {
+        console.error(e);
+      }
+      
       setLoadState("success");
     } catch {
       setSubmitError("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");

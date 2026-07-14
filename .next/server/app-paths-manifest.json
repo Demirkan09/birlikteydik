@@ -23,6 +23,8 @@
   "/api/login/route": "app/api/login/route.js",
   "/api/page-password/route": "app/api/page-password/route.js",
   "/api/portal/[token]/route": "app/api/portal/[token]/route.js",
+  "/api/portal/cleanup/route": "app/api/portal/cleanup/route.js",
+  "/api/portal/delete-file/route": "app/api/portal/delete-file/route.js",
   "/api/portal/generate/route": "app/api/portal/generate/route.js",
   "/api/portal/submissions/route": "app/api/portal/submissions/route.js",
   "/api/portal/upload/route": "app/api/portal/upload/route.js",

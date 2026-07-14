@@ -203,6 +203,18 @@
       "namedRegex": "^/api/page\\-password(?:/)?$"
     },
     {
+      "page": "/api/portal/cleanup",
+      "regex": "^/api/portal/cleanup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/portal/cleanup(?:/)?$"
+    },
+    {
+      "page": "/api/portal/delete-file",
+      "regex": "^/api/portal/delete\\-file(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/portal/delete\\-file(?:/)?$"
+    },
+    {
       "page": "/api/portal/generate",
       "regex": "^/api/portal/generate(?:/)?$",
       "routeKeys": {},

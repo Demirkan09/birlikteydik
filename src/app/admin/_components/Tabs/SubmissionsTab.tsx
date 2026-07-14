@@ -58,6 +58,13 @@ export function SubmissionsTab({ adminEmail }: Props) {
       const res = await fetch(`/api/portal/submissions?adminEmail=${encodeURIComponent(adminEmail)}`);
       const data = await res.json();
       if (res.ok && data.submissions) setSubmissions(data.submissions);
+
+      // Trigger automatic background cleanup of old unsaved portal uploads
+      fetch("/api/portal/cleanup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminEmail })
+      }).catch(err => console.error("Auto cleanup background error:", err));
     } catch { /* ignore */ }
     finally { setLoading(false); }
   }, [adminEmail]);

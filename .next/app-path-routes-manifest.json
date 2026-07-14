@@ -23,6 +23,8 @@
   "/api/login/route": "/api/login",
   "/api/page-password/route": "/api/page-password",
   "/api/portal/[token]/route": "/api/portal/[token]",
+  "/api/portal/cleanup/route": "/api/portal/cleanup",
+  "/api/portal/delete-file/route": "/api/portal/delete-file",
   "/api/portal/generate/route": "/api/portal/generate",
   "/api/portal/submissions/route": "/api/portal/submissions",
   "/api/portal/upload/route": "/api/portal/upload",

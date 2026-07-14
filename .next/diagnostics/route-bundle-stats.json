@@ -1,14 +1,14 @@
 [
   {
     "route": "/admin",
-    "firstLoadUncompressedJsBytes": 882511,
+    "firstLoadUncompressedJsBytes": 882696,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\20kk_vhpu_jmg.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
       ".next\\static\\chunks\\3v5lhp5lqcg4z.js",
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\0b_-mgibsb0aj.js",
-      ".next\\static\\chunks\\1lk6a3kk19cgp.js",
+      ".next\\static\\chunks\\25-0ne2y08bhq.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
@@ -140,14 +140,14 @@
   },
   {
     "route": "/portal/[token]",
-    "firstLoadUncompressedJsBytes": 710282,
+    "firstLoadUncompressedJsBytes": 711225,
     "firstLoadChunkPaths": [
       ".next\\static\\chunks\\20kk_vhpu_jmg.js",
       ".next\\static\\chunks\\14mrh2-p_w84d.js",
       ".next\\static\\chunks\\3v5lhp5lqcg4z.js",
       ".next\\static\\chunks\\0dn2p6gd7_ik7.js",
       ".next\\static\\chunks\\0b_-mgibsb0aj.js",
-      ".next\\static\\chunks\\1c_266fuj2jk0.js",
+      ".next\\static\\chunks\\14cozhr81u9c3.js",
       ".next\\static\\chunks\\3yiddnbtmgj46.js",
       ".next\\static\\chunks\\27jktro2p5rq9.js",
       ".next\\static\\chunks\\3n7dm2ojtyzwn.js",
