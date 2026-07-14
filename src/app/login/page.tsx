@@ -267,9 +267,11 @@ export default function LoginPage({ lang }: { lang?: string }) {
 
               {/* Beni Hatırla + Şifremi Unuttum satırı */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "9px", cursor: "pointer", userSelect: "none" }}>
+                <label
+                  onClick={() => setRememberMe(!rememberMe)}
+                  style={{ display: "flex", alignItems: "center", gap: "9px", cursor: "pointer", userSelect: "none" }}
+                >
                   <div
-                    onClick={() => setRememberMe(!rememberMe)}
                     style={{
                       width: "17px", height: "17px", borderRadius: "4px", flexShrink: 0,
                       border: `1px solid ${rememberMe ? C.gold + "88" : "rgba(255,255,255,0.18)"}`,

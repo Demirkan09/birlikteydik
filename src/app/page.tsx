@@ -1708,7 +1708,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
                         <span>{t.viewDemo}</span>
                       </Link>
 
-                      <a href={tplWhatsappUrl} target="_blank" rel="noopener noreferrer" style={{
+                      <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer" style={{
                         flex: 1.2,
                         display: "flex",
                         alignItems: "center",
@@ -1733,7 +1733,6 @@ export default function LandingPage({ lang }: LandingPageProps) {
                           e.currentTarget.style.filter = "none";
                         }}
                       >
-                        <FaWhatsapp size={14} />
                         <span>{t.orderTemplate}</span>
                       </a>
                     </div>
