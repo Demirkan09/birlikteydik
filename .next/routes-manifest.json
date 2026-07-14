@@ -23,12 +23,28 @@
   },
   "dynamicRoutes": [
     {
+      "page": "/api/portal/[token]",
+      "regex": "^/api/portal/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtoken": "nxtPtoken"
+      },
+      "namedRegex": "^/api/portal/(?<nxtPtoken>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/uploads/[filename]",
       "regex": "^/api/uploads/([^/]+?)(?:/)?$",
       "routeKeys": {
         "nxtPfilename": "nxtPfilename"
       },
       "namedRegex": "^/api/uploads/(?<nxtPfilename>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/portal/[token]",
+      "regex": "^/portal/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtoken": "nxtPtoken"
+      },
+      "namedRegex": "^/portal/(?<nxtPtoken>[^/]+?)(?:/)?$"
     },
     {
       "page": "/sablonlar/[slug]",
@@ -197,6 +213,24 @@
       "regex": "^/api/page\\-password(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/page\\-password(?:/)?$"
+    },
+    {
+      "page": "/api/portal/generate",
+      "regex": "^/api/portal/generate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/portal/generate(?:/)?$"
+    },
+    {
+      "page": "/api/portal/submissions",
+      "regex": "^/api/portal/submissions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/portal/submissions(?:/)?$"
+    },
+    {
+      "page": "/api/portal/upload",
+      "regex": "^/api/portal/upload(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/portal/upload(?:/)?$"
     },
     {
       "page": "/api/profile",

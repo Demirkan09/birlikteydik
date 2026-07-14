@@ -159,7 +159,7 @@ export default function RegisterPage() {
     if (!password) e.password = "Şifre gerekli";
     else if (password.length < 8) e.password = "Şifre en az 8 karakter olmalı";
     if (password !== passwordConfirm) e.passwordConfirm = "Şifreler eşleşmiyor";
-    if (!agree) e.agree = "Devam etmek için koşulları kabul et";
+    if (!agree) e.agree = "Devam etmek için koşulları kabul etmeniz gerekmektedir.";
     setErrors(e);
     return Object.keys(e).length === 0;
   };

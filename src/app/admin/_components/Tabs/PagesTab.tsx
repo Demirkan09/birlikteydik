@@ -351,6 +351,12 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
   const [selectedEditSlug, setSelectedEditSlug] = useState("");
   const [editPageSlug, setEditPageSlug] = useState("");
+
+  // Portal link state
+  const [portalLinkLoading, setPortalLinkLoading] = useState(false);
+  const [portalLinkUrl, setPortalLinkUrl] = useState("");
+  const [portalLinkError, setPortalLinkError] = useState("");
+  const [portalLinkCopied, setPortalLinkCopied] = useState(false);
   
   // Editor state
   const [editTemplateId, setEditTemplateId] = useState("klasik-retro");
@@ -1036,7 +1042,75 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                         >
                           Bu Sayfa İçin Kod Üret
                         </button>
+
+                        {/* Portal Linki Gönder */}
+                        <button
+                          onClick={async () => {
+                            setPortalLinkLoading(true);
+                            setPortalLinkError("");
+                            setPortalLinkUrl("");
+                            try {
+                              const res = await fetch("/api/portal/generate", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ adminEmail, pageSlug: selectedEditSlug }),
+                              });
+                              const data = await res.json();
+                              if (!res.ok) {
+                                setPortalLinkError(data.error || "Link oluşturulamadı.");
+                              } else {
+                                setPortalLinkUrl(data.portalUrl);
+                              }
+                            } catch {
+                              setPortalLinkError("Sunucuya bağlanılamadı.");
+                            } finally {
+                              setPortalLinkLoading(false);
+                            }
+                          }}
+                          disabled={portalLinkLoading}
+                          style={{
+                            padding: "8px 16px", borderRadius: "10px",
+                            border: `1px solid rgba(52,211,153,0.3)`,
+                            background: "rgba(52,211,153,0.06)",
+                            color: C.success, fontSize: "13px", cursor: portalLinkLoading ? "not-allowed" : "pointer",
+                            display: "flex", alignItems: "center", gap: "6px"
+                          }}
+                        >
+                          {portalLinkLoading ? "📨 Oluşturuluyor..." : "📨 Portal Linki Gönder"}
+                        </button>
                       </div>
+
+                      {/* Portal link result */}
+                      {(portalLinkUrl || portalLinkError) && (
+                        <div style={{
+                          marginTop: "12px",
+                          padding: "12px 16px",
+                          borderRadius: "10px",
+                          background: portalLinkError ? "rgba(239,68,68,0.08)" : "rgba(52,211,153,0.08)",
+                          border: `1px solid ${portalLinkError ? "rgba(239,68,68,0.25)" : "rgba(52,211,153,0.2)"}`,
+                          fontSize: "13px",
+                          color: portalLinkError ? C.error : C.success,
+                          display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap"
+                        }}>
+                          {portalLinkError ? (
+                            <span>❌ {portalLinkError}</span>
+                          ) : (
+                            <>
+                              <span style={{ flex: 1, wordBreak: "break-all", color: "rgba(52,211,153,0.7)", fontSize: "12px" }}>✅ Mail gönderildi · {portalLinkUrl}</span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(portalLinkUrl);
+                                  setPortalLinkCopied(true);
+                                  setTimeout(() => setPortalLinkCopied(false), 2000);
+                                }}
+                                style={{ padding: "4px 12px", borderRadius: "8px", background: "rgba(52,211,153,0.15)", border: "none", color: C.success, cursor: "pointer", fontSize: "12px", whiteSpace: "nowrap" }}
+                              >
+                                {portalLinkCopied ? "✓ Kopyalandı" : "📋 Kopyala"}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {editorError && (

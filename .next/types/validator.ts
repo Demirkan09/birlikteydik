@@ -110,6 +110,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/portal/[token]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/portal/[token]">> = Specific
+  const handler = {} as typeof import("../../src/app/portal/[token]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/profil/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/profil">> = Specific
@@ -366,6 +375,42 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/page-password">> = Specific
   const handler = {} as typeof import("../../src/app/api/page-password/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/portal/[token]/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/[token]">> = Specific
+  const handler = {} as typeof import("../../src/app/api/portal/[token]/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/portal/generate/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/generate">> = Specific
+  const handler = {} as typeof import("../../src/app/api/portal/generate/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/portal/submissions/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/submissions">> = Specific
+  const handler = {} as typeof import("../../src/app/api/portal/submissions/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/portal/upload/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/portal/upload">> = Specific
+  const handler = {} as typeof import("../../src/app/api/portal/upload/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

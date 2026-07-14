@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import pool from "@/lib/db";
-import { sendVerificationCodeEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   try {
@@ -45,27 +44,15 @@ export async function POST(request: Request) {
     // ── Şifreyi hashle ────────────────────────────────────────────────────
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // ── 6 Haneli Doğrulama Kodu Üret ──────────────────────────────────────
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
     // ── Kullanıcıyı veritabanına kaydet ───────────────────────────────────
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash, marketing_consent, is_verified, verification_code)
-       VALUES ($1, $2, $3, $4, FALSE, $5)
+       VALUES ($1, $2, $3, $4, FALSE, NULL)
        RETURNING id, name, email, marketing_consent, created_at`,
-      [name.trim(), email.toLowerCase().trim(), passwordHash, !!marketingConsent, verificationCode]
+      [name.trim(), email.toLowerCase().trim(), passwordHash, !!marketingConsent]
     );
 
     const newUser = result.rows[0];
-
-    // ── Doğrulama E-postasını Gönder (Arka Planda) ────────────────────────
-    sendVerificationCodeEmail({
-      to: newUser.email,
-      name: newUser.name,
-      code: verificationCode,
-    }).catch((mailErr) => {
-      console.error("Kayıt sonrası doğrulama maili gönderilemedi:", mailErr);
-    });
 
     return NextResponse.json(
       {

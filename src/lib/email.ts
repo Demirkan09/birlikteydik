@@ -210,3 +210,58 @@ export async function sendCustomEmail(opts: {
     headers: getUnsubscribeHeaders(opts.to),
   });
 }
+
+// ─── 5. Müşteri Portal Davet Maili ──────────────────────────────────────────
+export async function sendClientPortalInvite(opts: {
+  to: string;
+  name: string;
+  pageSlug: string;
+  portalUrl: string;
+  expiresAt: Date;
+}) {
+  const expiryStr = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Istanbul",
+  }).format(opts.expiresAt);
+
+  const html = baseTemplate(`
+    <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Merhaba, <strong style="color:#F0EDE8;">${opts.name}</strong></p>
+    <h2 style="margin:0 0 16px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Anılarınızı<br/><em style="color:#C9A84C;">Yükleyin</em></h2>
+    <p style="margin:0 0 24px;font-size:14px;color:rgba(240,237,232,0.55);line-height:1.7;font-weight:300;">
+      Siteniz hazır! Şimdi sıra sizin fotoğraflarınızı, yazılarınızı ve şarkı linkinizi yüklemenizde.<br/>
+      Aşağıdaki butona tıklayarak özel içerik formunuza ulaşabilirsiniz.
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr>
+        <td align="center">
+          <a href="${opts.portalUrl}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#C9A84C,#e0c068);color:#0B0F1A;text-decoration:none;border-radius:30px;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;box-shadow:0 4px 20px rgba(201,168,76,0.3);">
+            📸 &nbsp;Fotoğraflarımı Yükle
+          </a>
+        </td>
+      </tr>
+    </table>
+    <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:14px 20px;margin-bottom:20px;">
+      <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.5);line-height:1.6;">
+        <strong style="color:rgba(201,168,76,0.8);">⏱ Son kullanma tarihi:</strong><br/>
+        Bu link <strong style="color:#F0EDE8;">${expiryStr}</strong> tarihine kadar geçerlidir.
+      </p>
+    </div>
+    <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.3);line-height:1.6;">
+      Butona tıklayamıyorsanız şu linki kopyalayın:<br/>
+      <span style="color:rgba(201,168,76,0.5);word-break:break-all;font-size:11px;">${opts.portalUrl}</span>
+    </p>
+  `);
+
+  await transporter.sendMail({
+    from: FROM,
+    to: opts.to,
+    subject: "Fotoğraflarınızı Yükleyin — birlikteydik.com",
+    html,
+    text: stripHtml(html),
+    headers: getUnsubscribeHeaders(opts.to),
+  });
+}

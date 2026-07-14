@@ -11,13 +11,16 @@ import { UsersTab } from "./_components/Tabs/UsersTab";
 import { MarketingTab } from "./_components/Tabs/MarketingTab";
 import { SettingsTab } from "./_components/Tabs/SettingsTab";
 import { TemplateBuilderTab } from "./_components/Tabs/TemplateBuilderTab";
+import { SubmissionsTab } from "./_components/Tabs/SubmissionsTab";
+
+type TabKey = "create_page" | "template_builder" | "codes" | "users" | "submissions" | "marketing" | "settings";
 
 export default function AdminPage() {
   const router = useRouter();
   const [adminEmail, setAdminEmail] = useState("");
   const [adminRole, setAdminRole] = useState("admin");
   const [authorized, setAuthorized] = useState(false);
-  const [activeTab, setActiveTab] = useState<"create_page" | "template_builder" | "codes" | "users" | "marketing" | "settings">("create_page");
+  const [activeTab, setActiveTab] = useState<TabKey>("create_page");
   const [prefilledSlug, setPrefilledSlug] = useState("");
 
   useEffect(() => {
@@ -38,7 +41,6 @@ export default function AdminPage() {
     return (
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ width: "32px", height: "32px", border: `2px solid ${C.border}`, borderTopColor: C.gold, borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-
       </div>
     );
   }
@@ -50,6 +52,7 @@ export default function AdminPage() {
           background-color: #0b0f1a !important;
           color: #ffffff !important;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
       ` }} />
 
       {/* Arka plan */}
@@ -66,6 +69,7 @@ export default function AdminPage() {
               { key: "template_builder", icon: "📐", label: "Şablon Tasarla" },
               { key: "codes", icon: "📋", label: "Kod Üret" },
               { key: "users", icon: "👥", label: "Kullanıcılar" },
+              { key: "submissions", icon: "📥", label: "Müşteri Gönderimleri" },
               ...(adminRole === "admin" ? [
                 { key: "marketing", icon: "📢", label: "Pazarlama" },
                 { key: "settings", icon: "⚙️", label: "Site Ayarları" }
@@ -73,7 +77,7 @@ export default function AdminPage() {
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as any)}
+                onClick={() => setActiveTab(tab.key as TabKey)}
                 style={{
                   padding: "10px 20px", borderRadius: "12px",
                   background: activeTab === tab.key ? C.gold : "rgba(255,255,255,0.05)",
@@ -90,10 +94,11 @@ export default function AdminPage() {
           </div>
 
           <AnimatePresence mode="wait">
-            {activeTab === "create_page" && <PagesTab adminEmail={adminEmail} setPrefilledSlug={setPrefilledSlug} setActiveTab={setActiveTab} />}
+            {activeTab === "create_page" && <PagesTab adminEmail={adminEmail} setPrefilledSlug={setPrefilledSlug} setActiveTab={setActiveTab as any} />}
             {activeTab === "template_builder" && <TemplateBuilderTab adminEmail={adminEmail} />}
             {activeTab === "codes" && <CodesTab adminEmail={adminEmail} prefilledSlug={prefilledSlug} setPrefilledSlug={setPrefilledSlug} />}
             {activeTab === "users" && <UsersTab adminEmail={adminEmail} adminRole={adminRole} />}
+            {activeTab === "submissions" && <SubmissionsTab adminEmail={adminEmail} />}
             {activeTab === "marketing" && adminRole === "admin" && <MarketingTab adminEmail={adminEmail} />}
             {activeTab === "settings" && adminRole === "admin" && <SettingsTab adminEmail={adminEmail} />}
           </AnimatePresence>
