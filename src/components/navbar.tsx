@@ -34,6 +34,7 @@ export const WHATSAPP_NUMBER  = "905349829940";
 export const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
 export const WHATSAPP_MESSAGE_EN = "Hello! I would like to order from birlikteydik.com.";
 export const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
+export const INSTAGRAM_URL_EN = "https://www.instagram.com/birlikteydikcomglobal/";
 // ║                                                                  ║
 // ║  Menü linkleri (desktop + mobile'da gösterilir)                 ║
 // ║  "href" ana sayfada anchor (#), diğer sayfalardan ise tam yol  ║
@@ -246,7 +247,7 @@ export default function Navbar() {
         <div className="nb-desktop" style={{ alignItems: "center", gap: "10px" }}>
 
           {/* Instagram */}
-          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" title="Instagram"
+          <a href={isEn ? INSTAGRAM_URL_EN : INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" title="Instagram"
             style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(240,237,232,0.6)", textDecoration: "none", transition: "all 0.2s" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.15)"; e.currentTarget.style.borderColor = "#C9A84C66"; e.currentTarget.style.color = "#C9A84C"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(240,237,232,0.6)"; }}
@@ -316,7 +317,7 @@ export default function Navbar() {
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}
               >{isEn ? "Order Now" : "Sipariş Ver"}</a>
 
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
+              <a href={isEn ? INSTAGRAM_URL_EN : INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", color: "#C9A84C", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}
               ><FaInstagram size={17} />{isEn ? "Follow Instagram" : "Instagram'ı Takip Et"}</a>
 

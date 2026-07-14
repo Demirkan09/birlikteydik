@@ -12,6 +12,7 @@ import { HiOutlineEye } from "react-icons/hi";
 const WHATSAPP_NUMBER  = "905349829940";
 const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
 const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
+const INSTAGRAM_URL_EN = "https://www.instagram.com/birlikteydikcomglobal/";
 
 // VERİ — Yeni bir özel gün eklemek için sadece bu diziye bir obje ekle.
 // Kart otomatik olarak grid'e eklenir, başka bir şey yapman gerekmez.
@@ -1378,7 +1379,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
     onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.1)"; }}
     onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
   ><FaWhatsapp size={21} /></a>
-  <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" title="Instagram"
+  <a href={isEn ? INSTAGRAM_URL_EN : INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" title="Instagram"
     style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(11,15,26,0.9)", border: "1px solid rgba(201,168,76,0.3)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", color: "#C9A84C", textDecoration: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.4)", transition: "transform 0.2s" }}
     onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.1)"; }}
     onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
