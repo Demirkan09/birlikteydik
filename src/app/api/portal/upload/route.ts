@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     const filePath = path.join(uploadDir, filename);
     await fs.writeFile(filePath, buffer);
 
-    return NextResponse.json({ url: `/uploads/${filename}` });
+    return NextResponse.json({ url: `/api/uploads/${filename}` });
   } catch (err) {
     console.error("[POST /api/portal/upload] Hata:", err);
     return NextResponse.json(

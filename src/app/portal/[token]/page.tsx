@@ -156,19 +156,19 @@ function PhotoCard({
       {/* Fields */}
       <div style={{ padding: "16px" }}>
         <div style={{ marginBottom: "12px" }}>
-          <label style={labelStyle()}>Başlık <span style={{ color: C.subtle }}>(opsiyonel)</span></label>
+          <label style={labelStyle()}>Başlık <span style={{ color: C.subtle }}>(İsteğe Bağlı)</span></label>
           <input
             type="text"
             value={memory.title}
             onChange={e => onUpdate(memory.id, "title", e.target.value)}
             onFocus={() => setTitleFocused(true)}
             onBlur={() => setTitleFocused(false)}
-            placeholder="Ör: İlk Buluşmamız"
+            placeholder="Örn: İlk Buluşmamız"
             style={inputStyle(titleFocused)}
           />
         </div>
         <div style={{ marginBottom: "12px" }}>
-          <label style={labelStyle()}>Açıklama <span style={{ color: C.subtle }}>(opsiyonel)</span></label>
+          <label style={labelStyle()}>Açıklama <span style={{ color: C.subtle }}>(İsteğe Bağlı)</span></label>
           <textarea
             value={memory.description}
             onChange={e => onUpdate(memory.id, "description", e.target.value)}
@@ -180,14 +180,14 @@ function PhotoCard({
           />
         </div>
         <div>
-          <label style={labelStyle()}>Tarih <span style={{ color: C.subtle }}>(opsiyonel)</span></label>
+          <label style={labelStyle()}>Tarih <span style={{ color: C.subtle }}>(İsteğe Bağlı)</span></label>
           <input
             type="text"
             value={memory.date}
             onChange={e => onUpdate(memory.id, "date", e.target.value)}
             onFocus={() => setDateFocused(true)}
             onBlur={() => setDateFocused(false)}
-            placeholder="Ör: 14 Şubat 2024"
+            placeholder="Örn: 14 Şubat 2026"
             style={inputStyle(dateFocused)}
           />
         </div>
@@ -478,7 +478,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
           {/* ── Section 1: Genel Bilgiler ──────────────────────────────────── */}
           <section style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: "20px", padding: "28px", marginBottom: "24px" }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 400, color: C.text, margin: "0 0 24px" }}>
-              💑 Genel Bilgiler <span style={{ fontSize: "13px", color: C.muted, fontFamily: "Inter, sans-serif" }}>(opsiyonel)</span>
+              💑 Genel Bilgiler <span style={{ fontSize: "13px", color: C.muted, fontFamily: "Inter, sans-serif" }}>(İsteğe Bağlı)</span>
             </h2>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px", marginBottom: "16px" }}>
@@ -509,13 +509,13 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
             </div>
 
             <div style={{ marginBottom: "16px" }}>
-              <label style={labelStyle()}>Kısa Not / Tagline</label>
+              <label style={labelStyle()}>Giriş Cümlesi</label>
               <textarea
                 value={tagline}
                 onChange={e => setTagline(e.target.value)}
                 onFocus={() => setTaglineFocused(true)}
                 onBlur={() => setTaglineFocused(false)}
-                placeholder="Sayfanızda görünecek kısa bir not veya alıntı..."
+                placeholder="Sayfa girişinde (isimlerinizin altında) görünecek kısa bir yazı.."
                 rows={2}
                 style={{ ...inputStyle(taglineFocused), resize: "vertical" }}
               />
