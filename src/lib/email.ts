@@ -18,7 +18,10 @@ const transporter = nodemailer.createTransport({
 });
 
 const FROM = process.env.SMTP_FROM || '"birlikteydik.com" <info@birlikteydik.com>';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://birlikteydik.com";
+const SITE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://birlikteydik.com"
+    : (process.env.NEXT_PUBLIC_SITE_URL ?? "https://birlikteydik.com");
 
 // ─── Ortak HTML Şablonu ────────────────────────────────────────────────────
 function baseTemplate(content: string) {

@@ -117,7 +117,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const portalUrl = `${SITE_URL}/portal/${token}`;
+    const host = request.headers.get("host") || "birlikteydik.com";
+    const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+    const siteUrl = `${protocol}://${host}`;
+    const portalUrl = `${siteUrl}/portal/${token}`;
 
     // Send invitation e-mail to the page owner
     await sendClientPortalInvite({
