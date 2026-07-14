@@ -110,7 +110,34 @@ function Input({
 
 // ─── Şifremi Unuttum Sayfası ─────────────────────────────────────────────────
 // ─── Şifremi Unuttum Sayfası ─────────────────────────────────────────────────
-export default function ForgotPasswordPage() {
+export default function ForgotPasswordPage({ lang }: { lang?: string }) {
+  const isEn = lang === "en" || (typeof window !== "undefined" && window.location.pathname.startsWith("/en/"));
+
+  const t = {
+    eyebrow: isEn ? "Password Reset" : "Şifre Sıfırlama",
+    heading: isEn ? "Forgot Password" : "Şifremi Unuttum",
+    sub: isEn 
+      ? "Enter your account email, and we will send you a reset link."
+      : "Hesap e-postanı gir, sana sıfırlama bağlantısı gönderelim.",
+    emailLabel: isEn ? "Email Address" : "E-posta",
+    emailPlaceholder: isEn ? "example@mail.com" : "ornek@mail.com",
+    sendBtn: isEn ? "Send Reset Link" : "Sıfırlama Bağlantısı Gönder",
+    sendBtnLoading: isEn ? "Sending..." : "Gönderiliyor…",
+    or: isEn ? "or" : "veya",
+    rememberPass: isEn ? "Remembered your password?" : "Şifreni hatırladın mı?",
+    loginLink: isEn ? "Sign In" : "Giriş Yap",
+    needHelp: isEn ? "Need help?" : "Yardıma mı ihtiyacın var?",
+    contactLink: isEn ? "Contact us" : "İletişime geç",
+    successHeading: isEn ? "Email Sent!" : "E-posta Gönderildi!",
+    successDesc: isEn 
+      ? "Check your inbox. A password reset link will arrive in a few minutes."
+      : "Gelen kutunuzu kontrol edin. Şifre sıfırlama bağlantısı birkaç dakika içinde ulaşacak.",
+    errEmailReq: isEn ? "Email address is required." : "E-posta adresi gerekli",
+    errEmailValid: isEn ? "Please enter a valid email." : "Geçerli bir e-posta gir",
+    errGeneral: isEn ? "An error occurred. Please try again." : "Bir hata oluştu. Tekrar dene.",
+    errServer: isEn ? "Could not connect to server. Check your internet connection." : "Sunucuya bağlanılamadı. İnternet bağlantını kontrol et.",
+  };
+
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -118,8 +145,8 @@ export default function ForgotPasswordPage() {
 
   const validate = () => {
     const e: typeof errors = {};
-    if (!email) e.email = "E-posta adresi gerekli";
-    else if (!/\S+@\S+\.\S+/.test(email)) e.email = "Geçerli bir e-posta gir";
+    if (!email) e.email = t.errEmailReq;
+    else if (!/\S+@\S+\.\S+/.test(email)) e.email = t.errEmailValid;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -137,13 +164,13 @@ export default function ForgotPasswordPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setErrors({ general: data.error ?? "Bir hata oluştu. Tekrar dene." });
+        setErrors({ general: data.error || t.errGeneral });
         setLoading(false);
         return;
       }
       setSuccess(true);
     } catch {
-      setErrors({ general: "Sunucuya bağlanılamadı. İnternet bağlantını kontrol et." });
+      setErrors({ general: t.errServer });
     } finally {
       setLoading(false);
     }
@@ -151,7 +178,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-
       {/* Arka plan */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 80% 60% at 30% 20%, rgba(201,168,76,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(232,160,160,0.05) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0d1220 60%, #0a0d18 100%)" }} />
       <HeartsCanvas />
@@ -187,13 +213,13 @@ export default function ForgotPasswordPage() {
                     </motion.div>
                   </div>
                   <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.6rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, marginBottom: "12px" }}>
-                    E-posta <em style={{ color: C.gold, fontStyle: "italic" }}>Gönderildi!</em>
+                    {isEn ? <>Email <em style={{ color: C.gold, fontStyle: "italic" }}>Sent!</em></> : <>E-posta <em style={{ color: C.gold, fontStyle: "italic" }}>Gönderildi!</em></>}
                   </h2>
                   <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "14px", color: C.muted, fontWeight: 300, lineHeight: 1.7, marginBottom: "28px" }}>
-                    Gelen kutunuzu kontrol edin. Şifre sıfırlama bağlantısı birkaç dakika içinde ulaşacak.
+                    {t.successDesc}
                   </p>
                   <Link
-                    href="/login"
+                    href={isEn ? "/en/login" : "/login"}
                     style={{
                       display: "inline-block", padding: "13px 36px", borderRadius: "30px",
                       background: C.gold, color: "#0B0F1A", fontFamily: "var(--font-inter), sans-serif",
@@ -201,7 +227,7 @@ export default function ForgotPasswordPage() {
                       fontWeight: 600, textDecoration: "none",
                     }}
                   >
-                    Giriş Yap
+                    {t.loginLink}
                   </Link>
                 </motion.div>
               ) : (
@@ -215,14 +241,14 @@ export default function ForgotPasswordPage() {
                   <div style={{ textAlign: "center", marginBottom: "28px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
                       <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
-                      <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>Şifre Sıfırlama</span>
+                      <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>{t.eyebrow}</span>
                       <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
                     </div>
                     <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.7rem, 5vw, 2.2rem)", fontWeight: 600, color: C.text, lineHeight: 1.15 }}>
-                      Şifremi <em style={{ color: C.gold, fontStyle: "italic" }}>Unuttum</em>
+                      {isEn ? <>Forgot <em style={{ color: C.gold, fontStyle: "italic" }}>Password</em></> : <>Şifremi <em style={{ color: C.gold, fontStyle: "italic" }}>Unuttum</em></>}
                     </h1>
                     <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300, marginTop: "8px", lineHeight: 1.6 }}>
-                      Hesap e-postanı gir, sana sıfırlama bağlantısı gönderelim.
+                      {t.sub}
                     </p>
                   </div>
 
@@ -235,8 +261,8 @@ export default function ForgotPasswordPage() {
                     )}
 
                     <Input
-                      label="E-posta" type="email" value={email} onChange={setEmail}
-                      placeholder="ornek@mail.com" icon={<HiOutlineMail size={17} />} error={errors.email}
+                      label={t.emailLabel} type="email" value={email} onChange={setEmail}
+                      placeholder={t.emailPlaceholder} icon={<HiOutlineMail size={17} />} error={errors.email}
                     />
 
                     <button
@@ -253,20 +279,20 @@ export default function ForgotPasswordPage() {
                       onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
                     >
                       {loading ? (
-                        <><span style={{ width: "16px", height: "16px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} />Gönderiliyor…</>
-                      ) : "Sıfırlama Bağlantısı Gönder"}
+                        <><span style={{ width: "16px", height: "16px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} />{t.sendBtnLoading}</>
+                      ) : t.sendBtn}
                     </button>
                   </div>
 
                   {/* Divider + Giriş Yap linki */}
                   <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "24px 0 16px" }}>
                     <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                    <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
+                    <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>{t.or}</span>
                     <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
                   </div>
                   <p style={{ textAlign: "center", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
-                    Şifreni hatırladın mı?{" "}
-                    <Link href="/login" style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>Giriş Yap</Link>
+                    {t.rememberPass}{" "}
+                    <Link href={isEn ? "/en/login" : "/login"} style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>{t.loginLink}</Link>
                   </p>
                 </motion.div>
               )}
@@ -275,16 +301,59 @@ export default function ForgotPasswordPage() {
 
           {/* Alt bilgi */}
           <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
-            Yardıma mı ihtiyacın var?{" "}
-            <a href="mailto:destek@birlikteydik.com" style={{ color: C.gold + "66", textDecoration: "none" }}>İletişime geç</a>
+            {t.needHelp}{" "}
+            <a href="mailto:destek@birlikteydik.com" style={{ color: C.gold + "66", textDecoration: "none" }}>{t.contactLink}</a>
           </p>
         </motion.div>
       </main>
 
-      {/* Footer */}
-      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
-        <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
+      {/* FOOTER */}
+      <footer
+        style={{
+          position: "relative",
+          zIndex: 1,
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          padding: "48px 24px",
+          maxWidth: "1100px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "24px",
+          marginBottom: "28px",
+        }}>
+          <div>
+            <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.2rem", color: "rgba(240,237,232,0.6)" }}>
+              birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
+            </span>
+            <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.35)", marginTop: "6px", maxWidth: "280px", lineHeight: 1.6 }}>
+              {isEn ? "A unique, unforgettable digital surprise for your loved ones." : "Sevdiklerinize özel, unutulmaz bir dijital sürpriz."}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            <Link href={isEn ? "/en/kvkk-metni" : "/kvkk-metni"} style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Privacy Policy" : "KVKK Aydınlatma Metni"}</Link>
+            <a href={`https://wa.me/${"905349829940"}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Contact" : "İletişim"}</a>
+            <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >info@birlikteydik.com</a>
+          </div>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>
+          <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
+            © {new Date().getFullYear()} birlikteydik.com — {isEn ? "All Rights Reserved" : "Tüm Hakları Saklıdır"}
+          </p>
+        </div>
       </footer>
     </>
   );

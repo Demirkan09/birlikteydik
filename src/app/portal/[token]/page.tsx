@@ -94,6 +94,7 @@ function PhotoCard({
   onMoveUp,
   onMoveDown,
   uploading,
+  isEn = false,
 }: {
   memory: Memory;
   index: number;
@@ -103,6 +104,7 @@ function PhotoCard({
   onMoveUp: (index: number) => void;
   onMoveDown: (index: number) => void;
   uploading: boolean;
+  isEn?: boolean;
 }) {
   const [titleFocused, setTitleFocused] = useState(false);
   const [descFocused, setDescFocused] = useState(false);
@@ -121,7 +123,7 @@ function PhotoCard({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={memory.image}
-          alt={`Fotoğraf ${index + 1}`}
+          alt={isEn ? `Photo ${index + 1}` : `Fotoğraf ${index + 1}`}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
         {/* Order controls */}
@@ -130,14 +132,14 @@ function PhotoCard({
             <button
               onClick={() => onMoveUp(index)}
               style={{ width: "28px", height: "28px", background: "rgba(0,0,0,0.6)", border: `1px solid rgba(255,255,255,0.15)`, borderRadius: "8px", color: C.text, cursor: "pointer", fontSize: "13px", display: "flex", alignItems: "center", justifyContent: "center" }}
-              title="Yukarı taşı"
+              title={isEn ? "Move up" : "Yukarı taşı"}
             >↑</button>
           )}
           {index < total - 1 && (
             <button
               onClick={() => onMoveDown(index)}
               style={{ width: "28px", height: "28px", background: "rgba(0,0,0,0.6)", border: `1px solid rgba(255,255,255,0.15)`, borderRadius: "8px", color: C.text, cursor: "pointer", fontSize: "13px", display: "flex", alignItems: "center", justifyContent: "center" }}
-              title="Aşağı taşı"
+              title={isEn ? "Move down" : "Aşağı taşı"}
             >↓</button>
           )}
         </div>
@@ -145,7 +147,7 @@ function PhotoCard({
         <button
           onClick={() => onRemove(memory.id)}
           style={{ position: "absolute", top: "10px", right: "10px", width: "28px", height: "28px", background: "rgba(239,68,68,0.7)", border: "none", borderRadius: "8px", color: "#fff", cursor: "pointer", fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center" }}
-          title="Fotoğrafı kaldır"
+          title={isEn ? "Remove photo" : "Fotoğrafı kaldır"}
         >×</button>
         {/* Index badge */}
         <div style={{ position: "absolute", bottom: "10px", left: "10px", background: "rgba(0,0,0,0.55)", border: `1px solid ${C.gold}55`, borderRadius: "8px", padding: "3px 10px", fontSize: "11px", color: C.gold, letterSpacing: "0.08em" }}>
@@ -156,38 +158,38 @@ function PhotoCard({
       {/* Fields */}
       <div style={{ padding: "16px" }}>
         <div style={{ marginBottom: "12px" }}>
-          <label style={labelStyle()}>Başlık <span style={{ color: C.subtle }}>(İsteğe Bağlı)</span></label>
+          <label style={labelStyle()}>{isEn ? "Title " : "Başlık "}<span style={{ color: C.subtle }}>{isEn ? "(Optional)" : "(İsteğe Bağlı)"}</span></label>
           <input
             type="text"
             value={memory.title}
             onChange={e => onUpdate(memory.id, "title", e.target.value)}
             onFocus={() => setTitleFocused(true)}
             onBlur={() => setTitleFocused(false)}
-            placeholder="Örn: İlk Buluşmamız"
+            placeholder={isEn ? "e.g. Our First Meeting" : "Örn: İlk Buluşmamız"}
             style={inputStyle(titleFocused)}
           />
         </div>
         <div style={{ marginBottom: "12px" }}>
-          <label style={labelStyle()}>Açıklama <span style={{ color: C.subtle }}>(İsteğe Bağlı)</span></label>
+          <label style={labelStyle()}>{isEn ? "Description " : "Açıklama "}<span style={{ color: C.subtle }}>{isEn ? "(Optional)" : "(İsteğe Bağlı)"}</span></label>
           <textarea
             value={memory.description}
             onChange={e => onUpdate(memory.id, "description", e.target.value)}
             onFocus={() => setDescFocused(true)}
             onBlur={() => setDescFocused(false)}
-            placeholder="Bu fotoğraf hakkında kısa bir şeyler yazın..."
+            placeholder={isEn ? "Write a short note about this photo..." : "Bu fotoğraf hakkında kısa bir şeyler yazın..."}
             rows={2}
             style={{ ...inputStyle(descFocused), resize: "vertical" }}
           />
         </div>
         <div>
-          <label style={labelStyle()}>Tarih <span style={{ color: C.subtle }}>(İsteğe Bağlı)</span></label>
+          <label style={labelStyle()}>{isEn ? "Date " : "Tarih "}<span style={{ color: C.subtle }}>{isEn ? "(Optional)" : "(İsteğe Bağlı)"}</span></label>
           <input
             type="text"
             value={memory.date}
             onChange={e => onUpdate(memory.id, "date", e.target.value)}
             onFocus={() => setDateFocused(true)}
             onBlur={() => setDateFocused(false)}
-            placeholder="Örn: 14 Şubat 2026"
+            placeholder={isEn ? "e.g. February 14, 2026" : "Örn: 14 Şubat 2026"}
             style={inputStyle(dateFocused)}
           />
         </div>
@@ -197,8 +199,15 @@ function PhotoCard({
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-export default function PortalPage({ params }: { params: Promise<{ token: string }> }) {
+export default function PortalPage({
+  params,
+  lang,
+}: {
+  params: Promise<{ token: string }>;
+  lang?: string;
+}) {
   const [token, setToken] = useState<string>("");
+  const isEn = lang === "en" || (typeof window !== "undefined" && window.location.pathname.includes("/en/portal/"));
   const [portalData, setPortalData] = useState<PortalData | null>(null);
   const [loadState, setLoadState] = useState<"loading" | "valid" | "expired" | "invalid" | "success">("loading");
 
@@ -297,13 +306,16 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
     const remaining = maxPhotos - memories.length;
 
     if (remaining <= 0) {
-      setUploadError("En fazla 10 fotoğraf yükleyebilirsiniz.");
+      setUploadError(isEn ? "You can upload a maximum of 10 photos." : "En fazla 10 fotoğraf yükleyebilirsiniz.");
       return;
     }
 
     const toUpload = fileArray.slice(0, remaining);
     if (fileArray.length > remaining) {
-      setUploadError(`${fileArray.length} fotoğraf seçtiniz ama sadece ${remaining} tane daha ekleyebilirsiniz.`);
+      setUploadError(isEn 
+        ? `You selected ${fileArray.length} photos but you can only add ${remaining} more.`
+        : `${fileArray.length} fotoğraf seçtiniz ama sadece ${remaining} tane daha ekleyebilirsiniz.`
+      );
     }
 
     for (const file of toUpload) {
@@ -329,7 +341,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
 
         if (!res.ok) {
           setMemories(prev => prev.filter(m => m.id !== tempId));
-          setUploadError(data.error || "Fotoğraf yüklenemedi.");
+          setUploadError(data.error || (isEn ? "Failed to upload photo." : "Fotoğraf yüklenemedi."));
         } else {
           setMemories(prev =>
             prev.map(m =>
@@ -339,12 +351,12 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
         }
       } catch {
         setMemories(prev => prev.filter(m => m.id !== tempId));
-        setUploadError("Fotoğraf yüklenirken bir hata oluştu.");
+        setUploadError(isEn ? "An error occurred while uploading the photo." : "Fotoğraf yüklenirken bir hata oluştu.");
       } finally {
         setUploadingIds(prev => { const s = new Set(prev); s.delete(tempId); return s; });
       }
     }
-  }, [token, memories.length]);
+  }, [token, memories.length, isEn]);
 
   // Drag & drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -408,11 +420,11 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
   const handleSubmit = async () => {
     if (!token) return;
     if (memories.length === 0) {
-      setSubmitError("En az bir fotoğraf yüklemelisiniz.");
+      setSubmitError(isEn ? "You must upload at least one photo." : "En az bir fotoğraf yüklemelisiniz.");
       return;
     }
     if (uploadingIds.size > 0) {
-      setSubmitError("Lütfen tüm fotoğrafların yüklenmesini bekleyin.");
+      setSubmitError(isEn ? "Please wait for all photos to finish uploading." : "Lütfen tüm fotoğrafların yüklenmesini bekleyin.");
       return;
     }
 
@@ -434,7 +446,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
 
       const data = await res.json();
       if (!res.ok) {
-        setSubmitError(data.error || "Gönderim sırasında bir hata oluştu.");
+        setSubmitError(data.error || (isEn ? "An error occurred during submission." : "Gönderim sırasında bir hata oluştu."));
         return;
       }
       
@@ -447,7 +459,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
       
       setLoadState("success");
     } catch {
-      setSubmitError("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+      setSubmitError(isEn ? "Could not connect to the server. Please try again." : "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
     } finally {
       setSubmitting(false);
     }
@@ -464,11 +476,23 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
   }
 
   if (loadState === "expired") {
-    return <StatusScreen icon="⌛" title="Bu link süresi dolmuş." subtitle="Lütfen birlikteydik.com ile iletişime geçerek yeni bir link isteyin." />;
+    return (
+      <StatusScreen 
+        icon="⌛" 
+        title={isEn ? "This link has expired." : "Bu link süresi dolmuş."} 
+        subtitle={isEn ? "Please contact support to request a new link." : "Lütfen birlikteydik.com ile iletişime geçerek yeni bir link isteyin."} 
+      />
+    );
   }
 
   if (loadState === "invalid") {
-    return <StatusScreen icon="🔒" title="Geçersiz link." subtitle="Bu bağlantı geçersiz görünüyor. Doğru linki kullandığınızdan emin olun." />;
+    return (
+      <StatusScreen 
+        icon="🔒" 
+        title={isEn ? "Invalid link." : "Geçersiz link."} 
+        subtitle={isEn ? "This link appears to be invalid. Make sure you used the correct URL." : "Bu bağlantı geçersiz görünüyor. Doğru linki kullandığınızdan emin olun."} 
+      />
+    );
   }
 
   if (loadState === "success") {
@@ -476,12 +500,22 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
       <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", textAlign: "center" }}>
         <div style={{ fontSize: "64px", marginBottom: "24px", animation: "pop 0.4s ease" }}>💌</div>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "32px", fontWeight: 400, color: C.text, margin: "0 0 12px" }}>
-          Anılarınız <em style={{ color: C.gold }}>Teslim Edildi!</em>
+          {isEn ? (
+            <>Your Memories <em style={{ color: C.gold }}>Have Been Submitted!</em></>
+          ) : (
+            <>Anılarınız <em style={{ color: C.gold }}>Teslim Edildi!</em></>
+          )}
         </p>
         <p style={{ fontSize: "14px", color: C.muted, maxWidth: "420px", lineHeight: 1.8, margin: "0 0 24px" }}>
-          Fotoğraflarınız ve bilgileriniz başarıyla gönderildi. En kısa sürede siteniz hazırlanacak. 🎉
+          {isEn 
+            ? "Your photos and details have been successfully submitted. Your page will be prepared shortly. 🎉"
+            : "Fotoğraflarınız ve bilgileriniz başarıyla gönderildi. En kısa sürede siteniz hazırlanacak. 🎉"}
         </p>
-        <p style={{ fontSize: "12px", color: C.subtle }}>Daha önce gönderdiğiniz içeriklerle değişiklik yapmak isterseniz bu sayfaya tekrar gelebilirsiniz.</p>
+        <p style={{ fontSize: "12px", color: C.subtle }}>
+          {isEn 
+            ? "If you want to edit your content in the future, you can return to this page." 
+            : "Daha önce gönderdiğiniz içeriklerle değişiklik yapmak isterseniz bu sayfaya tekrar gelebilirsiniz."}
+        </p>
         <style>{`@keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
       </div>
     );
@@ -508,12 +542,14 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
         <header style={{ borderBottom: `1px solid ${C.border}`, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: "760px", margin: "0 auto" }}>
           <div>
             <p style={{ margin: 0, fontSize: "11px", letterSpacing: "0.4em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>birlikteydik.com</p>
-            <p style={{ margin: "4px 0 0", fontSize: "9px", letterSpacing: "0.2em", color: C.muted, textTransform: "uppercase" }}>Müşteri İçerik Formu</p>
+            <p style={{ margin: "4px 0 0", fontSize: "9px", letterSpacing: "0.2em", color: C.muted, textTransform: "uppercase" }}>
+              {isEn ? "Client Content Form" : "Müşteri İçerik Formu"}
+            </p>
           </div>
           {portalData && (
             <div style={{ textAlign: "right" }}>
               <p style={{ margin: 0, fontSize: "11px", color: C.muted }}>
-                Sayfa: <span style={{ color: C.gold }}>/{portalData.pageSlug}</span>
+                {isEn ? "Page: " : "Sayfa: "}<span style={{ color: C.gold }}>/{portalData.pageSlug}</span>
               </p>
             </div>
           )}
@@ -523,76 +559,85 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
           {/* Hero */}
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
             <p style={{ margin: "0 0 12px", fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: C.gold }}>
-              Adım 1 <GoldDot /> Genel Bilgiler <GoldDot /> Adım 2 <GoldDot /> Fotoğraflar <GoldDot /> Adım 3 <GoldDot /> Gönder
+              {isEn ? (
+                <>Step 1 <GoldDot /> Info <GoldDot /> Step 2 <GoldDot /> Photos <GoldDot /> Step 3 <GoldDot /> Submit</>
+              ) : (
+                <>Adım 1 <GoldDot /> Genel Bilgiler <GoldDot /> Adım 2 <GoldDot /> Fotoğraflar <GoldDot /> Adım 3 <GoldDot /> Gönder</>
+              )}
             </p>
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px,5vw,42px)", fontWeight: 400, color: C.text, margin: "0 0 12px", lineHeight: 1.2 }}>
-              Anılarınızı <em style={{ color: C.gold }}>Paylaşın</em>
+              {isEn ? (
+                <>Share <em style={{ color: C.gold }}>Your Memories</em></>
+              ) : (
+                <>Anılarınızı <em style={{ color: C.gold }}>Paylaşın</em></>
+              )}
             </h1>
             <p style={{ fontSize: "14px", color: C.muted, maxWidth: "480px", margin: "0 auto", lineHeight: 1.8 }}>
-              Aşağıdaki formu doldurun. Bilgiler ve fotoğraflar sitenize aktarılacak.
-              Tüm alanlar isteğe bağlıdır — yalnızca fotoğraf zorunludur.
+              {isEn 
+                ? "Fill out the form below. Your details and photos will be automatically transferred to your custom website. All fields are optional — only photos are required."
+                : "Aşağıdaki formu doldurun. Bilgiler ve fotoğraflar sitenize aktarılacak. Tüm alanlar isteğe bağlıdır — yalnızca fotoğraf zorunludur."}
             </p>
           </div>
 
           {/* ── Section 1: Genel Bilgiler ──────────────────────────────────── */}
           <section style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: "20px", padding: "28px", marginBottom: "24px" }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 400, color: C.text, margin: "0 0 24px" }}>
-              💑 Genel Bilgiler <span style={{ fontSize: "13px", color: C.muted, fontFamily: "Inter, sans-serif" }}>(İsteğe Bağlı)</span>
+              💑 {isEn ? "General Info " : "Genel Bilgiler "}<span style={{ fontSize: "13px", color: C.muted, fontFamily: "Inter, sans-serif" }}>{isEn ? "(Optional)" : "(İsteğe Bağlı)"}</span>
             </h2>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px", marginBottom: "16px" }}>
               <div>
-                <label style={labelStyle()}>Çift İsimleri</label>
+                <label style={labelStyle()}>{isEn ? "Couple Names" : "Çift İsimleri"}</label>
                 <input
                   type="text"
                   value={coupleNames}
                   onChange={e => setCoupleNames(e.target.value)}
                   onFocus={() => setCoupleNamesFocused(true)}
                   onBlur={() => setCoupleNamesFocused(false)}
-                  placeholder="Ör: Ayşe & Mehmet"
+                  placeholder={isEn ? "e.g. Emily & John" : "Ör: Ayşe & Mehmet"}
                   style={inputStyle(coupleNamesFocused)}
                 />
               </div>
               <div>
-                <label style={labelStyle()}>Özel Tarih</label>
+                <label style={labelStyle()}>{isEn ? "Special Date" : "Özel Tarih"}</label>
                 <input
                   type="text"
                   value={specialDate}
                   onChange={e => setSpecialDate(e.target.value)}
                   onFocus={() => setSpecialDateFocused(true)}
                   onBlur={() => setSpecialDateFocused(false)}
-                  placeholder="Ör: 14 Şubat 2024"
+                  placeholder={isEn ? "e.g. February 14, 2024" : "Ör: 14 Şubat 2024"}
                   style={inputStyle(specialDateFocused)}
                 />
               </div>
             </div>
 
             <div style={{ marginBottom: "16px" }}>
-              <label style={labelStyle()}>Giriş Cümlesi</label>
+              <label style={labelStyle()}>{isEn ? "Introduction Sentence" : "Giriş Cümlesi"}</label>
               <textarea
                 value={tagline}
                 onChange={e => setTagline(e.target.value)}
                 onFocus={() => setTaglineFocused(true)}
                 onBlur={() => setTaglineFocused(false)}
-                placeholder="Sayfa girişinde (isimlerinizin altında) görünecek kısa bir yazı.."
+                placeholder={isEn ? "A short text to display on the welcome screen (below your names)..." : "Sayfa girişinde (isimlerinizin altında) görünecek kısa bir yazı.."}
                 rows={2}
                 style={{ ...inputStyle(taglineFocused), resize: "vertical" }}
               />
             </div>
 
             <div>
-              <label style={labelStyle()}>Müzik Linki <span style={{ color: C.subtle }}>(Spotify veya YouTube)</span></label>
+              <label style={labelStyle()}>{isEn ? "Music Link " : "Müzik Linki "}<span style={{ color: C.subtle }}>{isEn ? "(Spotify or YouTube)" : "(Spotify veya YouTube)"}</span></label>
               <input
                 type="url"
                 value={musicUrl}
                 onChange={e => setMusicUrl(e.target.value)}
                 onFocus={() => setMusicUrlFocused(true)}
                 onBlur={() => setMusicUrlFocused(false)}
-                placeholder="https://open.spotify.com/track/... veya https://youtube.com/watch?v=..."
+                placeholder="https://open.spotify.com/track/... or https://youtube.com/watch?v=..."
                 style={inputStyle(musicUrlFocused)}
               />
               <p style={{ margin: "6px 0 0", fontSize: "11px", color: C.subtle }}>
-                Spotify veya YouTube şarkı/parça linki yapıştırın.
+                {isEn ? "Paste a Spotify song or YouTube video link." : "Spotify veya YouTube şarkı/parça linki yapıştırın."}
               </p>
             </div>
           </section>
@@ -600,7 +645,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
           {/* ── Section 2: Fotoğraflar ──────────────────────────────────────── */}
           <section style={{ marginBottom: "24px" }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 400, color: C.text, margin: "0 0 16px" }}>
-              📸 Fotoğraflarınız <span style={{ fontSize: "13px", color: `${C.error}CC`, fontFamily: "Inter, sans-serif" }}>(en az 1 zorunlu)</span>
+              📸 {isEn ? "Your Photos " : "Fotoğraflarınız "}<span style={{ fontSize: "13px", color: `${C.error}CC`, fontFamily: "Inter, sans-serif" }}>{isEn ? "(at least 1 required)" : "(en az 1 zorunlu)"}</span>
             </h2>
 
             {/* Dropzone */}
@@ -623,10 +668,14 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
             >
               <div style={{ fontSize: "36px", marginBottom: "12px" }}>📷</div>
               <p style={{ margin: "0 0 6px", color: C.text, fontSize: "15px", fontWeight: 500 }}>
-                {memories.length >= 10 ? "Maksimum 10 fotoğrafa ulaştınız" : "Fotoğraf seçin veya buraya sürükleyin"}
+                {memories.length >= 10 
+                  ? (isEn ? "You reached the limit of 10 photos" : "Maksimum 10 fotoğrafa ulaştınız") 
+                  : (isEn ? "Select photos or drag them here" : "Fotoğraf seçin veya buraya sürükleyin")}
               </p>
               <p style={{ margin: 0, fontSize: "12px", color: C.muted }}>
-                JPG, PNG veya WEBP — Maks. 10MB — En fazla {10 - memories.length} fotoğraf daha
+                {isEn 
+                  ? `JPG, PNG or WEBP — Max. 10MB — Up to ${10 - memories.length} more photos`
+                  : `JPG, PNG veya WEBP — Maks. 10MB — En fazla ${10 - memories.length} fotoğraf daha`}
               </p>
             </div>
 
@@ -648,7 +697,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
             {isUploading && (
               <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 16px", background: "rgba(201,168,76,0.06)", border: `1px solid rgba(201,168,76,0.15)`, borderRadius: "10px", marginBottom: "16px" }}>
                 <div style={{ width: "16px", height: "16px", border: `2px solid rgba(201,168,76,0.3)`, borderTopColor: C.gold, borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />
-                <span style={{ fontSize: "13px", color: C.muted }}>Fotoğraflar yükleniyor...</span>
+                <span style={{ fontSize: "13px", color: C.muted }}>{isEn ? "Uploading photos..." : "Fotoğraflar yükleniyor..."}</span>
               </div>
             )}
 
@@ -666,6 +715,7 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
                     onMoveUp={moveUp}
                     onMoveDown={moveDown}
                     uploading={uploadingIds.has(mem.id)}
+                    isEn={isEn}
                   />
                 ))}
               </div>
@@ -675,11 +725,12 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
           {/* ── Submit ─────────────────────────────────────────────────────── */}
           <section style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: "20px", padding: "28px", textAlign: "center" }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: 400, color: C.text, margin: "0 0 8px" }}>
-              Hazır mısınız?
+              {isEn ? "Ready?" : "Hazır mısınız?"}
             </h2>
             <p style={{ fontSize: "13px", color: C.muted, margin: "0 0 24px", lineHeight: 1.7 }}>
-              Gönderdiğinizde içerikleriniz incelemeye alınacak. Siteniz hazırlandıktan sonra bilgilendirileceksiniz.<br />
-              <span style={{ color: C.subtle }}>Gönderim yaptıktan sonra tekrar bu sayfaya gelerek değişiklik yapabilirsiniz.</span>
+              {isEn 
+                ? <>When you submit, your contents will be sent to review. You will be notified once your site is live.<br /><span style={{ color: C.subtle }}>You can return to this page and edit your submission even after sending it.</span></>
+                : <>Gönderdiğinizde içerikleriniz incelemeye alınacak. Siteniz hazırlandıktan sonra bilgilendirileceksiniz.<br /><span style={{ color: C.subtle }}>Gönderim yaptıktan sonra tekrar bu sayfaya gelerek değişiklik yapabilirsiniz.</span></>}
             </p>
 
             {submitError && (
@@ -713,16 +764,17 @@ export default function PortalPage({ params }: { params: Promise<{ token: string
               {submitting ? (
                 <>
                   <div style={{ width: "16px", height: "16px", border: "2px solid rgba(11,15,26,0.3)", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-                  Gönderiliyor...
+                  {isEn ? "Submitting..." : "Gönderiliyor..."}
                 </>
               ) : (
-                <>💌 Anılarımı Gönder</>
+                <>{isEn ? "💌 Submit My Memories" : "💌 Anılarımı Gönder"}</>
               )}
             </button>
 
             <p style={{ margin: "16px 0 0", fontSize: "11px", color: C.subtle }}>
-              {memories.length} fotoğraf seçildi
-              {memories.length > 0 && " · Hazır gözüküyor!"}
+              {isEn 
+                ? `${memories.length} photos selected ${memories.length > 0 ? " · Looking good!" : ""}`
+                : `${memories.length} fotoğraf seçildi ${memories.length > 0 ? " · Hazır gözüküyor!" : ""}`}
             </p>
           </section>
         </main>

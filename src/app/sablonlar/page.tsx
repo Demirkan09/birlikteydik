@@ -9,176 +9,7 @@ import { HiOutlineEye } from "react-icons/hi";
 const WHATSAPP_NUMBER  = "905349829940";
 const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
 const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
-
-const templates = [
-  {
-    id: "romantik-kirmizi",
-    title: "Romantik Kırmızı",
-    subtitle: "Aşkın ve Tutkunun Rengi",
-    accentColor: "#E63946",
-    tag: "En Çok Satan",
-    description: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim... Aşkın kırmızısı ve şehvetli derin gölgelerin birleştiği, romantik ışık patlamaları ve kalplerle bezeli tutkulu bir hikaye.",
-    demoUrl: "/sablonlar/sablon-kirmizi",
-    features: [
-      "Parıldayan Kalp Parçacıkları",
-      "Sıcak Kırmızı Geçiş Efektleri",
-      "Duygusal ve Romantik Arayüz",
-      "Aşkın Kırmızısı Loş Arka Işıklar",
-    ],
-  },
-  {
-    id: "modern-minimal",
-    title: "Modern Beyaz",
-    subtitle: "Sade, Şık ve Estetik",
-    accentColor: "#d8d8d8",
-    tag: null,
-    description: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben. Sadelikten yana olanlar için modern yazı tipleri, geniş boştımaklar ve pürüzsüz geçişlerle tasarlanmış minimalist bir aşk hikayesi.",
-    demoUrl: "/sablonlar/sablon-minimal",
-    features: [
-      "Modern ve Temiz Arayüz Tasarımı",
-      "Geniş Boşluklu Minimalist Müzik Çalar",
-      "Zarif ve Net Tipografi Düzeni",
-      "Sade ve Akıcı Sayfa Geçişleri",
-    ],
-    },
-    {
-    id: "premium-black",
-    title: "Asil Siyah",
-    subtitle: "Asil ve Lüks",
-    accentColor: "#bdbdbd",
-    tag: null,
-    description: "Karanlığın en kusursuz siyahında saklı, sessiz ve derin bir bağlılık... Mat gece siyahı, loş ışıkta süzülen gölgeler, gizemli ve son derece romantik bir anı.",
-    demoUrl: "/sablonlar/sablon-siyah",
-    features: [
-      "Koyu Lüks Polaroid Çerçeveleri",
-      "Süzülen Canlı Gül Yaprakları",
-      "Premium Koyu Kadife Plak Çalar",
-      "Zarif El Yazısı ve Serif Tipografisi",
-    ],
-  },
-  {
-    id: "premium-emerald",
-    title: "Zümrüt Yeşili",
-    subtitle: "Lüks ve Derin Detaylar",
-    accentColor: "#50c878",
-    tag: "Özel Tasarım",
-    description: "Karanlık yeşillikler arasında parlayan, en kıymetli altın değerindeki aşk hikayeniz... Derin orman yeşili arka plan, asil altın süslemeler ve pürüzsüz geçişlerle hazırlanan premium ve prestijli bir şablon.",
-    demoUrl: "/sablonlar/sablon-emerald",
-    features: [
-      "Derin Orman Yeşili ve Altın Teması",
-      "Lüks Zümrüt Efektli Geçişler",
-      "Altın Işıltılı Arka Plan Efektleri",
-      "Asil ve Şık Görsel Çerçeveler",
-    ],
-  },
-  {
-    id: "sablon-indigo",
-    title: "Gece Yarısı İndigo",
-    subtitle: "Gizemli ve Büyüleyici",
-    accentColor: "#818CF8",
-    tag: null,
-    description: "Sonsuz gece gökyüzünün altında, seninle parıldayan iki yıldız gibi... Derin gece mavisi arka plan üzerinde parıldayan indigo tonları, mistik dikey akış ve modern estetiğin sınırlarını zorlayan tasarım.",
-    demoUrl: "/sablonlar/sablon-indigo",
-    features: [
-      "Gece Mavisi Kalp Parçacıkları",
-      "Yıldızlı Gökyüzü Işıltısı",
-      "Minimalist Gece Yarısı Tasarım Dili",
-      "Pürüzsüz Dikey Akış Efektleri",
-    ]
-  },
-  {
-    id: "klasik-retro",
-    title: "Koyu Gül Kurusu",
-    subtitle: "Zarif Kadife ve Gül Yaprakları",
-    accentColor: "#C9897A",
-    tag: null,
-    description: "Karanlığın en zarif tonunda, aşkımızın en derin izleri... Koyu kadife gül kurusu rengi, yavaşça süzülen gül yaprakları ve karanlık lüks polaroid çerçeveleriyle hazırlanan derin ve son derece romantik bir hikaye.",
-    demoUrl: "/sablonlar/sablon-retro",
-    features: [
-      "Koyu Lüks Polaroid Çerçeveleri",
-      "Süzülen Canlı Gül Yaprakları",
-      "Premium Koyu Kadife Plak Çalar",
-      "Zarif El Yazısı ve Serif Tipografisi",
-    ],
-  },
-  {
-    id: "sinematik-ask",
-    title: "Sinematik Aşk",
-    subtitle: "Kendi Filminizin Başrolü",
-    accentColor: "#B8A9D4",
-    tag: null,
-    description: "Bir sevgi belgeseli, başrollerde sadece bizim olduğumuz... Girişte video/fotoğraf perdesi, arkada çalan duygusal piyano melodisi ve adeta film jeneriği gibi akan büyüleyici anılarınız.",
-    demoUrl: "/sablonlar/sablon-sinematik",
-    features: [
-      "Büyüleyici Giriş Perdesi & Karşılama Ekranı",
-      "Film Jeneriği Temalı Akış Tasarımı",
-      "Özel Video ve Sinematik Müzik Desteği",
-      "Loş ve Duygusal Işık Efektleri",
-    ],
-  },
-  {
-    id: "sablon-oyun",
-    title: "Oyuncu Şablonu",
-    subtitle: "Gamer Çiftler İçin Tasarım",
-    accentColor: "#CBFF3E",
-    tag: null,
-    description: "Seninle en iyi maceralara! Retro oyun konsolu tasarımlı müzik kontrolü, neon yeşili çizgiler, Space Grotesk yazı tipi ve piksel sanat detaylarıyla oyun sever çiftlerin dijital macerası.",
-    demoUrl: "/sablonlar/sablon-oyun",
-    features: [
-      "Retro Oyun Konsolu Müzik Oynatıcısı",
-      "Neon Lime & Pixel-Art Detaylar",
-      "Eğlenceli Retro Arcade Animasyonları",
-      "Gamer Çiftlere Özel Eğlenceli Vibe",
-    ],
-  },
-  {
-    id: "sablon-lavanta",
-    title: "Lavanta Rüyası",
-    subtitle: "Düşsel ve Romantik",
-    accentColor: "#D8B4FE",
-    tag: null,
-    description: "Lavanta kokulu rüzgarların arasında, seninle geçen her saniye ömre bedel... Düşsel mor radial arka plan ışıltıları, zarif kalpler ve akıcı yumuşak geçişlerle tasarlanmış büyüleyici bir aşk albümü.",
-    demoUrl: "/sablonlar/sablon-lavanta",
-    features: [
-      "Yumuşak Lavanta Parçacıkları",
-      "Zarif Müzik Oynatıcı",
-      "Modern Düşsel Tipografi",
-      "Düşsel Mor Radial Işıltılar",
-    ]
-  },
-  {
-    id: "sablon-amber",
-    title: "Günbatımı Amberi",
-    subtitle: "Sıcak ve Samimi",
-    accentColor: "#F59E0B",
-    tag: null,
-    description: "Güneşin en sıcak battığı yerde, senin gözlerindeki o ılık ışıkla aydınlanıyorum... Sıcak amber tonlarında radial ışıltılar, altın esintili çerçeveler ve samimi anılarınızı en iyi yansıtan dikey albüm tasarımı.",
-    demoUrl: "/sablonlar/sablon-amber",
-    features: [
-      "Uçuşan Sıcak Amber Ateşböcekleri",
-      "Gelişmiş Estetik Müzik Çalar",
-      "Dikey Romantik Albüm Akışı",
-      "Sıcak Amber Radial Işıltılar",
-    ]
-  },
-  {
-    id: "sablon-rose",
-    title: "Gül Kurusu",
-    subtitle: "Zarif ve Derin Aşk",
-    accentColor: "#FCA5A5",
-    tag: null,
-    description: "Güllerin pembe yapraklarında yazılı olan en zarif aşk şiirim sensin... Rose gold renk tonlarının eşsiz zarafeti, loş arka plan aydınlatması ve fotoğraflarınızı öne çıkaran pürüzsüz kart tasarımı.",
-    demoUrl: "/sablonlar/sablon-rose",
-    features: [
-      "Rose Gold Parıltılar",
-      "Zarif Gül Kurusu Renk Teması",
-      "Cormorant Garamond Başlık Şıklığı",
-      "Estetik ve Yumuşak Fotoğraf Kartları",
-    ]
-  }
-];
-
-function SmartphoneMockup({ accentColor, title }: { accentColor: string; title: string }) {
+function SmartphoneMockup({ accentColor, title, isEn = false }: { accentColor: string; title: string; isEn?: boolean }) {
   return (
     <div style={{
       width: "100%",
@@ -256,7 +87,7 @@ function SmartphoneMockup({ accentColor, title }: { accentColor: string; title: 
               fontWeight: 600,
               lineHeight: 1,
             }}>
-              Mutluluk Dolu Anlar
+              {isEn ? "Moments of Joy" : "Mutluluk Dolu Anlar"}
             </h5>
             <div style={{
               width: "20px",
@@ -277,7 +108,7 @@ function SmartphoneMockup({ accentColor, title }: { accentColor: string; title: 
               color: "rgba(255,255,255,0.4)",
               lineHeight: 1.2,
             }}>
-              Bizim şarkımız çalıyor...
+              {isEn ? "Our song is playing..." : "Bizim şarkımız çalıyor..."}
             </p>
           </div>
 
@@ -372,7 +203,30 @@ function HeartsCanvas() {
   return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
 }
 
-export default function TemplatesPage() {
+export default function TemplatesPage({ lang }: { lang?: string }) {
+  const isEn = lang === "en" || (typeof window !== "undefined" && window.location.pathname.startsWith("/en/"));
+
+  const t = {
+    metaTitle: isEn ? "Our Collection" : "Koleksiyonumuz",
+    title: isEn ? "All Our Designs" : "Tüm Tasarımlarımız",
+    desc: isEn 
+      ? "Choose the theme that best reflects your love and memories. Let us customize it as you wish."
+      : "Aşkınızı ve anılarınızı en iyi yansıtan temayı seçin. İstediğiniz gibi özelleştirelim.",
+    demoBtn: isEn ? "Live Demo" : "Canlı Demoyu Aç",
+    orderBtn: isEn ? "Order Now" : "Sipariş Ver",
+    homeBtn: isEn ? "← Back to Home" : "← Ana Sayfaya Dön",
+    footerMadeWith: isEn ? "Made with love" : "Sevgiyle yapıldı",
+    whatsappMsg: isEn 
+      ? "Hello! I selected the template \"{title}\". I would like to order or get detailed information." 
+      : "Merhaba! \"{title}\" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.",
+    underMaintenance: isEn ? "Under Maintenance" : "Bakım Modundayız",
+    maintenanceDesc: isEn 
+      ? "We are currently updating our website. We will be back online shortly." 
+      : "Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.",
+    maintenanceStart: isEn ? "Maintenance Start: " : "Bakım Başlangıcı: ",
+    contactWhatsApp: isEn ? "Contact via WhatsApp" : "WhatsApp ile İletişim",
+  };
+
   const [dbShowcases, setDbShowcases] = useState<any[]>([]);
   const [siteSettings, setSiteSettings] = useState<any>({
     maintenance_mode: false,
@@ -380,7 +234,7 @@ export default function TemplatesPage() {
   });
 
   useEffect(() => {
-    fetch("/api/showcase")
+    fetch(`/api/showcase?lang=${isEn ? "en" : "tr"}`)
       .then(res => res.json())
       .then(data => {
         if (data.showcasePages) {
@@ -397,7 +251,7 @@ export default function TemplatesPage() {
         }
       })
       .catch(err => console.error("Load settings error:", err));
-  }, []);
+  }, [isEn]);
 
   const mergedTemplates = dbShowcases;
 
@@ -406,7 +260,7 @@ export default function TemplatesPage() {
     if (siteSettings.maintenance_start_time) {
       try {
         const date = new Date(siteSettings.maintenance_start_time);
-        formattedTime = date.toLocaleString("tr-TR", {
+        formattedTime = date.toLocaleString(isEn ? "en-US" : "tr-TR", {
           day: "numeric",
           month: "long",
           year: "numeric",
@@ -418,26 +272,27 @@ export default function TemplatesPage() {
 
     return (
       <div style={{ minHeight: "100vh", background: "#0B0F1A", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center", fontFamily: "'Inter', sans-serif", color: "#F0EDE8" }}>
-        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>Bakım Modundayız</h1>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>{t.underMaintenance}</h1>
         <p style={{ maxWidth: "460px", color: "rgba(240,237,232,0.6)", fontSize: "14px", lineHeight: 1.6, marginBottom: "32px" }}>
-          Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.
+          {t.maintenanceDesc}
           {formattedTime && (
             <span style={{ display: "block", marginTop: "12px", fontSize: "12px", color: "rgba(240,237,232,0.45)" }}>
-              Bakım Başlangıcı: {formattedTime}
+              {t.maintenanceStart} {formattedTime}
             </span>
           )}
         </p>
         <a href={`https://wa.me/${siteSettings.whatsapp_number || "905349829940"}`}
            style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          WhatsApp ile İletişim
+          {t.contactWhatsApp}
         </a>
       </div>
     );
   }
 
+  const WHATSAPP_MSG_FLOAT = isEn ? "Hello! I am on the template showcase page and have some questions." : "Merhaba! Şablonlar vitrin sayfasındayım, bilgi almak istiyorum.";
+
   return (
     <>
-
       {/* Background gradients */}
       <div style={{
         position: "fixed",
@@ -455,7 +310,7 @@ export default function TemplatesPage() {
 
       {/* Floating social links */}
       <div style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 40, display: "flex", flexDirection: "column", gap: "10px" }}>
-        <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`} target="_blank" rel="noopener noreferrer" title="WhatsApp"
+        <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MSG_FLOAT)}`} target="_blank" rel="noopener noreferrer" title="WhatsApp"
           style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(11,15,26,0.9)", border: "1px solid rgba(37,211,102,0.35)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", color: "#25D366", textDecoration: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.4)", transition: "transform 0.2s" }}
           onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.1)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
@@ -472,7 +327,7 @@ export default function TemplatesPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px", justifyContent: "center" }}>
             <div style={{ height: "1px", width: "32px", background: "#C9A84C88" }} />
             <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: "#C9A84C", fontWeight: 500 }}>
-              Koleksiyonumuz
+              {t.metaTitle}
             </span>
             <div style={{ height: "1px", width: "32px", background: "#C9A84C88" }} />
           </div>
@@ -485,7 +340,7 @@ export default function TemplatesPage() {
             letterSpacing: "-0.015em",
             marginBottom: "16px",
           }}>
-            Tüm Tasarımlarımız
+            {t.title}
           </h1>
           <p style={{
             fontFamily: "var(--font-inter), sans-serif",
@@ -496,7 +351,7 @@ export default function TemplatesPage() {
             margin: "0 auto",
             fontWeight: 300,
           }}>
-            Aşkınızı ve anılarınızı en iyi yansıtan temayı seçin. İstediğiniz gibi özelleştirelim.
+            {t.desc}
           </p>
         </header>
 
@@ -508,8 +363,8 @@ export default function TemplatesPage() {
           marginBottom: "80px",
         }}>
           {mergedTemplates.map((tpl, i) => {
-            const orderMessage = `Merhaba! "${tpl.title}" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.`;
-            const tplWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
+            const orderMessage = t.whatsappMsg.replace("{title}", tpl.title);
+            const tplWhatsappUrl = `https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
 
             return (
               <motion.article
@@ -564,7 +419,7 @@ export default function TemplatesPage() {
                   </span>
                 )}
 
-                <SmartphoneMockup accentColor={tpl.accentColor} title={tpl.title} />
+                <SmartphoneMockup accentColor={tpl.accentColor} title={tpl.title} isEn={isEn} />
 
                 <div style={{ padding: "28px", display: "flex", flexDirection: "column", flex: 1 }}>
                   <div style={{ marginBottom: "16px" }}>
@@ -642,10 +497,10 @@ export default function TemplatesPage() {
                       }}
                     >
                       <HiOutlineEye size={14} />
-                      <span>Canlı Demoyu Aç</span>
+                      <span>{t.demoBtn}</span>
                     </Link>
 
-                    <a href={tplWhatsappUrl} target="_blank" rel="noopener noreferrer" style={{
+                    <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer" style={{
                       flex: 1.2,
                       display: "flex",
                       alignItems: "center",
@@ -670,8 +525,7 @@ export default function TemplatesPage() {
                         e.currentTarget.style.filter = "none";
                       }}
                     >
-                      <FaWhatsapp size={14} />
-                      <span>Sipariş Ver</span>
+                      <span>{t.orderBtn}</span>
                     </a>
                   </div>
                 </div>
@@ -681,7 +535,7 @@ export default function TemplatesPage() {
         </div>
 
         <div style={{ textAlign: "center", marginTop: "40px" }}>
-          <Link href="/" style={{
+          <Link href={isEn ? "/en/" : "/"} style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
@@ -699,34 +553,56 @@ export default function TemplatesPage() {
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; e.currentTarget.style.color = "#FFFFFF"; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(240,237,232,0.75)"; }}
           >
-            ← Ana Sayfaya Dön
+            {t.homeBtn}
           </Link>
         </div>
       </main>
 
-      <footer style={{
-        position: "relative",
-        zIndex: 1,
-        borderTop: "1px solid rgba(255,255,255,0.05)",
-        padding: "36px 24px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "16px",
-        maxWidth: "1100px",
-        margin: "0 auto",
-      }}>
-        <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.1rem", color: "rgba(240,237,232,0.5)" }}>
-          birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
-        </span>
-        <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap" }}>
-          <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
-            onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
-            onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
-          >info@birlikteydik.com</a>
+      {/* FOOTER */}
+      <footer
+        style={{
+          position: "relative",
+          zIndex: 1,
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          padding: "48px 24px",
+          maxWidth: "1100px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "24px",
+          marginBottom: "28px",
+        }}>
+          <div>
+            <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.2rem", color: "rgba(240,237,232,0.6)" }}>
+              birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
+            </span>
+            <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.35)", marginTop: "6px", maxWidth: "280px", lineHeight: 1.6 }}>
+              {isEn ? "A unique, unforgettable digital surprise for your loved ones." : "Sevdiklerinize özel, unutulmaz bir dijital sürpriz."}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            <Link href={isEn ? "/en/kvkk-metni" : "/kvkk-metni"} style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Privacy Policy" : "KVKK Aydınlatma Metni"}</Link>
+            <a href={`https://wa.me/${"905349829940"}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Contact" : "İletişim"}</a>
+            <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >info@birlikteydik.com</a>
+          </div>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>
           <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em", margin: 0 }}>
-            © {new Date().getFullYear()} — Sevgiyle yapıldı
+            © {new Date().getFullYear()} birlikteydik.com — {isEn ? "All Rights Reserved" : "Tüm Hakları Saklıdır"}
           </p>
         </div>
       </footer>

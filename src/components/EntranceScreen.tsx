@@ -10,6 +10,7 @@ interface EntranceScreenProps {
   accentColor?: string;
   coupleNames?: string;
   onEnter: () => void;
+  lang?: string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -44,7 +45,7 @@ function HeartIcon({ color, size = 22 }: { color: string; size?: number }) {
 }
 
 // ─── CURTAIN — Tiyatro Perdesi ────────────────────────────────────────────────
-function CurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
+function CurtainEntrance({ accentColor, onEnter, reduced, isEn }: { accentColor: string; onEnter: () => void; reduced: boolean; isEn: boolean }) {
   const [opening, setOpening] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -156,7 +157,7 @@ function CurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: strin
             letterSpacing: "0.04em",
             lineHeight: 1.1,
           }}>
-            Sahne Hazır
+            {isEn ? "Scene Ready" : "Sahne Hazır"}
           </span>
           <span style={{
             fontFamily: "var(--font-inter), 'Inter', sans-serif",
@@ -166,7 +167,7 @@ function CurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: strin
             color: `${acc}99`,
             fontWeight: 400,
           }}>
-            Açmak İçin Dokun
+            {isEn ? "Tap to Open" : "Açmak İçin Dokun"}
           </span>
         </div>
 
@@ -191,7 +192,7 @@ function CurtainEntrance({ accentColor, onEnter, reduced }: { accentColor: strin
 }
 
 // ─── ENVELOPE — Mektup Zarfı ──────────────────────────────────────────────────
-function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { accentColor: string; coupleNames?: string; onEnter: () => void; reduced: boolean }) {
+function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced, isEn }: { accentColor: string; coupleNames?: string; onEnter: () => void; reduced: boolean; isEn: boolean }) {
   const [phase, setPhase] = useState<"idle" | "flap" | "reveal" | "done">("idle");
 
   const handleClick = () => {
@@ -208,7 +209,7 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
   if (phase === "done") return null;
 
   const acc = accentColor || "#C9A84C";
-  const names = coupleNames?.replace(/\n/g, " · ").replace(/&/g, "♥") || "Sana Özel";
+  const names = coupleNames?.replace(/\n/g, " · ").replace(/&/g, "♥") || (isEn ? "Special for You" : "Sana Özel");
 
   return (
     <div
@@ -347,7 +348,7 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
             fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase",
             color: `${acc}77`,
           }}>
-            Zarfı Aç
+            {isEn ? "Open Envelope" : "Zarfı Aç"}
           </div>
         </div>
       </div>
@@ -372,7 +373,7 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced }: { acce
 
 // ─── POLAROID FLASH — Polaroid Flaş ─────────────────────────────────────────
 // Kamera vizöründen bakar, tıklandığında flaş patlar ve şipşak ses çıkar
-function PolaroidFlashEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
+function PolaroidFlashEntrance({ accentColor, onEnter, reduced, isEn }: { accentColor: string; onEnter: () => void; reduced: boolean; isEn: boolean }) {
   const [phase, setPhase] = useState<"idle" | "rising" | "done">("idle");
 
   if (phase === "done") return null;
@@ -489,14 +490,14 @@ function PolaroidFlashEntrance({ accentColor, onEnter, reduced }: { accentColor:
             fontWeight: 400, color: "#F0EDE8",
             letterSpacing: "0.04em",
           }}>
-            Kamera Hazır
+            {isEn ? "Camera Ready" : "Kamera Hazır"}
           </div>
           <div style={{
             fontFamily: "var(--font-inter), 'Inter', sans-serif",
             fontSize: "10px", letterSpacing: "0.25em", textTransform: "uppercase",
             color: `${acc}aa`,
           }}>
-            Objektife Odaklan
+            {isEn ? "Focus on Lens" : "Objektife Odaklan"}
           </div>
         </div>
 
@@ -525,7 +526,7 @@ function PolaroidFlashEntrance({ accentColor, onEnter, reduced }: { accentColor:
           onTouchStart={(e) => { e.currentTarget.style.transform = "scale(0.92)"; }}
           onTouchEnd={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
         >
-          ANAYI BAŞLAT
+          {isEn ? "START MEMORY" : "ANAYI BAŞLAT"}
         </button>
       </div>
 
@@ -555,7 +556,7 @@ function PolaroidFlashEntrance({ accentColor, onEnter, reduced }: { accentColor:
 
 // ─── FROSTED GLASS — Buzlu Cam ────────────────────────────────────────────────
 // Arka planı tamamen bulanıklaştırır ve tıklandığında/dokunulduğunda buğu eriyormuş gibi netleştirir.
-function FrostedGlassEntrance({ accentColor, onEnter, reduced }: { accentColor: string; onEnter: () => void; reduced: boolean }) {
+function FrostedGlassEntrance({ accentColor, onEnter, reduced, isEn }: { accentColor: string; onEnter: () => void; reduced: boolean; isEn: boolean }) {
   const [phase, setPhase] = useState<"idle" | "melting" | "done">("idle");
 
   const handleClick = () => {
@@ -613,7 +614,7 @@ function FrostedGlassEntrance({ accentColor, onEnter, reduced }: { accentColor: 
             fontWeight: 400, color: "#F0EDE8",
             letterSpacing: "0.04em",
           }}>
-            Bizim Dünyamız
+            {isEn ? "Our World" : "Bizim Dünyamız"}
           </div>
           <div style={{
             fontFamily: "var(--font-inter), 'Inter', sans-serif",
@@ -621,7 +622,7 @@ function FrostedGlassEntrance({ accentColor, onEnter, reduced }: { accentColor: 
             color: `${acc}99`,
             fontWeight: 400,
           }}>
-            Kalbe Dokun
+            {isEn ? "Touch the Heart" : "Kalbe Dokun"}
           </div>
         </div>
       </div>
@@ -640,21 +641,22 @@ function FrostedGlassEntrance({ accentColor, onEnter, reduced }: { accentColor: 
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
-export default function EntranceScreen({ type, accentColor, coupleNames, onEnter }: EntranceScreenProps) {
+export default function EntranceScreen({ type, accentColor, coupleNames, onEnter, lang }: EntranceScreenProps) {
   const reduced = useReducedMotion();
   const acc = accentColor || "#C9A84C";
+  const isEn = lang === "en";
 
   if (type === "curtain") {
-    return <CurtainEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
+    return <CurtainEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} isEn={isEn} />;
   }
   if (type === "envelope") {
-    return <EnvelopeEntrance accentColor={acc} coupleNames={coupleNames} onEnter={onEnter} reduced={reduced} />;
+    return <EnvelopeEntrance accentColor={acc} coupleNames={coupleNames} onEnter={onEnter} reduced={reduced} isEn={isEn} />;
   }
   if (type === "light-gate") {
-    return <PolaroidFlashEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
+    return <PolaroidFlashEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} isEn={isEn} />;
   }
   if (type === "frosted-glass") {
-    return <FrostedGlassEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} />;
+    return <FrostedGlassEntrance accentColor={acc} onEnter={onEnter} reduced={reduced} isEn={isEn} />;
   }
   return null;
 }

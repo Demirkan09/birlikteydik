@@ -81,6 +81,76 @@ const occasions = [
       "Gece yatmadan önce telefonunu açtığında onu bekleyen, senin ellerin tarafından hazırlanmış bir anı sayfası.",
     accentColor: "#8AA8C8",
     tag: null,
+    href: "/iyigeceler-sablonlari",
+  },
+];
+
+const occasionsEn = [
+  {
+    id: 1,
+    emoji: "🎂",
+    title: "Birthday",
+    subtitle: "Story of the Special Moment",
+    description:
+      "Make your partner's birthday unforgettable. Your personal page is ready to tell the story of your best moments like a cinematic movie.",
+    accentColor: "#C9A84C",
+    tag: "Most Popular",
+    href: "/en/dogumgunu-sablonlari",
+  },
+  {
+    id: 2,
+    emoji: "💍",
+    title: "Anniversary",
+    subtitle: "Years Spent Together",
+    description:
+      "How many years, how many memories, how many laughs? Celebrate your anniversary with a growing story album.",
+    accentColor: "#E8A0A0",
+    tag: null,
+    href: "/en/yildonumu-sablonlari",
+  },
+  {
+    id: 3,
+    emoji: "❤️",
+    title: "Valentine's Day",
+    subtitle: "February 14 Surprise",
+    description:
+      "An extraordinary surprise on the most romantic day of the year. Add custom music and your personal message to your page.",
+    accentColor: "#C9A84C",
+    tag: "Highly Loved",
+    href: "/en/sevgililergunu-sablonlari",
+  },
+  {
+    id: 4,
+    emoji: "✨",
+    title: "First Meeting",
+    subtitle: "The Day it All Began",
+    description:
+      "The first glance, the first smile... A special page describing that day could be the most beautiful gift for them.",
+    accentColor: "#B8A9D4",
+    tag: null,
+    href: "/en/ilktanisma-sablonlari",
+  },
+  {
+    id: 5,
+    emoji: "🌸",
+    title: "Just Because",
+    subtitle: "Unconditional Love",
+    description:
+      "Sometimes the most meaningful gesture is made without any special day. Perfect to say 'I thought of you'.",
+    accentColor: "#E8A0A0",
+    tag: null,
+    href: "/en/sebepsizsevgi-sablonlari",
+  },
+  {
+    id: 6,
+    emoji: "🌙",
+    title: "Good Night",
+    subtitle: "Surprise Before Sleep",
+    description:
+      "A memory page prepared by your own hands waiting for them when they open their phone before sleeping.",
+    accentColor: "#8AA8C8",
+    tag: null,
+    href: "/en/iyigeceler-sablonlari",
   },
 ];
 
@@ -322,6 +392,68 @@ const faqs = [
   },
 ];
 
+const stepsEn = [
+  {
+    num: "01",
+    title: "Upload Your Photos",
+    body: "Send us the best shots you took together. No need to choose, just send them all.",
+  },
+  {
+    num: "02",
+    title: "Personalize It",
+    body: "Share your special message, music, and special date details. We prepare everything for you.",
+  },
+  {
+    num: "03",
+    title: "Share the Link",
+    body: "Your special link is ready in 24 hours. Send it to them with one click, let them open it and be amazed.",
+  },
+];
+
+const testimonialsEn = [
+  {
+    quote: "Melis cried when she clicked the link. It was the best gift I have ever given.",
+    name: "Demirkan D.",
+    occasion: "Just Because",
+    featured: true,
+  },
+  {
+    quote: "It was incredible to see our 3-year journey displayed on such a beautiful page.",
+    name: "Selin T.",
+    occasion: "Anniversary",
+    featured: false,
+  },
+  {
+    quote: "Instead of buying ordinary flowers on Valentine's Day, I did this. The reaction was spectacular.",
+    name: "Kerem Y.",
+    occasion: "Valentine's Day",
+    featured: false,
+  },
+];
+
+const faqsEn = [
+  {
+    q: "How long does it take for the page to be ready?",
+    a: "In the basic package, your special link is sent to you by e-mail within 24 hours of your order approval.",
+  },
+  {
+    q: "How many photos can I send?",
+    a: "You can send as many photos as you want. Depending on your package, 10 to 64 photos are displayed on your page.",
+  },
+  {
+    q: "How long does the link remain active?",
+    a: "It remains active for 6 months in the basic package and 18 months in the premium package.",
+  },
+  {
+    q: "Can I add music?",
+    a: "Yes! Simply share a Spotify or YouTube link, and the music starts automatically when the page is opened.",
+  },
+  {
+    q: "Can I modify the page design later?",
+    a: "In the basic package, 1 revision can be made after publication. In the Premium and Premium+ packages, you have 3 revision rights.",
+  },
+];
+
 function FaqItem({ faq }: { faq: (typeof faqs)[0] }) {
   const [open, setOpen] = useState(false);
   return (
@@ -462,6 +594,64 @@ const plans = [
   },
 ];
 
+const plansEn = [
+  {
+    name: "Introductory Special!",
+    price: "$19",
+    features: [
+      "Up to 10 photos",
+      "Custom message & names",
+      "Add custom music",
+      "6 months active link",
+      "Password protection",
+    ],
+    highlighted: true,
+    cta: "Order Now",
+  },
+  {
+    name: "Premium",
+    price: "$49",
+    features: [
+      "Up to 32 photos",
+      "Custom message & names",
+      "Add custom music",
+      "18 months active link",
+      "Priority delivery (12 hours)",
+      "Password protection",
+    ],
+    highlighted: false,
+    cta: "Most Popular",
+  },
+  {
+    name: "Premium+",
+    price: "$99",
+    features: [
+      "Up to 64 photos",
+      "Custom message & names",
+      "Add custom music",
+      "2 years active link",
+      "Priority delivery (12 hours)",
+      "Password protection",
+    ],
+    highlighted: false,
+    cta: "Order Now",
+  },
+  {
+    name: "Custom",
+    price: "Custom Design?",
+    features: [
+      "Unlimited photos",
+      "Custom message & names",
+      "Add custom music",
+      "Lifetime active link",
+      "Priority delivery (12 hours)",
+      "Password protection",
+    ],
+    highlighted: false,
+    cta: "Contact Us",
+  },
+];
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION WRAPPER (tekrar eden layout)
@@ -544,7 +734,71 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // HERO
 // ─────────────────────────────────────────────────────────────────────────────
-function Hero({ settings }: { settings: any }) {
+const featuredTemplatesEn = [
+  {
+    id: "romantik-kirmizi",
+    title: "Romantic Red",
+    subtitle: "The Color of Love and Passion",
+    accentColor: "#E63946",
+    tag: "Popular",
+    description: "In the warmest tone of love, my deepest feelings hidden in every beat of my heart... A passionate story adorned with romantic light bursts and hearts, where the red of love meets deep sensual shadows.",
+    demoUrl: "/en/sablonlar/sablon-kirmizi",
+    features: [
+      "Glowing Heart Particles",
+      "Warm Red Transition Effects",
+      "Emotional & Romantic UI",
+      "Dim Red Backlights of Love",
+    ],
+  },
+  {
+    id: "premium-emerald",
+    title: "Emerald Green",
+    subtitle: "Luxury and Deep Details",
+    accentColor: "#50c878",
+    tag: "Special Design",
+    description: "Your love story shining like the most precious gold among dark green foliage... A premium and prestigious template prepared with a deep forest green background, noble gold ornaments and smooth transitions.",
+    demoUrl: "/en/sablonlar/sablon-emerald",
+    features: [
+      "Deep Forest Green & Gold Theme",
+      "Transitions with Luxury Emerald Effects",
+      "Golden Shimmer Background Effects",
+      "Noble & Stylish Visual Frames",
+    ],
+  },
+  {
+    id: "sablon-indigo",
+    title: "Midnight Indigo",
+    subtitle: "Mysterious and Enchanting",
+    accentColor: "#818CF8",
+    tag: null,
+    description: "Under the endless night sky, like two stars shining with you... Indigo tones glowing on a deep night blue background, mystical vertical flow, and design that pushes the boundaries of modern aesthetics.",
+    demoUrl: "/en/sablonlar/sablon-indigo",
+    features: [
+      "Midnight Blue Heart Particles",
+      "Starry Sky Glow",
+      "Minimalist Midnight Design Language",
+      "Smooth Vertical Flow Effects",
+    ]
+  },
+  {
+    id: "sablon-amber",
+    title: "Sunset Amber",
+    subtitle: "Warm and Sincere",
+    accentColor: "#F59E0B",
+    tag: "New",
+    description: "Where the sun sets warmest, I am illuminated by that warm light in your eyes... Sunset amber radial glows, gold-inspired frames and a vertical album design that best reflects your warm memories.",
+    demoUrl: "/en/sablonlar/sablon-amber",
+    features: [
+      "Floating Warm Amber Fireflies",
+      "Advanced Aesthetic Music Player",
+      "Vertical Romantic Album Stream",
+      "Warm Amber Radial Glows",
+    ],
+  }
+];
+
+function Hero({ settings, lang }: { settings: any; lang?: string }) {
+  const isEn = lang === "en";
   return (
     <div
       style={{
@@ -582,7 +836,7 @@ function Hero({ settings }: { settings: any }) {
             fontWeight: 500,
           }}
         >
-          Sevdiklerine Özel Bir Sürpriz
+          {isEn ? "A Special Surprise for Your Loved Ones" : "Sevdiklerine Özel Bir Sürpriz"}
         </span>
         <div style={{ height: "1px", width: "40px", background: "#C9A84C88" }} />
       </motion.div>
@@ -622,7 +876,9 @@ function Hero({ settings }: { settings: any }) {
           letterSpacing: "0.02em",
         }}
       >
-        {settings?.hero_texts?.subtitle || "Fotoğraflarınızı, müziğinizi ve mesajınızı bir araya getiriyoruz. Sevgilinize özel bir link gönder — açsın ve şaşırsın."}
+        {isEn 
+          ? "We bring together your photos, music, and messages. Send a special link to your partner — let them open it and be amazed."
+          : (settings?.hero_texts?.subtitle || "Fotoğraflarınızı, müziğinizi ve mesajınızı bir araya getiriyoruz. Sevgilinize özel bir link gönder — açsın ve şaşırsın.")}
       </motion.p>
 
       {/* CTAs */}
@@ -633,7 +889,7 @@ function Hero({ settings }: { settings: any }) {
         style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center" }}
       >
         <a
-          href="https://ig.me/m/birlikteydikcom"
+          href="https://www.shopier.com/birlikteydikcom"
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: "13px",
@@ -650,7 +906,7 @@ function Hero({ settings }: { settings: any }) {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
         >
-          Hemen Sipariş Ver
+          {isEn ? "Order Now" : "Hemen Sipariş Ver"}
         </a>
         <a
           href="#nasil-calisir"
@@ -678,7 +934,7 @@ function Hero({ settings }: { settings: any }) {
             e.currentTarget.style.color = "rgba(240,237,232,0.65)";
           }}
         >
-          Nasıl Çalışır?
+          {isEn ? "How It Works" : "Nasıl Çalışır?"}
         </a>
       </motion.div>
 
@@ -699,7 +955,7 @@ function Hero({ settings }: { settings: any }) {
             color: "rgba(201,168,76,0.6)",
             fontWeight: 500,
           }}>
-            Müşteriye verilen link böyle görünür
+            {isEn ? "Your link will look like this" : "Müşteriye verilen link böyle görünür"}
           </span>
           <div style={{ height: "1px", width: "20px", background: "rgba(201,168,76,0.3)" }} />
         </div>
@@ -731,7 +987,7 @@ function Hero({ settings }: { settings: any }) {
           }}
         >
           birlikteydik.com/
-          <span style={{ color: "#C9A84C" }}>senintasarimin</span>
+          <span style={{ color: "#C9A84C" }}>{isEn ? "yourpage" : "senintasarimin"}</span>
         </span>
       </motion.div>
       </motion.div>
@@ -963,14 +1219,26 @@ const featuredTemplates = [
 // ─────────────────────────────────────────────────────────────────────────────
 // ANA SAYFA
 // ─────────────────────────────────────────────────────────────────────────────
-export default function LandingPage() {
+interface LandingPageProps {
+  lang?: string;
+}
+
+export default function LandingPage({ lang }: LandingPageProps) {
+  const isEn = lang === "en";
+
   const [siteSettings, setSiteSettings] = useState<any>({
-    faqs: faqs,
-    faq_texts: {
+    faqs: isEn ? faqsEn : faqs,
+    faq_texts: isEn ? {
+      label: "Frequently Asked",
+      heading: `Have a <em style="color: #C9A84C; font-style: italic">Question?</em>`
+    } : {
       label: "Sıkça Sorulan",
       heading: `Aklında <em style="color: #C9A84C; font-style: italic">Soru mu Var?</em>`
     },
-    hero_texts: {
+    hero_texts: isEn ? {
+      title: `Your Memories<br /><em style="color: #C9A84C; font-style: italic">In</em><br />One Link`,
+      subtitle: "We bring together your photos, music, and messages. Send a special link to your partner — let them open it and be amazed."
+    } : {
       title: `Anılarınız<br /><em style="color: #C9A84C; font-style: italic">Bir Linke</em><br />Sığıyor`,
       subtitle: "Birlikte geçirdiğiniz anıları ölümsüzleştiren, sadece size özel tasarlanmış bir web sitesi hediye et."
     },
@@ -991,11 +1259,19 @@ export default function LandingPage() {
           setSiteSettings((prev: any) => ({
             ...prev,
             ...data.settings,
-            faq_texts: data.settings.faq_texts || prev.faq_texts,
-            hero_texts: data.settings.hero_texts || prev.hero_texts,
-            faqs: data.settings.faqs || prev.faqs,
+            faq_texts: isEn 
+              ? (data.settings.faq_texts_en || prev.faq_texts) 
+              : (data.settings.faq_texts || prev.faq_texts),
+            hero_texts: isEn 
+              ? (data.settings.hero_texts_en || prev.hero_texts) 
+              : (data.settings.hero_texts || prev.hero_texts),
+            faqs: isEn 
+              ? (data.settings.faqs_en || prev.faqs) 
+              : (data.settings.faqs || prev.faqs),
             whatsapp_number: data.settings.whatsapp_number || prev.whatsapp_number,
-            announcement_banner: data.settings.announcement_banner || prev.announcement_banner,
+            announcement_banner: isEn 
+              ? (data.settings.announcement_banner_en || prev.announcement_banner) 
+              : (data.settings.announcement_banner || prev.announcement_banner),
             maintenance_mode: data.settings.maintenance_mode !== undefined ? data.settings.maintenance_mode : prev.maintenance_mode,
           }));
         }
@@ -1004,14 +1280,35 @@ export default function LandingPage() {
       }
     }
     loadSettings();
-  }, []);
+  }, [isEn]);
+
+  const t = {
+    maintenanceTitle: isEn ? "Under Maintenance" : "Bakım Modundayız",
+    maintenanceDesc: isEn 
+      ? "We are currently updating our website. We will be back online shortly."
+      : "Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.",
+    maintenanceStart: isEn ? "Maintenance Start:" : "Bakım Başlangıcı:",
+    whatsappContact: isEn ? "Contact via WhatsApp" : "WhatsApp ile İletişim",
+    processLabel: isEn ? "Process" : "Süreç",
+    processHeading: isEn ? "Only 3 Steps" : "Sadece 3 Adım",
+    occasionsLabel: isEn ? "Special Days" : "Özel Günler",
+    pricingLabel: isEn ? "Pricing" : "Fiyatlar",
+    pricingHeading: isEn ? "Simple & Transparent" : "Basit & Şeffaf",
+    designsLabel: isEn ? "Designs" : "Tasarımlar",
+    designsHeading: isEn ? "Discover Our Templates" : "Şablonlarımızı Keşfedin",
+    viewAllTemplates: isEn ? "View All Templates" : "Tüm Şablonları Gör",
+    testimonialsHeading: isEn ? "What They Said" : "Onlar Anlattı",
+    faqLabel: isEn ? "FAQ" : "SSS",
+    orderTemplate: isEn ? "Order Now" : "Sipariş Ver",
+    viewDemo: isEn ? "Live Demo" : "Canlı Demoyu Aç",
+  };
 
   if (siteSettings.maintenance_mode) {
     let formattedTime = "";
     if (siteSettings.maintenance_start_time) {
       try {
         const date = new Date(siteSettings.maintenance_start_time);
-        formattedTime = date.toLocaleString("tr-TR", {
+        formattedTime = date.toLocaleString(isEn ? "en-US" : "tr-TR", {
           day: "numeric",
           month: "long",
           year: "numeric",
@@ -1023,18 +1320,18 @@ export default function LandingPage() {
 
     return (
       <div style={{ minHeight: "100vh", background: "#0B0F1A", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px", textAlign: "center", fontFamily: "'Inter', sans-serif", color: "#F0EDE8" }}>
-        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>Bakım Modundayız</h1>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3.5rem", color: "#C9A84C", marginBottom: "16px" }}>{t.maintenanceTitle}</h1>
         <p style={{ maxWidth: "460px", color: "rgba(240,237,232,0.6)", fontSize: "14px", lineHeight: 1.6, marginBottom: "32px" }}>
-          Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.
+          {t.maintenanceDesc}
           {formattedTime && (
             <span style={{ display: "block", marginTop: "12px", fontSize: "12px", color: "rgba(240,237,232,0.45)" }}>
-              Bakım Başlangıcı: {formattedTime}
+              {t.maintenanceStart} {formattedTime}
             </span>
           )}
         </p>
         <a href={`https://wa.me/${siteSettings.whatsapp_number || "905349829940"}`}
            style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          WhatsApp ile İletişim
+          {t.whatsappContact}
         </a>
       </div>
     );
@@ -1089,13 +1386,13 @@ export default function LandingPage() {
 </div>
       <main>
         {/* HERO */}
-        <Hero settings={siteSettings} />
+        <Hero settings={siteSettings} lang={lang} />
 
         {/* NASIL ÇALIŞIR */}
         <Section id="nasil-calisir">
-          <SectionLabel>Süreç</SectionLabel>
+          <SectionLabel>{t.processLabel}</SectionLabel>
           <SectionHeading>
-            Sadece <em style={{ color: "#C9A84C", fontStyle: "italic" }}>3 Adım</em>
+            {isEn ? <>Only <em style={{ color: "#C9A84C", fontStyle: "italic" }}>3 Steps</em></> : <>Sadece <em style={{ color: "#C9A84C", fontStyle: "italic" }}>3 Adım</em></>}
           </SectionHeading>
 
           <div
@@ -1105,7 +1402,7 @@ export default function LandingPage() {
               gap: "2px",
             }}
           >
-            {steps.map((step, i) => (
+            {(isEn ? stepsEn : steps).map((step, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 24 }}
@@ -1162,7 +1459,7 @@ export default function LandingPage() {
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 24px", borderTop: "1px solid rgba(255,255,255,0.05)" }} />
 
         <Section id="ozel-gunler">
-          <SectionLabel>Özel Günler</SectionLabel>
+          <SectionLabel>{t.occasionsLabel}</SectionLabel>
           <div
             style={{
               display: "grid",
@@ -1170,7 +1467,7 @@ export default function LandingPage() {
               gap: "16px",
             }}
           >
-            {occasions.map((o, i) => (
+            {(isEn ? occasionsEn : occasions).map((o, i) => (
               <OccasionCard key={o.id} occasion={o} index={i} />
             ))}
           </div>
@@ -1188,9 +1485,9 @@ export default function LandingPage() {
 
         {/* FİYATLAR */}
         <Section id="fiyatlar">
-          <SectionLabel>Fiyatlar</SectionLabel>
+          <SectionLabel>{t.pricingLabel}</SectionLabel>
           <SectionHeading>
-            Basit & <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Şeffaf</em>
+            {isEn ? <>Simple & <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Transparent</em></> : <>Basit & <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Şeffaf</em></>}
           </SectionHeading>
 
           <div
@@ -1202,7 +1499,7 @@ export default function LandingPage() {
               margin: "0 auto",
             }}
           >
-            {plans.map((plan, i) => (
+            {(isEn ? plansEn : plans).map((plan, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 24 }}
@@ -1261,9 +1558,9 @@ export default function LandingPage() {
 
         {/* ŞABLONLARIMIZ */}
         <Section id="sablonlar">
-          <SectionLabel>Tasarımlar</SectionLabel>
+          <SectionLabel>{t.designsLabel}</SectionLabel>
           <SectionHeading>
-            Şablonlarımızı <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Keşfedin</em>
+            {isEn ? <>Discover Our <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Templates</em></> : <>Şablonlarımızı <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Keşfedin</em></>}
           </SectionHeading>
 
           <div style={{
@@ -1271,8 +1568,10 @@ export default function LandingPage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
             gap: "24px",
           }}>
-            {featuredTemplates.map((tpl, i) => {
-              const orderMessage = `Merhaba! "${tpl.title}" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.`;
+            {(isEn ? featuredTemplatesEn : featuredTemplates).map((tpl, i) => {
+              const orderMessage = isEn 
+                ? `Hello! I selected the "${tpl.title}" template. I'd like to place an order or get more information.`
+                : `Merhaba! "${tpl.title}" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.`;
               const tplWhatsappUrl = `https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(orderMessage)}`;
 
               return (
@@ -1375,7 +1674,7 @@ export default function LandingPage() {
                     </ul>
 
                     <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
-                      <Link href={tpl.demoUrl} style={{
+                      <Link href={isEn ? `/en/sablonlar/${tpl.id}` : `/sablonlar/${tpl.id}`} style={{
                         flex: 1,
                         display: "flex",
                         alignItems: "center",
@@ -1406,7 +1705,7 @@ export default function LandingPage() {
                         }}
                       >
                         <HiOutlineEye size={14} />
-                        <span>Canlı Demoyu Aç</span>
+                        <span>{t.viewDemo}</span>
                       </Link>
 
                       <a href={tplWhatsappUrl} target="_blank" rel="noopener noreferrer" style={{
@@ -1435,7 +1734,7 @@ export default function LandingPage() {
                         }}
                       >
                         <FaWhatsapp size={14} />
-                        <span>Sipariş Ver</span>
+                        <span>{t.orderTemplate}</span>
                       </a>
                     </div>
                   </div>
@@ -1445,7 +1744,7 @@ export default function LandingPage() {
           </div>
 
           <div style={{ display: "flex", justifyContent: "center", marginTop: "48px" }}>
-            <Link href="/sablonlar" style={{
+            <Link href={isEn ? "/en/sablonlar" : "/sablonlar"} style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
@@ -1478,7 +1777,7 @@ export default function LandingPage() {
                 e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
               }}
             >
-              Tüm Şablonları Gör
+              {t.viewAllTemplates}
             </Link>
           </div>
         </Section>
@@ -1496,11 +1795,11 @@ export default function LandingPage() {
         {/* TESTİMONİALS — Quote-first büyük format: featured quote öne çıkar, diğerleri yan yana */}
         <Section>
           <SectionHeading>
-            Onlar <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Anlattı</em>
+            {isEn ? <>What They <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Said</em></> : <>Onlar <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Anlattı</em></>}
           </SectionHeading>
 
           {/* Öne çıkan büyük alıntı */}
-          {testimonials.filter(t => t.featured).map((t, i) => (
+          {(isEn ? testimonialsEn : testimonials).filter(t => t.featured).map((t, i) => (
             <motion.div
               key={"feat-" + i}
               initial={{ opacity: 0, y: 24 }}
@@ -1551,7 +1850,7 @@ export default function LandingPage() {
 
           {/* Diğer yorumlar — daha küçük yan yana */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px" }}>
-            {testimonials.filter(t => !t.featured).map((t, i) => (
+            {(isEn ? testimonialsEn : testimonials).filter(t => !t.featured).map((t, i) => (
               <motion.div
                 key={"side-" + i}
                 initial={{ opacity: 0, y: 20 }}
@@ -1613,13 +1912,13 @@ export default function LandingPage() {
 
         {/* SSS */}
         <Section id="sss">
-          <SectionLabel>{siteSettings.faq_texts?.label || "Sıkça Sorulan"}</SectionLabel>
+          <SectionLabel>{t.faqLabel}</SectionLabel>
           <SectionHeading>
             <span dangerouslySetInnerHTML={{ __html: siteSettings.faq_texts?.heading || `Aklında <em style="color: #C9A84C; font-style: italic">Soru mu Var?</em>` }} />
           </SectionHeading>
 
           <div style={{ maxWidth: "680px", margin: "0 auto" }}>
-            {(siteSettings.faqs || faqs).map((faq: any, i: number) => (
+            {(siteSettings.faqs || (isEn ? faqsEn : faqs)).map((faq: any, i: number) => (
               <FaqItem key={i} faq={faq} />
             ))}
           </div>
@@ -1662,7 +1961,7 @@ export default function LandingPage() {
             />
             <div style={{ position: "relative", zIndex: 1 }}>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: "#C9A84C", marginBottom: "16px" }}>
-                Bugün Başla
+                {isEn ? "Start Today" : "Bugün Başla"}
               </p>
               <h2
                 style={{
@@ -1675,15 +1974,13 @@ export default function LandingPage() {
                   letterSpacing: "-0.015em",
                 }}
               >
-                Ona Unutamayacağı
-                <br />
-                <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Bir Sürpriz</em> Yap
+                {isEn ? <>Give Them an <br /><em style={{ color: "#C9A84C", fontStyle: "italic" }}>Unforgettable Surprise</em></> : <>Ona Unutamayacağı<br /><em style={{ color: "#C9A84C", fontStyle: "italic" }}>Bir Sürpriz</em> Yap</>}
               </h2>
               <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "rgba(240,237,232,0.45)", lineHeight: 1.85, maxWidth: "42ch", margin: "0 auto 36px", fontWeight: 300 }}>
-                Siparişini ver, fotoğraflarını gönder. 24 saat içinde özel linkin hazır.
+                {isEn ? "Place your order, send your photos. Your special link is ready in 24 hours." : "Siparişini ver, fotoğraflarını gönder. 24 saat içinde özel linkin hazır."}
               </p>
               <a
-                href="https://ig.me/m/birlikteydikcom"
+                href="https://www.shopier.com/birlikteydikcom"
                 style={{
                   display: "inline-block",
                   fontFamily: "'Inter', sans-serif",
@@ -1701,7 +1998,7 @@ export default function LandingPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
               >
-                Hemen Sipariş Ver
+                {isEn ? "Order Now" : "Hemen Sipariş Ver"}
               </a>
             </div>
           </motion.div>
@@ -1732,18 +2029,18 @@ export default function LandingPage() {
               birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
             </span>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.35)", marginTop: "6px", maxWidth: "280px", lineHeight: 1.6 }}>
-              Sevdiklerinize özel, unutulmaz bir dijital sürpriz.
+              {isEn ? "A unique, unforgettable digital surprise for your loved ones." : "Sevdiklerinize özel, unutulmaz bir dijital sürpriz."}
             </p>
           </div>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
-            <Link href="/kvkk-metni" style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+            <Link href={isEn ? "/en/kvkk-metni" : "/kvkk-metni"} style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
               onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
               onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
-            >KVKK Aydınlatma Metni</Link>
+            >{isEn ? "Privacy Policy" : "KVKK Aydınlatma Metni"}</Link>
             <a href={`https://wa.me/${"905349829940"}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
               onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
               onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
-            >İletişim</a>
+            >{isEn ? "Contact" : "İletişim"}</a>
             <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
               onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
               onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
@@ -1752,7 +2049,7 @@ export default function LandingPage() {
         </div>
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
-            © {new Date().getFullYear()} birlikteydik.com — Tüm Hakları Saklıdır
+            © {new Date().getFullYear()} birlikteydik.com — {isEn ? "All Rights Reserved" : "Tüm Hakları Saklıdır"}
           </p>
         </div>
       </footer>

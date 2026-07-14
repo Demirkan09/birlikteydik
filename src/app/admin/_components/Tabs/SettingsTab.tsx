@@ -8,6 +8,7 @@ interface SettingsTabProps {
 }
 
 export function SettingsTab({ adminEmail }: SettingsTabProps) {
+  const [selectedLang, setSelectedLang] = useState<"tr" | "en">("tr");
   const [siteSettings, setSiteSettings] = useState<any>({
     package_durations: {
       "temel": { old: null, new: 6 },
@@ -16,15 +17,38 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
     },
     maintenance_mode: false,
     announcement_banner: { active: false, text: "" },
+    announcement_banner_en: { active: false, text: "" },
     hero_texts: {
       title: "Unutamayacağı<br /><em style=\"color: #C9A84C; font-style: italic\">Bir Sürpriz</em> Yap",
       subtitle: "Birlikte geçirdiğiniz anıları ölümsüzleştiren, sadece size özel tasarlanmış bir web sitesi hediye et."
+    },
+    hero_texts_en: {
+      title: "Make an Unforgettable<br /><em style=\"color: #C9A84C; font-style: italic\">Surprise</em>",
+      subtitle: "Gift a custom-designed website that immortalizes the memories you shared together."
     },
     faq_texts: {
       label: "Sıkça Sorulan",
       heading: "Aklında <em style=\"color: #C9A84C; font-style: italic\">Soru mu Var?</em>"
     },
+    faq_texts_en: {
+      label: "Frequently Asked",
+      heading: "Have a <em style=\"color: #C9A84C; font-style: italic\">Question?</em>"
+    },
     faqs: defaultFaqs,
+    faqs_en: [
+      {
+        q: "How does the process work after ordering?",
+        a: "After ordering, a code is sent to your email. You activate your memory page with this code from your profile, then upload your photos and music easily through the panel."
+      },
+      {
+        q: "Do I upload the photos and music myself?",
+        a: "Yes, you can upload all photos, select music, and write your personal messages directly from the page settings dashboard."
+      },
+      {
+        q: "Is it mobile compatible?",
+        a: "Yes, all templates are fully responsive and optimized for a cinematic mobile view."
+      }
+    ],
     whatsapp_number: "905555555555",
     abandoned_cart_settings: {
       enabled: true,
@@ -48,7 +72,9 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
           ...prev,
           ...data.settings,
           faq_texts: data.settings.faq_texts || prev.faq_texts,
-          faqs: data.settings.faqs || prev.faqs
+          faqs: data.settings.faqs || prev.faqs,
+          faq_texts_en: data.settings.faq_texts_en || prev.faq_texts_en,
+          faqs_en: data.settings.faqs_en || prev.faqs_en
         }));
       }
     } catch (err) {
@@ -87,6 +113,23 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
     WebkitBackdropFilter: "blur(16px)",
   };
 
+  const isEnTab = selectedLang === "en";
+  const currentBanner = isEnTab 
+    ? (siteSettings?.announcement_banner_en || { active: false, text: "" }) 
+    : (siteSettings?.announcement_banner || { active: false, text: "" });
+
+  const currentHero = isEnTab 
+    ? (siteSettings?.hero_texts_en || { title: "", subtitle: "" }) 
+    : (siteSettings?.hero_texts || { title: "", subtitle: "" });
+
+  const currentFaqTexts = isEnTab 
+    ? (siteSettings?.faq_texts_en || { label: "", heading: "" }) 
+    : (siteSettings?.faq_texts || { label: "", heading: "" });
+
+  const currentFaqs = isEnTab 
+    ? (siteSettings?.faqs_en || []) 
+    : (siteSettings?.faqs || []);
+
   return (
     <motion.div
       key="settings"
@@ -95,9 +138,40 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
       style={{ maxWidth: "680px", margin: "0 auto", fontFamily: "Inter, 'Inter Fallback', sans-serif" }}
     >
       <div style={{ ...cardStyle, padding: "32px" }}>
-        <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "24px", fontWeight: 600, color: C.text, marginBottom: "8px" }}>
-          Site <em style={{ color: C.gold, fontStyle: "italic" }}>Ayarları</em>
-        </h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px", flexWrap: "wrap", gap: "10px" }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "24px", fontWeight: 600, color: C.text }}>
+            Site <em style={{ color: C.gold, fontStyle: "italic" }}>Ayarları</em>
+          </h2>
+
+          {/* Language Selector Toggle */}
+          <div style={{ display: "flex", gap: "4px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", padding: "3px" }}>
+            {[
+              { key: "tr", label: "TR" },
+              { key: "en", label: "EN" }
+            ].map((lang) => (
+              <button
+                key={lang.key}
+                type="button"
+                onClick={() => setSelectedLang(lang.key as "tr" | "en")}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: "5px",
+                  border: "none",
+                  background: selectedLang === lang.key ? C.gold : "transparent",
+                  color: selectedLang === lang.key ? "#0B0F1A" : C.muted,
+                  fontSize: "11px",
+                  fontWeight: selectedLang === lang.key ? 600 : 400,
+                  cursor: "pointer",
+                  fontFamily: "var(--font-inter), sans-serif",
+                  transition: "all 0.15s"
+                }}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <p style={{ fontSize: "13px", color: C.muted, marginBottom: "28px", fontWeight: 300, lineHeight: 1.6 }}>
           Sitenin temel ayarlarını ve paket aktiflik sürelerini buradan güncelleyebilirsiniz.
         </p>
@@ -200,28 +274,34 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
 
             {/* Announcement Banner */}
             <div style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}` }}>
-              <h4 style={{ fontSize: "14px", color: C.gold, marginBottom: "16px", fontWeight: 600 }}>Duyuru Banner'ı</h4>
+              <h4 style={{ fontSize: "14px", color: C.gold, marginBottom: "16px", fontWeight: 600 }}>Duyuru Banner'ı ({selectedLang.toUpperCase()})</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
                   <input
                     type="checkbox"
-                    checked={siteSettings?.announcement_banner?.active || false}
-                    onChange={(e) => setSiteSettings((prev: any) => ({
-                      ...prev,
-                      announcement_banner: { ...prev.announcement_banner, active: e.target.checked }
-                    }))}
+                    checked={currentBanner.active || false}
+                    onChange={(e) => {
+                      const bannerKey = isEnTab ? "announcement_banner_en" : "announcement_banner";
+                      setSiteSettings((prev: any) => ({
+                        ...prev,
+                        [bannerKey]: { ...(prev[bannerKey] || {}), active: e.target.checked }
+                      }));
+                    }}
                     style={{ accentColor: C.gold, width: "16px", height: "16px" }}
                   />
                   <span style={{ fontSize: "13px", color: C.text }}>Banner'ı Aktif Et</span>
                 </label>
                 <input
                   type="text"
-                  value={siteSettings?.announcement_banner?.text || ""}
-                  onChange={(e) => setSiteSettings((prev: any) => ({
-                    ...prev,
-                    announcement_banner: { ...prev.announcement_banner, text: e.target.value }
-                  }))}
-                  placeholder="Örn: Sevgililer Gününe Özel %20 İndirim!"
+                  value={currentBanner.text || ""}
+                  onChange={(e) => {
+                    const bannerKey = isEnTab ? "announcement_banner_en" : "announcement_banner";
+                    setSiteSettings((prev: any) => ({
+                      ...prev,
+                      [bannerKey]: { ...(prev[bannerKey] || {}), text: e.target.value }
+                    }));
+                  }}
+                  placeholder={isEnTab ? "e.g. Valentine's Day Special 20% Off!" : "Örn: Sevgililer Gününe Özel %20 İndirim!"}
                   style={{ width: "100%", padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px" }}
                 />
               </div>
@@ -229,16 +309,19 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
 
             {/* Hero Texts */}
             <div style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}` }}>
-              <h4 style={{ fontSize: "14px", color: C.gold, marginBottom: "16px", fontWeight: 600 }}>Ana Sayfa (Hero) Metinleri</h4>
+              <h4 style={{ fontSize: "14px", color: C.gold, marginBottom: "16px", fontWeight: 600 }}>Ana Sayfa (Hero) Metinleri ({selectedLang.toUpperCase()})</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>Ana Başlık (HTML Kullanılabilir)</label>
                   <textarea
-                    value={siteSettings?.hero_texts?.title || ""}
-                    onChange={(e) => setSiteSettings((prev: any) => ({
-                      ...prev,
-                      hero_texts: { ...prev.hero_texts, title: e.target.value }
-                    }))}
+                    value={currentHero.title || ""}
+                    onChange={(e) => {
+                      const heroKey = isEnTab ? "hero_texts_en" : "hero_texts";
+                      setSiteSettings((prev: any) => ({
+                        ...prev,
+                        [heroKey]: { ...(prev[heroKey] || {}), title: e.target.value }
+                      }));
+                    }}
                     rows={3}
                     style={{ width: "100%", padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px", fontFamily: "monospace", resize: "vertical" }}
                   />
@@ -246,11 +329,14 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>Alt Metin</label>
                   <textarea
-                    value={siteSettings?.hero_texts?.subtitle || ""}
-                    onChange={(e) => setSiteSettings((prev: any) => ({
-                      ...prev,
-                      hero_texts: { ...prev.hero_texts, subtitle: e.target.value }
-                    }))}
+                    value={currentHero.subtitle || ""}
+                    onChange={(e) => {
+                      const heroKey = isEnTab ? "hero_texts_en" : "hero_texts";
+                      setSiteSettings((prev: any) => ({
+                        ...prev,
+                        [heroKey]: { ...(prev[heroKey] || {}), subtitle: e.target.value }
+                      }));
+                    }}
                     rows={2}
                     style={{ width: "100%", padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px", resize: "vertical" }}
                   />
@@ -260,28 +346,34 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
 
             {/* FAQ Texts */}
             <div style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}` }}>
-              <h4 style={{ fontSize: "14px", color: C.gold, marginBottom: "16px", fontWeight: 600 }}>Sıkça Sorulan Sorular Metinleri</h4>
+              <h4 style={{ fontSize: "14px", color: C.gold, marginBottom: "16px", fontWeight: 600 }}>Sıkça Sorulan Sorular Metinleri ({selectedLang.toUpperCase()})</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>Küçük Başlık (Label)</label>
                   <input
                     type="text"
-                    value={siteSettings?.faq_texts?.label || ""}
-                    onChange={(e) => setSiteSettings((prev: any) => ({
-                      ...prev,
-                      faq_texts: { ...(prev.faq_texts || {}), label: e.target.value }
-                    }))}
+                    value={currentFaqTexts.label || ""}
+                    onChange={(e) => {
+                      const faqTextsKey = isEnTab ? "faq_texts_en" : "faq_texts";
+                      setSiteSettings((prev: any) => ({
+                        ...prev,
+                        [faqTextsKey]: { ...(prev[faqTextsKey] || {}), label: e.target.value }
+                      }));
+                    }}
                     style={{ width: "100%", padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px" }}
                   />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "11px", color: C.muted, textTransform: "uppercase" }}>Ana Başlık (HTML Kullanılabilir)</label>
                   <textarea
-                    value={siteSettings?.faq_texts?.heading || ""}
-                    onChange={(e) => setSiteSettings((prev: any) => ({
-                      ...prev,
-                      faq_texts: { ...(prev.faq_texts || {}), heading: e.target.value }
-                    }))}
+                    value={currentFaqTexts.heading || ""}
+                    onChange={(e) => {
+                      const faqTextsKey = isEnTab ? "faq_texts_en" : "faq_texts";
+                      setSiteSettings((prev: any) => ({
+                        ...prev,
+                        [faqTextsKey]: { ...(prev[faqTextsKey] || {}), heading: e.target.value }
+                      }));
+                    }}
                     rows={2}
                     style={{ width: "100%", padding: "10px 14px", borderRadius: "8px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "13px", fontFamily: "monospace", resize: "vertical" }}
                   />
@@ -292,14 +384,15 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
             {/* FAQ List Editor */}
             <div style={{ padding: "20px", borderRadius: "12px", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}` }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                <h4 style={{ fontSize: "14px", color: C.gold, fontWeight: 600 }}>Sıkça Sorulan Sorular Listesi</h4>
+                <h4 style={{ fontSize: "14px", color: C.gold, fontWeight: 600 }}>Sıkça Sorulan Sorular Listesi ({selectedLang.toUpperCase()})</h4>
                 <button
                   type="button"
                   onClick={() => {
-                    const newFaq = { q: "Yeni Soru?", a: "Cevap..." };
+                    const newFaq = { q: isEnTab ? "New Question?" : "Yeni Soru?", a: isEnTab ? "Answer..." : "Cevap..." };
+                    const faqsKey = isEnTab ? "faqs_en" : "faqs";
                     setSiteSettings((prev: any) => ({
                       ...prev,
-                      faqs: [...(prev.faqs || []), newFaq]
+                      [faqsKey]: [...(prev[faqsKey] || []), newFaq]
                     }));
                   }}
                   style={{
@@ -317,12 +410,12 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                   onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
                   onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
                 >
-                  + Yeni Soru Ekle
+                  {isEnTab ? "+ Add New Question" : "+ Yeni Soru Ekle"}
                 </button>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                {(siteSettings?.faqs || []).map((faq: any, index: number) => (
+                {currentFaqs.map((faq: any, index: number) => (
                   <div
                     key={index}
                     style={{
@@ -334,7 +427,7 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                      <span style={{ fontSize: "11px", color: C.gold, fontWeight: 500 }}>Soru #{index + 1}</span>
+                      <span style={{ fontSize: "11px", color: C.gold, fontWeight: 500 }}>{isEnTab ? `Question #${index + 1}` : `Soru #${index + 1}`}</span>
                       <div style={{ display: "flex", gap: "8px" }}>
                         {/* Move Up */}
                         <button
@@ -342,11 +435,12 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                           disabled={index === 0}
                           onClick={() => {
                             if (index === 0) return;
-                            const newList = [...(siteSettings.faqs || [])];
+                            const faqsKey = isEnTab ? "faqs_en" : "faqs";
+                            const newList = [...(siteSettings[faqsKey] || [])];
                             const temp = newList[index];
                             newList[index] = newList[index - 1];
                             newList[index - 1] = temp;
-                            setSiteSettings((prev: any) => ({ ...prev, faqs: newList }));
+                            setSiteSettings((prev: any) => ({ ...prev, [faqsKey]: newList }));
                           }}
                           style={{
                             background: "transparent",
@@ -361,21 +455,22 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                         {/* Move Down */}
                         <button
                           type="button"
-                          disabled={index === (siteSettings.faqs || []).length - 1}
+                          disabled={index === currentFaqs.length - 1}
                           onClick={() => {
-                            if (index === (siteSettings.faqs || []).length - 1) return;
-                            const newList = [...(siteSettings.faqs || [])];
+                            if (index === currentFaqs.length - 1) return;
+                            const faqsKey = isEnTab ? "faqs_en" : "faqs";
+                            const newList = [...(siteSettings[faqsKey] || [])];
                             const temp = newList[index];
                             newList[index] = newList[index + 1];
                             newList[index + 1] = temp;
-                            setSiteSettings((prev: any) => ({ ...prev, faqs: newList }));
+                            setSiteSettings((prev: any) => ({ ...prev, [faqsKey]: newList }));
                           }}
                           style={{
                             background: "transparent",
                             border: "none",
-                            color: index === (siteSettings.faqs || []).length - 1 ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.4)",
+                            color: index === currentFaqs.length - 1 ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.4)",
                             fontSize: "11px",
-                            cursor: index === (siteSettings.faqs || []).length - 1 ? "not-allowed" : "pointer"
+                            cursor: index === currentFaqs.length - 1 ? "not-allowed" : "pointer"
                           }}
                         >
                           ▼
@@ -384,9 +479,11 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                         <button
                           type="button"
                           onClick={() => {
-                            if (confirm("Bu soruyu silmek istediğinize emin misiniz?")) {
-                              const newList = (siteSettings.faqs || []).filter((_: any, idx: number) => idx !== index);
-                              setSiteSettings((prev: any) => ({ ...prev, faqs: newList }));
+                            const confirmMsg = isEnTab ? "Are you sure you want to delete this question?" : "Bu soruyu silmek istediğinize emin misiniz?";
+                            if (confirm(confirmMsg)) {
+                              const faqsKey = isEnTab ? "faqs_en" : "faqs";
+                              const newList = (siteSettings[faqsKey] || []).filter((_: any, idx: number) => idx !== index);
+                              setSiteSettings((prev: any) => ({ ...prev, [faqsKey]: newList }));
                             }
                           }}
                           style={{
@@ -398,33 +495,35 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
                             fontWeight: 500
                           }}
                         >
-                          Sil
+                          {isEnTab ? "Delete" : "Sil"}
                         </button>
                       </div>
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                        <label style={{ fontSize: "10px", color: C.muted, textTransform: "uppercase" }}>Soru</label>
+                        <label style={{ fontSize: "10px", color: C.muted, textTransform: "uppercase" }}>{isEnTab ? "Question" : "Soru"}</label>
                         <input
                           type="text"
                           value={faq.q || ""}
                           onChange={(e) => {
-                            const newList = [...(siteSettings.faqs || [])];
+                            const faqsKey = isEnTab ? "faqs_en" : "faqs";
+                            const newList = [...(siteSettings[faqsKey] || [])];
                             newList[index] = { ...newList[index], q: e.target.value };
-                            setSiteSettings((prev: any) => ({ ...prev, faqs: newList }));
+                            setSiteSettings((prev: any) => ({ ...prev, [faqsKey]: newList }));
                           }}
                           style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "12px" }}
                         />
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                        <label style={{ fontSize: "10px", color: C.muted, textTransform: "uppercase" }}>Cevap</label>
+                        <label style={{ fontSize: "10px", color: C.muted, textTransform: "uppercase" }}>{isEnTab ? "Answer" : "Cevap"}</label>
                         <textarea
                           value={faq.a || ""}
                           onChange={(e) => {
-                            const newList = [...(siteSettings.faqs || [])];
+                            const faqsKey = isEnTab ? "faqs_en" : "faqs";
+                            const newList = [...(siteSettings[faqsKey] || [])];
                             newList[index] = { ...newList[index], a: e.target.value };
-                            setSiteSettings((prev: any) => ({ ...prev, faqs: newList }));
+                            setSiteSettings((prev: any) => ({ ...prev, [faqsKey]: newList }));
                           }}
                           rows={2}
                           style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", background: C.bg, border: `1px solid ${C.border}`, color: C.text, fontSize: "12px", resize: "vertical" }}

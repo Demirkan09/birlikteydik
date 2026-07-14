@@ -21,6 +21,7 @@ export const defaultConfig = {
   musicUrl: "/music/default.mp3",
   finalHeading: "Sonsuza Dek Birlikte",
   finalEnabled: true,
+  lang: "tr" as string,
   // Partiküller
   particlesEnabled: true,
   particlesType: "hearts" as "hearts" | "rose-petals" | "stars" | "none",
@@ -319,7 +320,7 @@ function StarsCanvas({ accentColor, density }: { accentColor: string; density: n
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎵  MÜZİK WİDGET'I — Vinyl (Plak) tipi
 // ─────────────────────────────────────────────────────────────────────────────
-function MusicWidgetVinyl({ isPlaying, toggleMusic, accentColor }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string }) {
+function MusicWidgetVinyl({ isPlaying, toggleMusic, accentColor, isEn }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string; isEn: boolean }) {
   return (
     <div
       onClick={toggleMusic}
@@ -350,10 +351,10 @@ function MusicWidgetVinyl({ isPlaying, toggleMusic, accentColor }: { isPlaying: 
       </motion.div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span style={{ fontFamily: HEADING_FONT.cormorant, fontSize: "13px", fontStyle: "italic", color: isPlaying ? accentColor : "rgba(255,255,255,0.75)", letterSpacing: "0.04em" }}>
-          {isPlaying ? "Melodi Çalıyor..." : "Arka Plan Melodisi"}
+          {isPlaying ? (isEn ? "Melody Playing..." : "Melodi Çalıyor...") : (isEn ? "Background Melody" : "Arka Plan Melodisi")}
         </span>
         <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "9px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: "2px" }}>
-          {isPlaying ? "Tıkla & Durdur" : "Tıkla & Dinle"}
+          {isPlaying ? (isEn ? "Click to Pause" : "Tıkla & Durdur") : (isEn ? "Click to Play" : "Tıkla & Dinle")}
         </span>
       </div>
       <div style={{ marginLeft: "auto" }}>
@@ -366,7 +367,7 @@ function MusicWidgetVinyl({ isPlaying, toggleMusic, accentColor }: { isPlaying: 
 // ─────────────────────────────────────────────────────────────────────────────
 // 🎵  MÜZİK WİDGET'I — Minimal Bar tipi
 // ─────────────────────────────────────────────────────────────────────────────
-function MusicWidgetMinimal({ isPlaying, toggleMusic, accentColor }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string }) {
+function MusicWidgetMinimal({ isPlaying, toggleMusic, accentColor, isEn }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string; isEn: boolean }) {
   return (
     <div
       onClick={toggleMusic}
@@ -391,7 +392,7 @@ function MusicWidgetMinimal({ isPlaying, toggleMusic, accentColor }: { isPlaying
         ))}
       </div>
       <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: isPlaying ? accentColor : "rgba(255,255,255,0.6)", letterSpacing: "0.1em" }}>
-        {isPlaying ? "Çalıyor" : "Müzik"}
+        {isPlaying ? (isEn ? "Playing" : "Çalıyor") : (isEn ? "Music" : "Müzik")}
       </span>
     </div>
   );
@@ -407,14 +408,14 @@ const WIDGET_POSITION_STYLE: Record<string, React.CSSProperties> = {
   "top-right":    { position: "fixed", top: "24px",    right: "max(24px, calc(50% - 216px))", zIndex: 40 },
 };
 
-function MusicWidget({ isPlaying, toggleMusic, accentColor, type, position }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string; type: string; position: string }) {
+function MusicWidget({ isPlaying, toggleMusic, accentColor, type, position, isEn }: { isPlaying: boolean; toggleMusic: () => void; accentColor: string; type: string; position: string; isEn: boolean }) {
   const posStyle = WIDGET_POSITION_STYLE[position] ?? WIDGET_POSITION_STYLE["bottom-left"];
   if (type === "hidden") return null;
   return (
     <div className="lg:absolute" style={posStyle}>
       {type === "minimal"
-        ? <MusicWidgetMinimal isPlaying={isPlaying} toggleMusic={toggleMusic} accentColor={accentColor} />
-        : <MusicWidgetVinyl isPlaying={isPlaying} toggleMusic={toggleMusic} accentColor={accentColor} />
+        ? <MusicWidgetMinimal isPlaying={isPlaying} toggleMusic={toggleMusic} accentColor={accentColor} isEn={isEn} />
+        : <MusicWidgetVinyl isPlaying={isPlaying} toggleMusic={toggleMusic} accentColor={accentColor} isEn={isEn} />
       }
     </div>
   );
@@ -1056,6 +1057,7 @@ export default function BosTemplate({
               accentColor={config.accentColor}
               coupleNames={config.coupleNames}
               onEnter={handleEnter}
+              lang={config.lang}
             />
           </motion.div>
         )}
@@ -1090,7 +1092,7 @@ export default function BosTemplate({
 
           {/* Müzik Widget */}
           {config.musicWidgetEnabled && config.musicWidgetType !== "hidden" && (
-            <MusicWidget isPlaying={isPlaying} toggleMusic={toggleMusic} accentColor={ac} type={config.musicWidgetType} position={config.musicWidgetPosition} />
+            <MusicWidget isPlaying={isPlaying} toggleMusic={toggleMusic} accentColor={ac} type={config.musicWidgetType} position={config.musicWidgetPosition} isEn={config.lang === "en"} />
           )}
 
           {/* ── HERO ──────────────────────────────────────────────────────── */}

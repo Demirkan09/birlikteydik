@@ -20,12 +20,19 @@ const PAGES: string[] = [
   "/register",
   "/profil",
   "/sablonlar",
+  "/en",
+  "/en/login",
+  "/en/register",
+  "/en/profil",
+  "/en/sablonlar",
 ];
 // ║                                                                  ║
 // ║  İletişim & sosyal medya bilgileri                              ║
 // ║                                                                  ║
+// export const WHATSAPP_NUMBER  = "905349829940";
 export const WHATSAPP_NUMBER  = "905349829940";
 export const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
+export const WHATSAPP_MESSAGE_EN = "Hello! I would like to order from birlikteydik.com.";
 export const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
 // ║                                                                  ║
 // ║  Menü linkleri (desktop + mobile'da gösterilir)                 ║
@@ -40,11 +47,20 @@ const NAV_LINKS = [
   { label: "Şablonlar",     anchor: "/sablonlar", isPage: true },
   { label: "SSS",           anchor: "#sss"           },
 ];
+
+const NAV_LINKS_EN = [
+  { label: "Home",          anchor: "#anasayfa"      },
+  { label: "How It Works",  anchor: "#nasil-calisir" },
+  { label: "Special Days",  anchor: "#ozel-gunler"   },
+  { label: "Pricing",       anchor: "#fiyatlar"      },
+  { label: "Templates",     anchor: "/en/sablonlar", isPage: true },
+  { label: "FAQ",           anchor: "#sss"           },
+];
 // ║                                                                  ║
 // ╚══════════════════════════════════════════════════════════════════╝
 
 // ─── Auth state (localStorage tabanlı) ────────────────────────────────────────
-function useAuthState() {
+function useAuthState(isEn: boolean) {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
 
   const checkUser = () => {
@@ -72,7 +88,7 @@ function useAuthState() {
     localStorage.removeItem("birlikteydik_user");
     setUser(null);
     window.dispatchEvent(new Event("auth-change"));
-    window.location.href = "/";
+    window.location.href = isEn ? "/en" : "/";
   };
 
   return { user, logout };
@@ -84,7 +100,9 @@ export default function Navbar() {
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const { user, logout } = useAuthState();
+  
+  const isEn = pathname.startsWith("/en") || pathname.includes("/en/");
+  const { user, logout } = useAuthState(isEn);
 
   const [siteSettings, setSiteSettings] = useState<any>({
     whatsapp_number: WHATSAPP_NUMBER,
@@ -101,7 +119,9 @@ export default function Navbar() {
             ...prev,
             ...data.settings,
             whatsapp_number: data.settings.whatsapp_number || prev.whatsapp_number,
-            announcement_banner: data.settings.announcement_banner || prev.announcement_banner,
+            announcement_banner: isEn 
+              ? (data.settings.announcement_banner_en || prev.announcement_banner) 
+              : (data.settings.announcement_banner || prev.announcement_banner),
           }));
         }
       } catch (err) {
@@ -109,19 +129,20 @@ export default function Navbar() {
       }
     }
     loadSettings();
-  }, []);
+  }, [isEn]);
 
-  const isHome = pathname === "/";
-  const whatsappUrl = `https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+  const isHome = pathname === "/" || pathname === "/en";
+  const whatsappUrl = `https://wa.me/${siteSettings.whatsapp_number || WHATSAPP_NUMBER}?text=${encodeURIComponent(isEn ? WHATSAPP_MESSAGE_EN : WHATSAPP_MESSAGE)}`;
 
   // Menü linklerini pathname'e göre ayarla
-  const navLinks = NAV_LINKS.map((l) => ({
+  const activeNavLinks = isEn ? NAV_LINKS_EN : NAV_LINKS;
+  const navLinks = activeNavLinks.map((l) => ({
     label: l.label,
-    href: l.isPage ? l.anchor : (isHome ? l.anchor : `/${l.anchor}`),
+    href: l.isPage ? l.anchor : (isHome ? l.anchor : (isEn ? `/en${l.anchor}` : `/${l.anchor}`)),
   }));
 
   const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href === "#anasayfa" || href === "/#anasayfa") {
+    if (href === "#anasayfa" || href === "/#anasayfa" || href === "/en#anasayfa") {
       if (isHome) {
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -197,11 +218,11 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link
-          href="/"
+          href={isEn ? "/en" : "/"}
           onClick={(e) => {
             if (isHome) {
               e.preventDefault();
-              window.location.href = "/";
+              window.location.href = isEn ? "/en" : "/";
             }
           }}
           style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 600, color: "#F0EDE8", letterSpacing: "0.04em", textDecoration: "none" }}
@@ -231,16 +252,16 @@ export default function Navbar() {
             onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(240,237,232,0.6)"; }}
           ><FaInstagram size={15} /></a>
 
-          {/* WhatsApp */}
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 16px", borderRadius: "30px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.25)", color: "#25D366", textDecoration: "none", fontSize: "11px", letterSpacing: "0.08em", fontWeight: 500, transition: "background 0.2s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(37,211,102,0.2)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(37,211,102,0.1)"; }}
-          ><FaWhatsapp size={14} /><span>Sipariş Ver</span></a>
+          {/* Order Link */}
+          <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer"
+            style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 16px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "11px", letterSpacing: "0.08em", fontWeight: 600, transition: "opacity 0.2s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+          ><span>{isEn ? "Order Now" : "Sipariş Ver"}</span></a>
 
           {/* Auth — giriş yapıldıysa /profil sayfasına yönlendiren isim butonu, yoksa login/register */}
           {user ? (
-            <Link href="/profil"
+            <Link href={isEn ? "/en/profil" : "/profil"}
               style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", borderRadius: "30px", background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)", textDecoration: "none", color: "#F0EDE8", transition: "all 0.2s" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.18)"; e.currentTarget.style.borderColor = "#C9A84C66"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(201,168,76,0.1)"; e.currentTarget.style.borderColor = "rgba(201,168,76,0.25)"; }}
@@ -252,17 +273,17 @@ export default function Navbar() {
             </Link>
           ) : (
             <>
-              <Link href="/login"
+              <Link href={isEn ? "/en/login" : "/login"}
                 style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderRadius: "30px", background: "transparent", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(240,237,232,0.65)", textDecoration: "none", fontSize: "11px", letterSpacing: "0.08em", fontWeight: 400, transition: "all 0.2s" }}
                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"; e.currentTarget.style.color = "#F0EDE8"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "rgba(240,237,232,0.65)"; }}
-              ><HiOutlineUser size={14} /><span>Giriş</span></Link>
+              ><HiOutlineUser size={14} /><span>{isEn ? "Login" : "Giriş"}</span></Link>
 
-              <Link href="/register"
+              <Link href={isEn ? "/en/register" : "/register"}
                 style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "11px", letterSpacing: "0.1em", fontWeight: 600, transition: "opacity 0.2s" }}
                 onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-              ><HiOutlineUserAdd size={14} /><span>Kayıt Ol</span></Link>
+              ><HiOutlineUserAdd size={14} /><span>{isEn ? "Register" : "Kayıt Ol"}</span></Link>
             </>
           )}
         </div>
@@ -291,17 +312,17 @@ export default function Navbar() {
             ))}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.25)", color: "#25D366", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}
-              ><FaWhatsapp size={17} />WhatsApp ile Sipariş Ver</a>
+              <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}
+              >{isEn ? "Order Now" : "Sipariş Ver"}</a>
 
               <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", color: "#C9A84C", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}
-              ><FaInstagram size={17} />Instagram'ı Takip Et</a>
+              ><FaInstagram size={17} />{isEn ? "Follow Instagram" : "Instagram'ı Takip Et"}</a>
 
               {user ? (
                 <>
-                  <Link href="/profil" onClick={() => setMobileOpen(false)}
+                  <Link href={isEn ? "/en/profil" : "/profil"} onClick={() => setMobileOpen(false)}
                     style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)", color: "#F0EDE8", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}
                   >
                     <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: "linear-gradient(135deg, #C9A84C, #E8A0A0)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", color: "#0B0F1A", fontWeight: 700 }}>
@@ -311,16 +332,16 @@ export default function Navbar() {
                   </Link>
                   <button onClick={logout}
                     style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "rgba(232,160,160,0.08)", border: "1px solid rgba(232,160,160,0.2)", color: "#E8A0A0", fontSize: "13px", cursor: "pointer" }}
-                  ><HiOutlineLogout size={17} />Çıkış Yap</button>
+                  ><HiOutlineLogout size={17} />{isEn ? "Logout" : "Çıkış Yap"}</button>
                 </>
               ) : (
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <Link href="/login" onClick={() => setMobileOpen(false)}
+                  <Link href={isEn ? "/en/login" : "/login"} onClick={() => setMobileOpen(false)}
                     style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px", borderRadius: "30px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(240,237,232,0.7)", textDecoration: "none", fontSize: "13px" }}
-                  ><HiOutlineUser size={16} />Giriş</Link>
-                  <Link href="/register" onClick={() => setMobileOpen(false)}
+                  ><HiOutlineUser size={16} />{isEn ? "Login" : "Giriş"}</Link>
+                  <Link href={isEn ? "/en/register" : "/register"} onClick={() => setMobileOpen(false)}
                     style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px", padding: "14px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}
-                  ><HiOutlineUserAdd size={16} />Kayıt Ol</Link>
+                  ><HiOutlineUserAdd size={16} />{isEn ? "Register" : "Kayıt Ol"}</Link>
                 </div>
               )}
             </div>

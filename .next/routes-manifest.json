@@ -39,6 +39,30 @@
       "namedRegex": "^/api/uploads/(?<nxtPfilename>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/en/portal/[token]",
+      "regex": "^/en/portal/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtoken": "nxtPtoken"
+      },
+      "namedRegex": "^/en/portal/(?<nxtPtoken>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/en/sablonlar/[slug]",
+      "regex": "^/en/sablonlar/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/en/sablonlar/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/en/[slug]",
+      "regex": "^/en/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/en/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/portal/[token]",
       "regex": "^/portal/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -291,6 +315,48 @@
       "regex": "^/demirkanmelis(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/demirkanmelis(?:/)?$"
+    },
+    {
+      "page": "/en",
+      "regex": "^/en(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en(?:/)?$"
+    },
+    {
+      "page": "/en/forgot-password",
+      "regex": "^/en/forgot\\-password(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en/forgot\\-password(?:/)?$"
+    },
+    {
+      "page": "/en/login",
+      "regex": "^/en/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en/login(?:/)?$"
+    },
+    {
+      "page": "/en/profil",
+      "regex": "^/en/profil(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en/profil(?:/)?$"
+    },
+    {
+      "page": "/en/register",
+      "regex": "^/en/register(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en/register(?:/)?$"
+    },
+    {
+      "page": "/en/sablonlar",
+      "regex": "^/en/sablonlar(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en/sablonlar(?:/)?$"
+    },
+    {
+      "page": "/en/verify-email",
+      "regex": "^/en/verify\\-email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/en/verify\\-email(?:/)?$"
     },
     {
       "page": "/forgot-password",

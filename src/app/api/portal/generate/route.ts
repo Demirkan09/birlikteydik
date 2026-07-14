@@ -19,11 +19,13 @@ async function verifyAdminOrStaff(adminEmail: string) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { adminEmail, userPageId, pageSlug: rawPageSlug } = body as {
+    const { adminEmail, userPageId, pageSlug: rawPageSlug, lang } = body as {
       adminEmail?: string;
       userPageId?: number;
       pageSlug?: string;
+      lang?: string;
     };
+    const activeLang = lang === "en" ? "en" : "tr";
 
     if (!adminEmail || (!userPageId && !rawPageSlug)) {
       return NextResponse.json(
@@ -104,6 +106,12 @@ export async function POST(request: Request) {
       // Reuse the existing valid token
       token = existingRes.rows[0].token;
       expiresAt = new Date(existingRes.rows[0].expires_at);
+
+      // Update the language of the existing pending submission in case it was changed by the admin
+      await pool.query(
+        `UPDATE client_submissions SET lang = $1 WHERE token = $2`,
+        [activeLang, token]
+      );
     } else {
       // Generate a fresh token valid for 7 days
       token = randomBytes(32).toString("hex");
@@ -111,16 +119,16 @@ export async function POST(request: Request) {
 
       await pool.query(
         `INSERT INTO client_submissions
-           (token, page_slug, status, expires_at)
-         VALUES ($1, $2, 'pending', $3)`,
-        [token, pageSlug, expiresAt.toISOString()]
+           (token, page_slug, status, expires_at, lang)
+         VALUES ($1, $2, 'pending', $3, $4)`,
+        [token, pageSlug, expiresAt.toISOString(), activeLang]
       );
     }
 
     const host = request.headers.get("host") || "birlikteydik.com";
     const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
     const siteUrl = `${protocol}://${host}`;
-    const portalUrl = `${siteUrl}/portal/${token}`;
+    const portalUrl = activeLang === "en" ? `${siteUrl}/en/portal/${token}` : `${siteUrl}/portal/${token}`;
 
     // Send invitation e-mail to the page owner
     await sendClientPortalInvite({
@@ -129,6 +137,7 @@ export async function POST(request: Request) {
       portalUrl,
       pageSlug,
       expiresAt,
+      lang: activeLang,
     });
 
     return NextResponse.json({ success: true, portalUrl, token });

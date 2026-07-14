@@ -91,7 +91,33 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.3);text-align:center;">
       Bu kod g\xfcvenlik nedeniyle 15 dakika ge\xe7erlidir.
     </p>
-  `);await t.sendMail({from:i,to:e.to,subject:"E-posta Onay Kodu — birlikteydik.com",html:a,text:o(a),headers:n(e.to)})}async function c(e){await t.sendMail({from:i,to:e.to,subject:e.subject,html:e.html,text:o(e.html),headers:n(e.to)})}async function d(e){let a=new Intl.DateTimeFormat("tr-TR",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Istanbul"}).format(e.expiresAt),r=s(`
+  `);await t.sendMail({from:i,to:e.to,subject:"E-posta Onay Kodu — birlikteydik.com",html:a,text:o(a),headers:n(e.to)})}async function c(e){await t.sendMail({from:i,to:e.to,subject:e.subject,html:e.html,text:o(e.html),headers:n(e.to)})}async function d(e){let a="en"===e.lang,r=new Intl.DateTimeFormat(a?"en-US":"tr-TR",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Istanbul"}).format(e.expiresAt),p=s(a?`
+    <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Hello, <strong style="color:#F0EDE8;">${e.name}</strong></p>
+    <h2 style="margin:0 0 16px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Upload Your<br/><em style="color:#C9A84C;">Memories</em></h2>
+    <p style="margin:0 0 24px;font-size:14px;color:rgba(240,237,232,0.55);line-height:1.7;font-weight:300;">
+      Your page is ready! Now it's time to upload your photos, stories, and song link.<br/>
+      Click the button below to access your custom content portal.
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr>
+        <td align="center">
+          <a href="${e.portalUrl}" style="display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#C9A84C,#e0c068);color:#0B0F1A;text-decoration:none;border-radius:30px;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;box-shadow:0 4px 20px rgba(201,168,76,0.3);">
+            📸 &nbsp;Upload My Photos
+          </a>
+        </td>
+      </tr>
+    </table>
+    <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:14px 20px;margin-bottom:20px;">
+      <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.5);line-height:1.6;">
+        <strong style="color:rgba(201,168,76,0.8);">⏱ Expiry Date:</strong><br/>
+        This link is valid until <strong style="color:#F0EDE8;">${r}</strong>.
+      </p>
+    </div>
+    <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.3);line-height:1.6;">
+      If you cannot click the button, copy this link:<br/>
+      <span style="color:rgba(201,168,76,0.5);word-break:break-all;font-size:11px;">${e.portalUrl}</span>
+    </p>
+  `:`
     <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,237,232,0.4);">Merhaba, <strong style="color:#F0EDE8;">${e.name}</strong></p>
     <h2 style="margin:0 0 16px;font-size:24px;font-weight:400;color:#F0EDE8;line-height:1.3;">Anılarınızı<br/><em style="color:#C9A84C;">Y\xfckleyin</em></h2>
     <p style="margin:0 0 24px;font-size:14px;color:rgba(240,237,232,0.55);line-height:1.7;font-weight:300;">
@@ -110,13 +136,13 @@ module.exports=[27699,(e,t,i)=>{t.exports=e.x("events",()=>require("events"))},9
     <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:14px 20px;margin-bottom:20px;">
       <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.5);line-height:1.6;">
         <strong style="color:rgba(201,168,76,0.8);">⏱ Son kullanma tarihi:</strong><br/>
-        Bu link <strong style="color:#F0EDE8;">${a}</strong> tarihine kadar ge\xe7erlidir.
+        Bu link <strong style="color:#F0EDE8;">${r}</strong> tarihine kadar ge\xe7erlidir.
       </p>
     </div>
     <p style="margin:0;font-size:12px;color:rgba(240,237,232,0.3);line-height:1.6;">
       Butona tıklayamıyorsanız şu linki kopyalayın:<br/>
       <span style="color:rgba(201,168,76,0.5);word-break:break-all;font-size:11px;">${e.portalUrl}</span>
     </p>
-  `);await t.sendMail({from:i,to:e.to,subject:"Fotoğraflarınızı Yükleyin — birlikteydik.com",html:r,text:o(r),headers:n(e.to)})}e.s(["sendAccountPasswordReset",0,r,"sendClientPortalInvite",0,d,"sendCustomEmail",0,c,"sendPagePasswordReset",0,p,"sendVerificationCodeEmail",0,l])}];
+  `);await t.sendMail({from:i,to:e.to,subject:a?"Upload Your Memories — birlikteydik.com":"Anılarınızı Yükleyin — birlikteydik.com",html:p,text:o(p),headers:n(e.to)})}e.s(["sendAccountPasswordReset",0,r,"sendClientPortalInvite",0,d,"sendCustomEmail",0,c,"sendPagePasswordReset",0,p,"sendVerificationCodeEmail",0,l])}];
 
 //# sourceMappingURL=%5Broot-of-the-server%5D__1_y4f8w._.js.map

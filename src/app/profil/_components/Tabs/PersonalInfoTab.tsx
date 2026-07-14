@@ -34,6 +34,7 @@ export function PersonalInfoTab({
   handleSendVerification,
   verificationLoading,
   verificationSuccess,
+  isEn = false,
 }: {
   user: User;
   name: string;
@@ -52,28 +53,50 @@ export function PersonalInfoTab({
   handleSendVerification: () => void;
   verificationLoading: boolean;
   verificationSuccess: string;
+  isEn?: boolean;
 }) {
   const isMobile = useWindowWidth() < 768;
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const [showPass3, setShowPass3] = useState(false);
 
+  const t = {
+    title: isEn ? "Personal " : "Kişisel ",
+    titleEm: isEn ? "Information" : "Bilgiler",
+    subtitle: isEn 
+      ? "You can update your account information and change your password."
+      : "Hesap bilgilerinizi güncelleyebilir ve şifrenizi değiştirebilirsiniz.",
+    fullName: isEn ? "Full Name" : "Adınız Soyadınız",
+    emailAddr: isEn ? "Email Address" : "E-posta Adresiniz",
+    notVerified: isEn ? "⚠ Your email address is not verified." : "⚠ E-posta adresiniz doğrulanmadı.",
+    sendCode: isEn ? "Send Verification Code" : "Doğrulama Kodu Gönder",
+    sending: isEn ? "Sending..." : "Gönderiliyor...",
+    pwdUpdateTitle: isEn ? "Update Password " : "Şifre Güncelleme ",
+    optional: isEn ? "(Optional)" : "(İsteğe Bağlı)",
+    curPassword: isEn ? "Current Password" : "Mevcut Şifreniz",
+    newPassword: isEn ? "New Password" : "Yeni Şifre",
+    confirmPassword: isEn ? "Confirm New Password" : "Yeni Şifre Tekrarı",
+    passPlaceholder: isEn ? "At least 8 characters" : "En az 8 karakter",
+    saveBtn: isEn ? "Save Changes" : "Değişiklikleri Kaydet",
+    savingBtn: isEn ? "Saving..." : "Kaydediliyor...",
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
       <div>
         <h2 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "1.6rem", fontWeight: 500, color: C.text, marginBottom: "8px" }}>
-          Kişisel <em style={{ color: C.gold, fontStyle: "italic" }}>Bilgiler</em>
+          {t.title}<em style={{ color: C.gold, fontStyle: "italic" }}>{t.titleEm}</em>
         </h2>
         <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12.5px", color: C.muted, fontWeight: 300 }}>
-          Hesap bilgilerinizi güncelleyebilir ve şifrenizi değiştirebilirsiniz.
+          {t.subtitle}
         </p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
-          <ProfileInput label="Adınız Soyadınız" value={name} onChange={setName} icon={<HiOutlineUser size={15} />} error={errors.name} />
+          <ProfileInput label={t.fullName} value={name} onChange={setName} icon={<HiOutlineUser size={15} />} error={errors.name} />
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <ProfileInput label="E-posta Adresiniz" type="email" value={email} onChange={setEmail} icon={<HiOutlineMail size={15} />} error={errors.email} />
+            <ProfileInput label={t.emailAddr} type="email" value={email} onChange={setEmail} icon={<HiOutlineMail size={15} />} error={errors.email} />
             
             {/* E-posta Doğrulama Durumu */}
             {!user.isVerified && (
@@ -88,7 +111,7 @@ export function PersonalInfoTab({
                 gap: "8px",
               }}>
                 <span style={{ fontSize: "12px", color: "#E8A0A0", display: "flex", alignItems: "center", gap: "6px", fontFamily: "var(--font-inter), sans-serif", fontWeight: 400 }}>
-                  ⚠ E-posta adresiniz doğrulanmadı.
+                  {t.notVerified}
                 </span>
                 <button
                   onClick={(e) => {
@@ -114,7 +137,7 @@ export function PersonalInfoTab({
                   onMouseEnter={(e) => { if (!verificationLoading) e.currentTarget.style.background = "rgba(201,168,76,0.1)"; }}
                   onMouseLeave={(e) => { if (!verificationLoading) e.currentTarget.style.background = "transparent"; }}
                 >
-                  {verificationLoading ? "Gönderiliyor..." : "Doğrulama Kodu Gönder"}
+                  {verificationLoading ? t.sending : t.sendCode}
                 </button>
                 {verificationSuccess && (
                   <span style={{ fontSize: "12px", color: C.success, fontFamily: "var(--font-inter), sans-serif", fontWeight: 300, marginTop: "2px" }}>
@@ -130,22 +153,22 @@ export function PersonalInfoTab({
 
         <div>
           <h3 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "1.25rem", color: C.gold, fontWeight: 500, marginBottom: "14px" }}>
-            Şifre Güncelleme <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10.5px", color: "rgba(240,237,232,0.22)", fontWeight: 300, marginLeft: "4px" }}>(İsteğe Bağlı)</span>
+            {t.pwdUpdateTitle}<span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10.5px", color: "rgba(240,237,232,0.22)", fontWeight: 300, marginLeft: "4px" }}>{t.optional}</span>
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <ProfileInput
-              label="Mevcut Şifreniz" type={showPass1 ? "text" : "password"} value={currentPassword} onChange={setCurrentPassword}
+              label={t.curPassword} type={showPass1 ? "text" : "password"} value={currentPassword} onChange={setCurrentPassword}
               icon={<HiOutlineLockClosed size={15} />} placeholder="••••••••" error={errors.currentPassword}
               rightElement={<span onClick={() => setShowPass1(!showPass1)}>{showPass1 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
             />
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "16px" }}>
               <ProfileInput
-                label="Yeni Şifre" type={showPass2 ? "text" : "password"} value={newPassword} onChange={setNewPassword}
-                icon={<HiOutlineLockClosed size={15} />} placeholder="En az 8 karakter" error={errors.newPassword}
+                label={t.newPassword} type={showPass2 ? "text" : "password"} value={newPassword} onChange={setNewPassword}
+                icon={<HiOutlineLockClosed size={15} />} placeholder={t.passPlaceholder} error={errors.newPassword}
                 rightElement={<span onClick={() => setShowPass2(!showPass2)}>{showPass2 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
               />
               <ProfileInput
-                label="Yeni Şifre Tekrarı" type={showPass3 ? "text" : "password"} value={newPasswordConfirm} onChange={setNewPasswordConfirm}
+                label={t.confirmPassword} type={showPass3 ? "text" : "password"} value={newPasswordConfirm} onChange={setNewPasswordConfirm}
                 icon={<HiOutlineLockClosed size={15} />} placeholder="••••••••" error={errors.newPasswordConfirm}
                 rightElement={<span onClick={() => setShowPass3(!showPass3)}>{showPass3 ? <HiOutlineEyeOff size={15} /> : <HiOutlineEye size={15} />}</span>}
               />
@@ -167,7 +190,7 @@ export function PersonalInfoTab({
           onMouseLeave={(e) => { if (!loading) e.currentTarget.style.opacity = "1"; }}
         >
           {loading ? <span style={{ width: "14px", height: "14px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} /> : null}
-          <span>{loading ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}</span>
+          <span>{loading ? t.savingBtn : t.saveBtn}</span>
         </button>
       </div>
     </div>

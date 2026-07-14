@@ -18,9 +18,26 @@ const C = {
 interface PasswordGateProps {
   slug: string;
   children: React.ReactNode;
+  lang?: string;
 }
 
-export default function PasswordGate({ slug, children }: PasswordGateProps) {
+export default function PasswordGate({ slug, children, lang }: PasswordGateProps) {
+  const isEn = lang === "en" || (typeof window !== "undefined" && window.location.pathname.startsWith("/en/"));
+
+  const t = {
+    title: isEn ? "This Page is Protected" : "Bu Sayfa Korumalı",
+    desc: isEn 
+      ? "To view these shared special memories and photo gallery, please enter the page password."
+      : "Paylaşılan özel anıları ve fotoğraf galerisini görüntülemek için sayfa şifresini girmeniz gerekmektedir.",
+    label: isEn ? "Page Password" : "Sayfa Şifresi",
+    placeholder: isEn ? "Enter password here..." : "Şifreyi buraya girin...",
+    errorEmpty: isEn ? "Please enter the password." : "Lütfen şifrenizi girin.",
+    errorWrong: isEn ? "Incorrect password. Please try again." : "Şifre hatalı. Lütfen tekrar deneyin.",
+    errorConn: isEn ? "Connection error occurred. Please try again." : "Bağlantı hatası oluştu. Lütfen tekrar deneyin.",
+    submitting: isEn ? "Verifying..." : "Doğrulanıyor...",
+    submit: isEn ? "Enter" : "Giriş Yap",
+    copyright: isEn ? "All Rights Reserved" : "Tüm Hakları Saklıdır",
+  };
   const [isChecking, setIsChecking] = useState(true);
   const [isProtected, setIsProtected] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -65,7 +82,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password) {
-      setError("Lütfen şifrenizi girin.");
+      setError(t.errorEmpty);
       return;
     }
 
@@ -87,11 +104,11 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
         }
         setIsUnlocked(true);
       } else {
-        setError(data.error || "Şifre hatalı. Lütfen tekrar deneyin.");
+        setError(data.error || t.errorWrong);
       }
     } catch (err) {
       console.error("Password verification error:", err);
-      setError("Bağlantı hatası oluştu. Lütfen tekrar deneyin.");
+      setError(t.errorConn);
     } finally {
       setIsSubmitting(false);
     }
@@ -232,7 +249,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
               letterSpacing: "0.02em",
             }}
           >
-            Bu Sayfa Korumalı
+            {t.title}
           </h2>
           <p
             style={{
@@ -244,7 +261,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
               padding: "0 10px",
             }}
           >
-            Paylaşılan özel anıları ve fotoğraf galerisini görüntülemek için sayfa şifresini girmeniz gerekmektedir.
+            {t.desc}
           </p>
         </div>
 
@@ -287,7 +304,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
                 fontWeight: 500,
               }}
             >
-              Sayfa Şifresi
+              {t.label}
             </label>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
               <input
@@ -295,7 +312,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Şifreyi buraya girin..."
+                placeholder={t.placeholder}
                 style={{
                   width: "100%",
                   padding: "14px 48px 14px 16px",
@@ -376,7 +393,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
               }
             }}
           >
-            {isSubmitting ? "Doğrulanıyor..." : "Giriş Yap"}
+            {isSubmitting ? t.submitting : t.submit}
           </button>
         </form>
       </motion.div>
@@ -414,7 +431,7 @@ export default function PasswordGate({ slug, children }: PasswordGateProps) {
             color: "rgba(240, 237, 232, 0.2)",
           }}
         >
-          Tüm Hakları Saklıdır © {new Date().getFullYear()}
+          {t.copyright} © {new Date().getFullYear()}
         </span>
       </motion.div>
     </div>

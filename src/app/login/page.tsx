@@ -104,7 +104,34 @@ function Input({
 // Beni Hatırla timeout süresi: 1 saat (milisaniye cinsinden)
 const REMEMBER_ME_TTL = 60 * 60 * 1000;
 
-export default function LoginPage() {
+export default function LoginPage({ lang }: { lang?: string }) {
+  const isEn = lang === "en" || (typeof window !== "undefined" && window.location.pathname.startsWith("/en/"));
+
+  const t = {
+    eyebrow: isEn ? "Welcome Back" : "Hoş Geldin",
+    heading: isEn ? "Sign In to Your Account" : "Hesabına Giriş Yap",
+    emailLabel: isEn ? "Email Address" : "E-posta",
+    emailPlaceholder: isEn ? "example@mail.com" : "ornek@mail.com",
+    passLabel: isEn ? "Password" : "Şifre",
+    rememberMe: isEn ? "Remember Me" : "Beni Hatırla",
+    forgotPass: isEn ? "Forgot Password?" : "Şifremi Unuttum",
+    loginBtn: isEn ? "Sign In" : "Giriş Yap",
+    loginBtnLoading: isEn ? "Signing In..." : "Giriş Yapılıyor…",
+    or: isEn ? "or" : "veya",
+    noAccount: isEn ? "Don't have an account?" : "Hesabın yok mu?",
+    registerLink: isEn ? "Register" : "Kayıt Ol",
+    termsConsent: isEn 
+      ? "By signing in, you accept our Terms & Conditions." 
+      : "Giriş yaparak Kullanım Koşulları'nı kabul etmiş olursun.",
+    termsLink: isEn ? "Terms & Conditions" : "Kullanım Koşulları",
+    errEmailReq: isEn ? "Email address is required." : "E-posta adresi gerekli",
+    errEmailValid: isEn ? "Please enter a valid email." : "Geçerli bir e-posta gir",
+    errPassReq: isEn ? "Password is required." : "Şifre gerekli",
+    errPassLen: isEn ? "Password must be at least 6 characters." : "Şifre en az 6 karakter olmalı",
+    errGeneral: isEn ? "Incorrect email or password." : "E-posta veya şifre hatalı.",
+    errServer: isEn ? "A server error occurred. Please try again." : "Giriş yapılırken sunucu hatası oluştu. Lütfen tekrar dene.",
+  };
+
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -133,10 +160,10 @@ export default function LoginPage() {
 
   const validate = () => {
     const e: typeof errors = {};
-    if (!email) e.email = "E-posta adresi gerekli";
-    else if (!/\S+@\S+\.\S+/.test(email)) e.email = "Geçerli bir e-posta gir";
-    if (!password) e.password = "Şifre gerekli";
-    else if (password.length < 6) e.password = "Şifre en az 6 karakter olmalı";
+    if (!email) e.email = t.errEmailReq;
+    else if (!/\S+@\S+\.\S+/.test(email)) e.email = t.errEmailValid;
+    if (!password) e.password = t.errPassReq;
+    else if (password.length < 6) e.password = t.errPassLen;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -154,10 +181,10 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) {
         if (data.unverified) {
-          router.push(`/verify-email?email=${encodeURIComponent(email.toLowerCase().trim())}`);
+          router.push((isEn ? "/en/verify-email" : "/verify-email") + `?email=${encodeURIComponent(email.toLowerCase().trim())}`);
           return;
         }
-        setErrors({ general: data.error ?? "E-posta veya şifre hatalı." });
+        setErrors({ general: data.error || t.errGeneral });
         setLoading(false);
         return;
       }
@@ -181,9 +208,9 @@ export default function LoginPage() {
       }
 
       setLoading(false);
-      router.push("/profil");
+      router.push(isEn ? "/en/profil" : "/profil");
     } catch {
-      setErrors({ general: "Giriş yapılırken sunucu hatası oluştu. Lütfen tekrar dene." });
+      setErrors({ general: t.errServer });
       setLoading(false);
     }
   };
@@ -208,11 +235,11 @@ export default function LoginPage() {
             <div style={{ textAlign: "center", marginBottom: "36px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center", marginBottom: "16px" }}>
                 <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
-                <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>Hoş Geldin</span>
+                <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "10px", letterSpacing: "0.38em", textTransform: "uppercase", color: C.gold, fontWeight: 500 }}>{t.eyebrow}</span>
                 <div style={{ height: "1px", width: "28px", background: C.gold + "66" }} />
               </div>
               <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: "clamp(1.8rem, 5vw, 2.4rem)", fontWeight: 600, color: C.text, lineHeight: 1.15, letterSpacing: "-0.01em" }}>
-                Hesabına <em style={{ color: C.gold, fontStyle: "italic" }}>Giriş Yap</em>
+                {isEn ? <>Sign In to <em style={{ color: C.gold, fontStyle: "italic" }}>Your Account</em></> : <>Hesabına <em style={{ color: C.gold, fontStyle: "italic" }}>Giriş Yap</em></>}
               </h1>
             </div>
 
@@ -225,11 +252,11 @@ export default function LoginPage() {
               )}
 
               <Input
-                label="E-posta" type="email" value={email} onChange={setEmail}
-                placeholder="ornek@mail.com" icon={<HiOutlineMail size={17} />} error={errors.email}
+                label={t.emailLabel} type="email" value={email} onChange={setEmail}
+                placeholder={t.emailPlaceholder} icon={<HiOutlineMail size={17} />} error={errors.email}
               />
               <Input
-                label="Şifre" type={showPass ? "text" : "password"} value={password} onChange={setPassword}
+                label={t.passLabel} type={showPass ? "text" : "password"} value={password} onChange={setPassword}
                 placeholder="••••••••" icon={<HiOutlineLockClosed size={17} />} error={errors.password}
                 rightElement={
                   <span onClick={() => setShowPass(!showPass)} style={{ color: "rgba(240,237,232,0.35)", display: "flex", cursor: "pointer" }}>
@@ -258,10 +285,10 @@ export default function LoginPage() {
                     )}
                   </div>
                   <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: rememberMe ? "rgba(240,237,232,0.7)" : "rgba(240,237,232,0.38)", fontWeight: 300, transition: "color 0.2s" }}>
-                    Beni Hatırla
+                    {t.rememberMe}
                   </span>
                 </label>
-                <Link href="/forgot-password" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>Şifremi Unuttum</Link>
+                <Link href={isEn ? "/en/forgot-password" : "/forgot-password"} style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: C.gold + "bb", textDecoration: "none", fontWeight: 400, letterSpacing: "0.04em" }}>{t.forgotPass}</Link>
               </div>
 
               {/* Submit */}
@@ -279,37 +306,83 @@ export default function LoginPage() {
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
               >
                 {loading ? (
-                  <><span style={{ width: "16px", height: "16px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} />Giriş Yapılıyor…</>
-                ) : "Giriş Yap"}
+                  <><span style={{ width: "16px", height: "16px", border: "2px solid #0B0F1A44", borderTopColor: "#0B0F1A", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} />{t.loginBtnLoading}</>
+                ) : t.loginBtn}
               </button>
             </div>
 
             {/* Divider */}
             <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "24px 0" }}>
               <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-              <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>veya</span>
+              <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.06em" }}>{t.or}</span>
               <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
             </div>
 
             {/* Register link */}
             <p style={{ textAlign: "center", fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, fontWeight: 300 }}>
-              Hesabın yok mu?{" "}
-              <Link href="/register" style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>Kayıt Ol</Link>
+              {t.noAccount}{" "}
+              <Link href={isEn ? "/en/register" : "/register"} style={{ color: C.gold, textDecoration: "none", fontWeight: 500 }}>{t.registerLink}</Link>
             </p>
           </div>
 
           {/* Alt bilgi */}
           <p style={{ textAlign: "center", marginTop: "24px", fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.06em" }}>
-            Giriş yaparak{" "}
-            <a href="/kvkk-metni" target="_blank" style={{ color: C.gold + "66", textDecoration: "none" }}>Kullanım Koşulları</a>'nı kabul etmiş olursun.
+            {isEn ? (
+              <>By signing in, you accept our <Link href="/en/kvkk-metni" style={{ color: C.gold + "66", textDecoration: "none" }}>Terms &amp; Conditions</Link>.</>
+            ) : (
+              <>Giriş yaparak <Link href="/kvkk-metni" style={{ color: C.gold + "66", textDecoration: "none" }}>Kullanım Koşulları</Link>'nı kabul etmiş olursun.</>
+            )}
           </p>
         </motion.div>
       </main>
 
-      {/* Footer mini */}
-      <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
-        <FaHeart size={10} color="rgba(232,160,160,0.25)" />
-        <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.18)", letterSpacing: "0.08em" }}>© {new Date().getFullYear()} birlikteydik.com</p>
+      {/* FOOTER */}
+      <footer
+        style={{
+          position: "relative",
+          zIndex: 1,
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          padding: "48px 24px",
+          maxWidth: "1100px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "24px",
+          marginBottom: "28px",
+        }}>
+          <div>
+            <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.2rem", color: "rgba(240,237,232,0.6)" }}>
+              birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
+            </span>
+            <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.35)", marginTop: "6px", maxWidth: "280px", lineHeight: 1.6 }}>
+              {isEn ? "A unique, unforgettable digital surprise for your loved ones." : "Sevdiklerinize özel, unutulmaz bir dijital sürpriz."}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            <Link href={isEn ? "/en/kvkk-metni" : "/kvkk-metni"} style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Privacy Policy" : "KVKK Aydınlatma Metni"}</Link>
+            <a href={`https://wa.me/${"905349829940"}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Contact" : "İletişim"}</a>
+            <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >info@birlikteydik.com</a>
+          </div>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>
+          <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
+            © {new Date().getFullYear()} birlikteydik.com — {isEn ? "All Rights Reserved" : "Tüm Hakları Saklıdır"}
+          </p>
+        </div>
       </footer>
     </>
   );

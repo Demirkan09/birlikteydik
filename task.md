@@ -1,0 +1,35 @@
+# Task List — i18n Subpath (/en) Implementation
+
+- [x] Run migration to add `lang` column to `client_submissions` table <!-- id: 1 -->
+- [x] Implement backend API updates <!-- id: 2 -->
+  - [x] Update `src/app/api/portal/generate/route.ts` (accept `lang`, prefix `/en/portal`, send EN email)
+  - [x] Update `src/app/api/portal/[token]/route.ts` (return `lang` in GET)
+  - [x] Update `src/app/api/portal/submissions/route.ts` (merge `lang` to config on page settings import)
+  - [x] Update `src/lib/email.ts` (add English email templates)
+- [x] Create `/en` subpath layout shell pages <!-- id: 3 -->
+  - [x] Create `/src/app/en/page.tsx` (Landing Page)
+  - [x] Create `/src/app/en/login/page.tsx` (Login)
+  - [x] Create `/src/app/en/register/page.tsx` (Register)
+  - [x] Create `/src/app/en/forgot-password/page.tsx` (Forgot Password)
+  - [x] Create `/src/app/en/verify-email/page.tsx` (Verify Email)
+  - [x] Create `/src/app/en/profil/page.tsx` (Profile)
+  - [x] Create `/src/app/en/sablonlar/page.tsx` (Templates List)
+  - [x] Create `/src/app/en/sablonlar/[slug]/page.tsx` (Templates Detail)
+  - [x] Create `/src/app/en/portal/[token]/page.tsx` (Client Portal)
+  - [x] Create `/src/app/en/[slug]/page.tsx` (Couple dynamic template page)
+- [x] Implement component-level translations <!-- id: 4 -->
+  - [x] Update `src/app/page.tsx` (Landing Page text, prices, templates)
+  - [x] Update `src/app/login/page.tsx` (Login)
+  - [x] Update `src/app/register/page.tsx` (Register)
+  - [x] Update `src/app/forgot-password/page.tsx` (Forgot Password)
+  - [x] Update `src/app/verify-email/page.tsx` (Verify Email)
+  - [x] Update `src/app/profil/page.tsx` & tabs (PersonalInfo, Communications, AccountDetails, MyPages, DangerZone)
+  - [x] Update `src/app/sablonlar/page.tsx` (Templates List)
+  - [x] Update `src/app/sablonlar/sablon-bos/page.tsx` (Template core, countdowns, buttons)
+  - [x] Update `src/components/EntranceScreen.tsx` (Entrance transitions)
+- [x] Implement Admin Panel features <!-- id: 5 -->
+  - [x] Update `src/app/admin/_components/Tabs/PagesTab.tsx` (Portal generate language selection)
+  - [x] Update `src/app/admin/_components/Tabs/SettingsTab.tsx` (Dual-language TR/EN editor tabs & site settings saving)
+- [x] Verify build and functionality <!-- id: 6 -->
+  - [x] Run `npm run build`
+  - [x] Manually test all routes

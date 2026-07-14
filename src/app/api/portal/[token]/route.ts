@@ -27,6 +27,7 @@ export async function GET(
          cs.tagline,
          cs.music_url,
          cs.memories,
+         cs.lang,
          ps.template_id,
          ps.config
        FROM client_submissions cs
@@ -59,6 +60,7 @@ export async function GET(
       templateId: row.template_id ?? null,
       config: row.config ?? {},
       expiresAt: row.expires_at,
+      lang: row.lang ?? "tr",
       existing: {
         coupleNames: row.couple_names ?? "",
         specialDate: row.special_date ?? "",

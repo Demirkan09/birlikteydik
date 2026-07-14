@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 function useWindowWidth() {
@@ -35,7 +36,53 @@ import { AccountDetailsTab } from "./_components/Tabs/AccountDetailsTab";
 import { MyPagesTab } from "./_components/Tabs/MyPagesTab";
 import { DangerZoneTab } from "./_components/Tabs/DangerZoneTab";
 
-export default function ProfilePage() {
+export default function ProfilePage({ lang }: { lang?: string }) {
+  const isEn = lang === "en" || (typeof window !== "undefined" && window.location.pathname.startsWith("/en/"));
+
+  const t = {
+    loading: isEn ? "Profile loading..." : "Profil yükleniyor…",
+    hello: isEn ? "Hello, " : "Merhaba, ",
+    activeSession: isEn ? "Active Session" : "Aktif Oturum",
+    logout: isEn ? "Log Out" : "Güvenli Çıkış Yap",
+    logoutShort: isEn ? "Exit" : "Çıkış",
+    errNameReq: isEn ? "Name field cannot be left blank." : "İsim alanı boş bırakılamaz.",
+    errEmailVal: isEn ? "Please enter a valid email." : "Geçerli bir e-posta girin.",
+    errCurPassword: isEn ? "To change your password, you must enter your current password." : "Şifrenizi değiştirmek için mevcut şifrenizi girmeniz gerekir.",
+    errNewPasswordLen: isEn ? "New password must be at least 8 characters." : "Yeni şifre en az 8 karakter olmalıdır.",
+    errNewPasswordMatch: isEn ? "Passwords do not match." : "Şifreler eşleşmiyor.",
+    errGeneralUpdate: isEn ? "An error occurred during update." : "Güncelleme sırasında bir hata oluştu.",
+    successUpdate: isEn ? "Your personal information has been successfully updated." : "Kişisel bilgileriniz başarıyla güncellendi.",
+    errConnection: isEn ? "Connection error. Please try again later." : "Bağlantı hatası. Lütfen daha sonra tekrar deneyin.",
+    errConsentUpdate: isEn ? "Consent could not be updated." : "Onay güncellenemedi.",
+    successConsentOn: isEn ? "Campaign and communication consent granted." : "Kampanya ve iletişim onayı verildi.",
+    successConsentOff: isEn ? "Campaign and communication consent removed." : "Kampanya ve iletişim onayı kaldırıldı.",
+    errConsentGeneral: isEn ? "An error occurred while updating consent." : "Onay güncellenirken bir hata oluştu.",
+    errDeletePasswordReq: isEn ? "You must enter your password." : "Şifrenizi girmelisiniz.",
+    errDeleteConfirmWord: isEn ? "You must type 'delete' to confirm account deletion." : "Hesap silme işlemini onaylamak için kutuya 'sil' yazmalısınız.",
+    errDeleteGeneral: isEn ? "An error occurred during deletion." : "Silme işlemi sırasında hata oluştu.",
+    errDeleteConnection: isEn ? "A connection error occurred." : "Bağlantı hatası oluştu.",
+    errVerifySendFail: isEn ? "Verification code could not be sent." : "Doğrulama kodu gönderilemedi.",
+    successVerifySend: isEn ? "Verification code sent to your email! Redirecting..." : "Doğrulama kodu e-postanıza gönderildi! Yönlendiriliyorsunuz...",
+    errActivateReq: isEn ? "Please enter an activation code." : "Lütfen bir aktivasyon kodu girin.",
+    errActivateInvalid: isEn ? "Code is invalid." : "Kod geçersiz.",
+    successActivate: isEn ? "Page activated successfully! 🎉" : "Sayfa başarıyla aktive edildi! 🎉",
+    errActivateConn: isEn ? "A connection error occurred." : "Bağlantı hatası oluştu.",
+    errPagePasswordLen: isEn ? "Password must be at least 4 characters." : "Şifre en az 4 karakter olmalıdır.",
+    errPagePasswordGeneral: isEn ? "An error occurred." : "Hata oluştu.",
+    successPagePasswordSaved: isEn ? "Password saved." : "Şifre kaydedildi.",
+    errPagePasswordConn: isEn ? "Connection error." : "Bağlantı hatası.",
+    successPagePasswordRemoved: isEn ? "Password removed." : "Şifre kaldırıldı.",
+    tabInfo: isEn ? "Personal Info" : "Kişisel Bilgiler",
+    tabInfoMobile: isEn ? "Info" : "Bilgiler",
+    tabConsent: isEn ? "Consent & Options" : "İletişim & Onaylar",
+    tabConsentMobile: isEn ? "Contact" : "İletişim",
+    tabAccount: isEn ? "Account Details" : "Hesap Bilgileri",
+    tabAccountMobile: isEn ? "Account" : "Hesap",
+    tabPages: isEn ? "My Pages" : "Sayfalarım",
+    tabDanger: isEn ? "Permanently Delete Account" : "Hesabı Kalıcı Olarak Sil",
+    tabDangerMobile: isEn ? "Delete" : "Sil",
+  };
+
   const isMobile = useWindowWidth() < 768;
   const router = useRouter();
 
@@ -92,7 +139,7 @@ export default function ProfilePage() {
       try {
         const stored = localStorage.getItem("birlikteydik_user");
         if (!stored) {
-          router.push("/login");
+          router.push(isEn ? "/en/login" : "/login");
           return;
         }
         const parsed = JSON.parse(stored);
@@ -123,7 +170,7 @@ export default function ProfilePage() {
             // Format creation date
             if (data.user.createdAt) {
               const dateObj = new Date(data.user.createdAt);
-              setCreatedAt(dateObj.toLocaleDateString("tr-TR", { year: "numeric", month: "long", day: "numeric" }));
+              setCreatedAt(dateObj.toLocaleDateString(isEn ? "en-US" : "tr-TR", { year: "numeric", month: "long", day: "numeric" }));
             }
 
             // Load user pages
@@ -139,13 +186,13 @@ export default function ProfilePage() {
       }
     };
     checkSession();
-  }, [router]);
+  }, [router, isEn]);
 
   // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("birlikteydik_user");
     window.dispatchEvent(new Event("auth-change"));
-    router.push("/");
+    router.push(isEn ? "/en/" : "/");
   };
 
   // 2. Submit Info & Password Change
@@ -156,18 +203,18 @@ export default function ProfilePage() {
     setErrors({});
 
     const errs: Record<string, string> = {};
-    if (!name.trim()) errs.name = "İsim alanı boş bırakılamaz.";
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) errs.email = "Geçerli bir e-posta girin.";
+    if (!name.trim()) errs.name = t.errNameReq;
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) errs.email = t.errEmailVal;
 
     if (newPassword) {
       if (!currentPassword) {
-        errs.currentPassword = "Şifrenizi değiştirmek için mevcut şifrenizi girmeniz gerekir.";
+        errs.currentPassword = t.errCurPassword;
       }
       if (newPassword.length < 8) {
-        errs.newPassword = "Yeni şifre en az 8 karakter olmalıdır.";
+        errs.newPassword = t.errNewPasswordLen;
       }
       if (newPassword !== newPasswordConfirm) {
-        errs.newPasswordConfirm = "Şifreler eşleşmiyor.";
+        errs.newPasswordConfirm = t.errNewPasswordMatch;
       }
     }
 
@@ -192,7 +239,7 @@ export default function ProfilePage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setErrors({ general: data.error ?? "Güncelleme sırasında bir hata oluştu." });
+        setErrors({ general: data.error || t.errGeneralUpdate });
         setLoading(false);
         return;
       }
@@ -213,10 +260,10 @@ export default function ProfilePage() {
       setNewPassword("");
       setNewPasswordConfirm("");
 
-      setSuccessMsg("Kişisel bilgileriniz başarıyla güncellendi.");
+      setSuccessMsg(t.successUpdate);
       setTimeout(() => setSuccessMsg(""), 5000);
     } catch {
-      setErrors({ general: "Bağlantı hatası. Lütfen daha sonra tekrar deneyin." });
+      setErrors({ general: t.errConnection });
     } finally {
       setLoading(false);
     }
@@ -241,7 +288,7 @@ export default function ProfilePage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setErrors({ consent: data.error ?? "Onay güncellenemedi." });
+        setErrors({ consent: data.error || t.errConsentUpdate });
         setLoading(false);
         return;
       }
@@ -251,10 +298,10 @@ export default function ProfilePage() {
       localStorage.setItem("birlikteydik_user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
-      setSuccessMsg(checked ? "Kampanya ve iletişim onayı verildi." : "Kampanya ve iletişim onayı kaldırıldı.");
+      setSuccessMsg(checked ? t.successConsentOn : t.successConsentOff);
       setTimeout(() => setSuccessMsg(""), 4000);
     } catch {
-      setErrors({ consent: "Onay güncellenirken bir hata oluştu." });
+      setErrors({ consent: t.errConsentGeneral });
     } finally {
       setLoading(false);
     }
@@ -266,11 +313,11 @@ export default function ProfilePage() {
     setErrors({});
 
     if (!deletePassword) {
-      setErrors({ deletePassword: "Şifrenizi girmelisiniz." });
+      setErrors({ deletePassword: t.errDeletePasswordReq });
       return;
     }
-    if (deleteConfirmText.toLowerCase() !== "sil") {
-      setErrors({ deleteConfirmText: "Hesap silme işlemini onaylamak için kutuya 'sil' yazmalısınız." });
+    if (deleteConfirmText.toLowerCase() !== (isEn ? "delete" : "sil")) {
+      setErrors({ deleteConfirmText: t.errDeleteConfirmWord });
       return;
     }
 
@@ -287,7 +334,7 @@ export default function ProfilePage() {
 
       const data = await res.json();
       if (!res.ok) {
-        setErrors({ delete: data.error ?? "Silme işlemi sırasında hata oluştu." });
+        setErrors({ delete: data.error || t.errDeleteGeneral });
         setLoading(false);
         return;
       }
@@ -295,9 +342,9 @@ export default function ProfilePage() {
       // Clear local storage and redirect
       localStorage.removeItem("birlikteydik_user");
       window.dispatchEvent(new Event("auth-change"));
-      router.push("/");
+      router.push(isEn ? "/en/" : "/");
     } catch {
-      setErrors({ delete: "Bağlantı hatası oluştu." });
+      setErrors({ delete: t.errDeleteConnection });
       setLoading(false);
     }
   };
@@ -316,15 +363,15 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setErrors({ general: data.error ?? "Doğrulama kodu gönderilemedi." });
+        setErrors({ general: data.error || t.errVerifySendFail });
         return;
       }
-      setVerificationSuccess("Doğrulama kodu e-postanıza gönderildi! Yönlendiriliyorsunuz...");
+      setVerificationSuccess(t.successVerifySend);
       setTimeout(() => {
-        router.push(`/verify-email?email=${encodeURIComponent(user.email)}`);
+        router.push((isEn ? "/en/verify-email" : "/verify-email") + `?email=${encodeURIComponent(user.email)}`);
       }, 2000);
     } catch {
-      setErrors({ general: "Bağlantı hatası oluştu." });
+      setErrors({ general: t.errDeleteConnection });
     } finally {
       setVerificationLoading(false);
     }
@@ -334,7 +381,7 @@ export default function ProfilePage() {
   const handleActivate = async () => {
     if (!user?.id) return;
     const code = activationCode.trim().toUpperCase();
-    if (!code) { setActivationError("Lütfen bir aktivasyon kodu girin."); return; }
+    if (!code) { setActivationError(t.errActivateReq); return; }
     setActivationLoading(true);
     setActivationError("");
     setActivationMsg("");
@@ -345,11 +392,11 @@ export default function ProfilePage() {
         body: JSON.stringify({ userId: user.id, code }),
       });
       const data = await res.json();
-      if (!res.ok) { setActivationError(data.error ?? "Kod geçersiz."); return; }
-      setActivationMsg("Sayfa başarıyla aktive edildi! 🎉");
+      if (!res.ok) { setActivationError(data.error || t.errActivateInvalid); return; }
+      setActivationMsg(t.successActivate);
       setActivationCode("");
       if (data.page) setUserPages((prev) => [data.page, ...prev]);
-    } catch { setActivationError("Bağlantı hatası oluştu."); }
+    } catch { setActivationError(t.errActivateConn); }
     finally { setActivationLoading(false); }
   };
 
@@ -357,7 +404,7 @@ export default function ProfilePage() {
   const handleSetPagePassword = async (pageSlug: string) => {
     if (!user?.id) return;
     const pwd = pagePasswords[pageSlug] || "";
-    if (pwd.length < 4) { setPagePassErrors((p) => ({ ...p, [pageSlug]: "Şifre en az 4 karakter olmalıdır." })); return; }
+    if (pwd.length < 4) { setPagePassErrors((p) => ({ ...p, [pageSlug]: t.errPagePasswordLen })); return; }
     setPagePassLoading((p) => ({ ...p, [pageSlug]: true }));
     setPagePassErrors((p) => ({ ...p, [pageSlug]: "" }));
     try {
@@ -367,11 +414,11 @@ export default function ProfilePage() {
         body: JSON.stringify({ userId: user.id, pageSlug, newPassword: pwd }),
       });
       const data = await res.json();
-      if (!res.ok) { setPagePassErrors((p) => ({ ...p, [pageSlug]: data.error ?? "Hata oluştu." })); return; }
-      setPagePassSuccess((p) => ({ ...p, [pageSlug]: "Şifre kaydedildi." }));
+      if (!res.ok) { setPagePassErrors((p) => ({ ...p, [pageSlug]: data.error || t.errPagePasswordGeneral })); return; }
+      setPagePassSuccess((p) => ({ ...p, [pageSlug]: t.successPagePasswordSaved }));
       setPagePasswords((p) => ({ ...p, [pageSlug]: "" }));
       setTimeout(() => setPagePassSuccess((p) => ({ ...p, [pageSlug]: "" })), 3000);
-    } catch { setPagePassErrors((p) => ({ ...p, [pageSlug]: "Bağlantı hatası." })); }
+    } catch { setPagePassErrors((p) => ({ ...p, [pageSlug]: t.errPagePasswordConn })); }
     finally { setPagePassLoading((p) => ({ ...p, [pageSlug]: false })); }
   };
 
@@ -386,10 +433,10 @@ export default function ProfilePage() {
         body: JSON.stringify({ userId: user.id, pageSlug }),
       });
       const data = await res.json();
-      if (!res.ok) { setPagePassErrors((p) => ({ ...p, [pageSlug]: data.error ?? "Hata oluştu." })); return; }
-      setPagePassSuccess((p) => ({ ...p, [pageSlug]: "Şifre kaldırıldı." }));
+      if (!res.ok) { setPagePassErrors((p) => ({ ...p, [pageSlug]: data.error || t.errPagePasswordGeneral })); return; }
+      setPagePassSuccess((p) => ({ ...p, [pageSlug]: t.successPagePasswordRemoved }));
       setTimeout(() => setPagePassSuccess((p) => ({ ...p, [pageSlug]: "" })), 3000);
-    } catch { setPagePassErrors((p) => ({ ...p, [pageSlug]: "Bağlantı hatası." })); }
+    } catch { setPagePassErrors((p) => ({ ...p, [pageSlug]: t.errPagePasswordConn })); }
     finally { setPagePassLoading((p) => ({ ...p, [pageSlug]: false })); }
   };
 
@@ -397,13 +444,13 @@ export default function ProfilePage() {
   const timeAgo = (dateStr: string): string => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins} dakika önce`;
+    if (mins < 60) return `${mins} ${isEn ? "minutes ago" : "dakika önce"}`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs} saat önce`;
+    if (hrs < 24) return `${hrs} ${isEn ? "hours ago" : "saat önce"}`;
     const days = Math.floor(hrs / 24);
-    if (days < 30) return `${days} gün önce`;
+    if (days < 30) return `${days} ${isEn ? "days ago" : "gün önce"}`;
     const months = Math.floor(days / 30);
-    return `${months} ay önce`;
+    return `${months} ${isEn ? "months ago" : "ay önce"}`;
   };
 
   if (authLoading) {
@@ -411,9 +458,8 @@ export default function ProfilePage() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: C.bg, color: C.text }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
           <span style={{ width: "28px", height: "28px", border: "2.5px solid rgba(201,168,76,0.2)", borderTopColor: C.gold, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-          <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, letterSpacing: "0.05em" }}>Profil yükleniyor…</p>
+          <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "13px", color: C.muted, letterSpacing: "0.05em" }}>{t.loading}</p>
         </div>
-
       </div>
     );
   }
@@ -422,7 +468,6 @@ export default function ProfilePage() {
 
   return (
     <>
-
       {/* Background Gradients & Canvas */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", background: "radial-gradient(ellipse 65% 55% at 20% 15%, rgba(201,168,76,0.05) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 85% 80%, rgba(184,169,212,0.04) 0%, transparent 55%), linear-gradient(160deg, #0B0F1A 0%, #0c101c 65%, #080b14 100%)" }} />
       <HeartsCanvas />
@@ -436,11 +481,11 @@ export default function ProfilePage() {
               {/* User Avatar with gradient border */}
               <div style={{ position: "relative", width: isMobile ? "50px" : "64px", height: isMobile ? "50px" : "64px", borderRadius: "50%", background: "linear-gradient(135deg, #C9A84C, #B8A9D4)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 24px rgba(0,0,0,0.3)", flexShrink: 0 }}>
                 <span style={{ fontSize: isMobile ? "18px" : "22px", color: "#0B0F1A", fontWeight: 700 }}>{user.name?.[0]?.toUpperCase()}</span>
-                <div style={{ position: "absolute", bottom: 0, right: 0, width: "14px", height: "14px", borderRadius: "50%", background: C.success, border: `2px solid ${C.bg}`, display: "flex", alignItems: "center", justifyContent: "center" }} title="Aktif Oturum" />
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: "14px", height: "14px", borderRadius: "50%", background: C.success, border: `2px solid ${C.bg}`, display: "flex", alignItems: "center", justifyContent: "center" }} title={t.activeSession} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
                 <h1 style={{ fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif", fontSize: isMobile ? "1.5rem" : "clamp(1.5rem, 4vw, 2.1rem)", fontWeight: 600, color: C.text, lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  Merhaba, <em style={{ color: C.gold, fontStyle: "italic" }}>{user.name}</em>
+                  {t.hello}<em style={{ color: C.gold, fontStyle: "italic" }}>{user.name}</em>
                 </h1>
                 <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: isMobile ? "11px" : "13px", color: C.muted, fontWeight: 300, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
               </div>
@@ -461,8 +506,8 @@ export default function ProfilePage() {
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(232,160,160,0.04)"; e.currentTarget.style.borderColor = "rgba(232,160,160,0.2)"; }}
             >
               <HiOutlineLogout size={13} />
-              {!isMobile && <span>Güvenli Çıkış Yap</span>}
-              {isMobile && <span>Çıkış</span>}
+              {!isMobile && <span>{t.logout}</span>}
+              {isMobile && <span>{t.logoutShort}</span>}
             </button>
           </div>
 
@@ -491,11 +536,11 @@ export default function ProfilePage() {
               /* Mobile: horizontal scrollable tab bar */
               <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px", scrollbarWidth: "none", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", padding: "10px" }}>
                 {[
-                  { id: "info", label: "Bilgiler", icon: <HiOutlineUser size={15} /> },
-                  { id: "notifications", label: "İletişim", icon: <HiOutlineShieldCheck size={15} /> },
-                  { id: "details", label: "Hesap", icon: <HiOutlineCalendar size={15} /> },
-                  { id: "pages", label: "Sayfalarım", icon: <HiOutlineCollection size={15} /> },
-                  { id: "danger", label: "Sil", icon: <HiOutlineTrash size={15} />, color: "#E8A0A0" },
+                  { id: "info", label: t.tabInfoMobile, icon: <HiOutlineUser size={15} /> },
+                  { id: "notifications", label: t.tabConsentMobile, icon: <HiOutlineShieldCheck size={15} /> },
+                  { id: "details", label: t.tabAccountMobile, icon: <HiOutlineCalendar size={15} /> },
+                  { id: "pages", label: t.tabPages, icon: <HiOutlineCollection size={15} /> },
+                  { id: "danger", label: t.tabDangerMobile, icon: <HiOutlineTrash size={15} />, color: "#E8A0A0" },
                 ].map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -522,11 +567,11 @@ export default function ProfilePage() {
               /* Desktop: vertical sidebar */
               <div style={{ display: "flex", flexDirection: "column", gap: "8px", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "20px", padding: "16px" }}>
                 {[
-                  { id: "info", label: "Kişisel Bilgiler", icon: <HiOutlineUser size={16} /> },
-                  { id: "notifications", label: "İletişim & Onaylar", icon: <HiOutlineShieldCheck size={16} /> },
-                  { id: "details", label: "Hesap Bilgileri", icon: <HiOutlineCalendar size={16} /> },
-                  { id: "pages", label: "Sayfalarım", icon: <HiOutlineCollection size={16} /> },
-                  { id: "danger", label: "Hesabı Kalıcı Olarak Sil", icon: <HiOutlineTrash size={16} />, color: "#E8A0A0" },
+                  { id: "info", label: t.tabInfo, icon: <HiOutlineUser size={16} /> },
+                  { id: "notifications", label: t.tabConsent, icon: <HiOutlineShieldCheck size={16} /> },
+                  { id: "details", label: t.tabAccount, icon: <HiOutlineCalendar size={16} /> },
+                  { id: "pages", label: t.tabPages, icon: <HiOutlineCollection size={16} /> },
+                  { id: "danger", label: t.tabDanger, icon: <HiOutlineTrash size={16} />, color: "#E8A0A0" },
                 ].map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -576,6 +621,7 @@ export default function ProfilePage() {
                   handleSendVerification={handleSendVerification}
                   verificationLoading={verificationLoading}
                   verificationSuccess={verificationSuccess}
+                  isEn={isEn}
                 />
               )}
 
@@ -586,12 +632,13 @@ export default function ProfilePage() {
                   handleToggleConsent={handleToggleConsent}
                   loading={loading}
                   errors={errors}
+                  isEn={isEn}
                 />
               )}
 
               {/* Tab 3: Hesap Bilgileri */}
               {activeTab === "details" && (
-                <AccountDetailsTab createdAt={createdAt} />
+                <AccountDetailsTab createdAt={createdAt} isEn={isEn} />
               )}
 
               {/* Tab 4: Sayfalarım */}
@@ -616,6 +663,7 @@ export default function ProfilePage() {
                   pagePassLoading={pagePassLoading}
                   handleRemovePagePassword={handleRemovePagePassword}
                   pagePassSuccess={pagePassSuccess}
+                  isEn={isEn}
                 />
               )}
 
@@ -629,6 +677,7 @@ export default function ProfilePage() {
                   handleDeleteAccount={handleDeleteAccount}
                   loading={loading}
                   errors={errors}
+                  isEn={isEn}
                 />
               )}
 
@@ -637,6 +686,55 @@ export default function ProfilePage() {
 
         </div>
       </main>
+
+      {/* FOOTER */}
+      <footer
+        style={{
+          position: "relative",
+          zIndex: 1,
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          padding: "48px 24px",
+          maxWidth: "1100px",
+          margin: "0 auto",
+        }}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "24px",
+          marginBottom: "28px",
+        }}>
+          <div>
+            <span style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.2rem", color: "rgba(240,237,232,0.6)" }}>
+              birlikteydik<span style={{ color: "#C9A84C" }}>.com</span>
+            </span>
+            <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "12px", color: "rgba(240,237,232,0.35)", marginTop: "6px", maxWidth: "280px", lineHeight: 1.6 }}>
+              {isEn ? "A unique, unforgettable digital surprise for your loved ones." : "Sevdiklerinize özel, unutulmaz bir dijital sürpriz."}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+            <Link href={isEn ? "/en/kvkk-metni" : "/kvkk-metni"} style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Privacy Policy" : "KVKK Aydınlatma Metni"}</Link>
+            <a href={`https://wa.me/${"905349829940"}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >{isEn ? "Contact" : "İletişim"}</a>
+            <a href="mailto:info@birlikteydik.com" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.4)", textDecoration: "none", letterSpacing: "0.06em", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "rgba(240,237,232,0.8)"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(240,237,232,0.4)"}
+            >info@birlikteydik.com</a>
+          </div>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: "20px" }}>
+          <p style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.2)", letterSpacing: "0.08em" }}>
+            © {new Date().getFullYear()} birlikteydik.com — {isEn ? "All Rights Reserved" : "Tüm Hakları Saklıdır"}
+          </p>
+        </div>
+      </footer>
     </>
   );
 }

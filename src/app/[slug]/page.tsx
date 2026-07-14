@@ -7,9 +7,10 @@ import BosTemplate from "@/app/sablonlar/sablon-bos/page";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  lang?: string;
 }
 
-export default async function DynamicUserPage({ params }: PageProps) {
+export default async function DynamicUserPage({ params, lang }: PageProps) {
   const { slug } = await params;
   const cleanSlug = slug.toLowerCase().trim();
 
@@ -30,10 +31,12 @@ export default async function DynamicUserPage({ params }: PageProps) {
     return notFound();
   }
 
+  const activeLang = lang || pageSetting.config?.lang || "tr";
+
   return (
     <PasswordGate slug={cleanSlug}>
       <BosTemplate
-        config={pageSetting.config}
+        config={{ ...(pageSetting.config || {}), lang: activeLang }}
         memories={pageSetting.memories}
         pageSlug={cleanSlug}
       />

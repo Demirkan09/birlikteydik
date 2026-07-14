@@ -87,7 +87,7 @@ export async function PATCH(request: Request) {
 
     // Fetch the submission
     const subRes = await pool.query(
-      `SELECT id, page_slug, couple_names, special_date, tagline, music_url, memories
+      `SELECT id, page_slug, couple_names, special_date, tagline, music_url, memories, lang
        FROM client_submissions
        WHERE id = $1`,
       [submissionId]
@@ -108,6 +108,7 @@ export async function PATCH(request: Request) {
       tagline: string | null;
       music_url: string | null;
       memories: unknown;
+      lang: string | null;
     };
 
     // Build the config overlay — only include non-null fields
@@ -116,6 +117,7 @@ export async function PATCH(request: Request) {
     if (sub.special_date !== null) configOverlay.specialDate = sub.special_date;
     if (sub.tagline !== null) configOverlay.tagline = sub.tagline;
     if (sub.music_url !== null) configOverlay.musicUrl = sub.music_url;
+    if (sub.lang !== null) configOverlay.lang = sub.lang;
 
     const memoriesJson = JSON.stringify(
       Array.isArray(sub.memories) ? sub.memories : []
