@@ -30,7 +30,7 @@ export function SettingsTab({ adminEmail }: SettingsTabProps) {
       enabled: true,
       email_delay_hours: 12,
       email_subject: "Yarım Kalan Bir Hikaye Var... 🤍",
-      email_body: "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;\">\n<h2 style=\"color: #C9A84C;\">Merhaba,</h2>\n<p>Birlikteydik sayfanı tasarlamaya başladığını gördük ancak henüz yayına almadın.</p>\n<p>Yarım kalan anılarını tamamlamak ve sayfanı ölümsüzleştirmek için tasarımına geri dön.</p>\n<div style=\"text-align: center; margin: 30px 0;\">\n<a href=\"https://birlikteydik.com/sayfa-olustur\" style=\"background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;\">Tasarımı Tamamla ve Hayata Geçir</a>\n</div>\n</div>",
+      email_body: "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;\">\n<h2 style=\"color: #C9A84C;\">Merhaba,</h2>\n<p>Birlikteydik sayfanı tasarlamaya başladığını gördük ancak henüz yayına almadın.</p>\n<p>Yarım kalan anılarını tamamlamak ve sayfanı ölümsüzleştirmek için tasarımına geri dön.</p>\n<div style=\"text-align: center; margin: 30px 0;\">\n<a href=\"https://birlikteydik.com/profil\" style=\"background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;\">Tasarımı Tamamla ve Hayata Geçir</a>\n</div>\n</div>",
       delete_delay_hours: 72
     }
   });

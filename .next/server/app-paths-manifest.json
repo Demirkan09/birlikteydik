@@ -19,8 +19,6 @@
   "/api/admin/users/role/route": "app/api/admin/users/role/route.js",
   "/api/admin/users/route": "app/api/admin/users/route.js",
   "/api/cron/abandoned-pages/route": "app/api/cron/abandoned-pages/route.js",
-  "/api/customer/save-page/route": "app/api/customer/save-page/route.js",
-  "/api/customer/upload/route": "app/api/customer/upload/route.js",
   "/api/forgot-password/route": "app/api/forgot-password/route.js",
   "/api/login/route": "app/api/login/route.js",
   "/api/page-password/route": "app/api/page-password/route.js",
@@ -51,7 +49,6 @@
   "/sablonlar/[slug]/page": "app/sablonlar/[slug]/page.js",
   "/sablonlar/page": "app/sablonlar/page.js",
   "/sablonlar/sablon-bos/page": "app/sablonlar/sablon-bos/page.js",
-  "/sayfa-olustur/page": "app/sayfa-olustur/page.js",
   "/sitemap.xml/route": "app/sitemap.xml/route.js",
   "/verify-email/page": "app/verify-email/page.js"
 }

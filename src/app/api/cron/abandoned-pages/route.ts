@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         <h2 style="color: #C9A84C;">Merhaba {{isim}},</h2>
         <p>Birlikteydik sayfanı tasarlamaya başladığını gördük ancak henüz yayına almadın.</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://birlikteydik.com/sayfa-olustur" style="background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;">Tasarımı Tamamla ve Hayata Geçir</a>
+          <a href="https://birlikteydik.com/profil" style="background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;">Tasarımı Tamamla ve Hayata Geçir</a>
         </div>
       </div>
     `;

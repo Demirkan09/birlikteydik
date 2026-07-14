@@ -111,9 +111,9 @@ export async function POST(request: Request) {
 
       await pool.query(
         `INSERT INTO client_submissions
-           (token, page_slug, user_page_id, status, expires_at)
-         VALUES ($1, $2, $3, 'pending', $4)`,
-        [token, pageSlug, resolvedUserPageId, expiresAt.toISOString()]
+           (token, page_slug, status, expires_at)
+         VALUES ($1, $2, 'pending', $3)`,
+        [token, pageSlug, expiresAt.toISOString()]
       );
     }
 

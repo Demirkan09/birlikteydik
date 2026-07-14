@@ -49,7 +49,7 @@ export async function GET(request: Request) {
          u.name  AS user_name,
          u.email AS user_email
        FROM client_submissions cs
-       LEFT JOIN user_pages up ON up.id = cs.user_page_id
+       LEFT JOIN user_pages up ON up.page_slug = cs.page_slug
        LEFT JOIN users u ON u.id = up.user_id
        ORDER BY cs.created_at DESC`
     );

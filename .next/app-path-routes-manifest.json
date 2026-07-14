@@ -19,8 +19,6 @@
   "/api/admin/users/role/route": "/api/admin/users/role",
   "/api/admin/users/route": "/api/admin/users",
   "/api/cron/abandoned-pages/route": "/api/cron/abandoned-pages",
-  "/api/customer/save-page/route": "/api/customer/save-page",
-  "/api/customer/upload/route": "/api/customer/upload",
   "/api/forgot-password/route": "/api/forgot-password",
   "/api/login/route": "/api/login",
   "/api/page-password/route": "/api/page-password",
@@ -51,7 +49,6 @@
   "/sablonlar/[slug]/page": "/sablonlar/[slug]",
   "/sablonlar/page": "/sablonlar",
   "/sablonlar/sablon-bos/page": "/sablonlar/sablon-bos",
-  "/sayfa-olustur/page": "/sayfa-olustur",
   "/sitemap.xml/route": "/sitemap.xml",
   "/verify-email/page": "/verify-email"
 }

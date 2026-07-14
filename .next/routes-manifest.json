@@ -185,18 +185,6 @@
       "namedRegex": "^/api/cron/abandoned\\-pages(?:/)?$"
     },
     {
-      "page": "/api/customer/save-page",
-      "regex": "^/api/customer/save\\-page(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/customer/save\\-page(?:/)?$"
-    },
-    {
-      "page": "/api/customer/upload",
-      "regex": "^/api/customer/upload(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/api/customer/upload(?:/)?$"
-    },
-    {
       "page": "/api/forgot-password",
       "regex": "^/api/forgot\\-password(?:/)?$",
       "routeKeys": {},
@@ -345,12 +333,6 @@
       "regex": "^/sablonlar/sablon\\-bos(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/sablonlar/sablon\\-bos(?:/)?$"
-    },
-    {
-      "page": "/sayfa-olustur",
-      "regex": "^/sayfa\\-olustur(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/sayfa\\-olustur(?:/)?$"
     },
     {
       "page": "/sitemap.xml",

@@ -319,30 +319,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/sayfa-olustur": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/sayfa-olustur",
-      "dataRoute": "/sayfa-olustur.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/sitemap.xml": {
       "initialHeaders": {
         "cache-control": "public, max-age=0, must-revalidate",
@@ -400,8 +376,8 @@
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "958fd8aaa9f3fb715e2aaea3521434c4",
-    "previewModeSigningKey": "6d2d7128e66281beb297c2561f534a28c329ce5bb51788274af7e249c24f1543",
-    "previewModeEncryptionKey": "22750ab8150ad44aed84b7a97ad7c0263ae275edfbfe38911e6f979a4f6e8420"
+    "previewModeId": "97f4ad6ea6986ead6cb587504d05bf27",
+    "previewModeSigningKey": "f1b17ce24e8c7617b075e560798cb9fb1b06f5a6053690b55d3a90805cdf93eb",
+    "previewModeEncryptionKey": "30ad42ab59a555e961946fa77e2f0281247885cf82a146425e75736f95e97fc8"
   }
 }

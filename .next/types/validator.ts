@@ -173,15 +173,6 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
-// Validate ../../src/app/sayfa-olustur/page.tsx
-{
-  type __IsExpected<Specific extends AppPageConfig<"/sayfa-olustur">> = Specific
-  const handler = {} as typeof import("../../src/app/sayfa-olustur/page.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
 // Validate ../../src/app/verify-email/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/verify-email">> = Specific
@@ -330,24 +321,6 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/cron/abandoned-pages">> = Specific
   const handler = {} as typeof import("../../src/app/api/cron/abandoned-pages/route.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/api/customer/save-page/route.ts
-{
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/customer/save-page">> = Specific
-  const handler = {} as typeof import("../../src/app/api/customer/save-page/route.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../src/app/api/customer/upload/route.ts
-{
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/customer/upload">> = Specific
-  const handler = {} as typeof import("../../src/app/api/customer/upload/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

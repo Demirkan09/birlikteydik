@@ -3,7 +3,7 @@ module.exports=[14747,(e,t,a)=>{t.exports=e.x("path",()=>require("path"))},24361
         <h2 style="color: #C9A84C;">Merhaba {{isim}},</h2>
         <p>Birlikteydik sayfanı tasarlamaya başladığını g\xf6rd\xfck ancak hen\xfcz yayına almadın.</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://birlikteydik.com/sayfa-olustur" style="background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;">Tasarımı Tamamla ve Hayata Ge\xe7ir</a>
+          <a href="https://birlikteydik.com/profil" style="background-color: #C9A84C; color: #0B0F1A; padding: 14px 28px; text-decoration: none; border-radius: 40px; font-weight: bold; font-size: 16px;">Tasarımı Tamamla ve Hayata Ge\xe7ir</a>
         </div>
       </div>
     `,u=e.delete_delay_hours||72;try{await s.default.query("ALTER TABLE user_pages ADD COLUMN IF NOT EXISTS abandoned_email_sent BOOLEAN DEFAULT false;")}catch(e){}let d=0,p=0;if(t>0)for(let e of(await s.default.query(`
