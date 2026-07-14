@@ -148,7 +148,7 @@ export default function ProfilePage({ lang }: { lang?: string }) {
         setEmail(parsed.email || "");
 
         // Fetch fresh details from DB
-        const res = await fetch(`/api/profile?email=${encodeURIComponent(parsed.email)}`);
+        const res = await fetch(`/api/profile?email=${encodeURIComponent(parsed.email)}&lang=${isEn ? "en" : "tr"}`);
         if (res.ok) {
           const data = await res.json();
           if (data.user) {

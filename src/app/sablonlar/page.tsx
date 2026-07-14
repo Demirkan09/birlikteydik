@@ -500,7 +500,7 @@ export default function TemplatesPage({ lang }: { lang?: string }) {
                       <span>{t.demoBtn}</span>
                     </Link>
 
-                    <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer" style={{
+                    <a href={isEn ? "https://birlikteydik.gumroad.com/" : "https://www.shopier.com/birlikteydikcom"} target="_blank" rel="noopener noreferrer" style={{
                       flex: 1.2,
                       display: "flex",
                       alignItems: "center",

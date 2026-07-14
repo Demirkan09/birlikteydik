@@ -253,7 +253,7 @@ export default function Navbar() {
           ><FaInstagram size={15} /></a>
 
           {/* Order Link */}
-          <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer"
+          <a href={isEn ? "https://birlikteydik.gumroad.com/" : "https://www.shopier.com/birlikteydikcom"} target="_blank" rel="noopener noreferrer"
             style={{ display: "flex", alignItems: "center", gap: "7px", padding: "8px 16px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "11px", letterSpacing: "0.08em", fontWeight: 600, transition: "opacity 0.2s" }}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
@@ -312,7 +312,7 @@ export default function Navbar() {
             ))}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
-              <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer"
+              <a href={isEn ? "https://birlikteydik.gumroad.com/" : "https://www.shopier.com/birlikteydikcom"} target="_blank" rel="noopener noreferrer"
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "9px", padding: "14px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}
               >{isEn ? "Order Now" : "Sipariş Ver"}</a>
 

@@ -160,7 +160,7 @@ export function MyPagesTab({
                   </div>
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
                     <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: "rgba(240,237,232,0.35)", background: "rgba(255,255,255,0.04)", padding: "2px 8px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.08)", textTransform: "capitalize" }}>
-                      {page.packageName}
+                      {isEn && page.packageName?.toLowerCase() === "temel" ? "basic" : page.packageName}
                     </span>
                     {page.remainingTime && (
                       <span style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "11px", color: isExpired ? "#E8A0A0" : C.gold, background: isExpired ? "rgba(232,160,160,0.05)" : "rgba(201,168,76,0.05)", padding: "2px 8px", borderRadius: "20px", border: `1px solid ${isExpired ? "rgba(232,160,160,0.15)" : "rgba(201,168,76,0.15)"}` }}>

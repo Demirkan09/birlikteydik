@@ -597,7 +597,7 @@ const plans = [
 const plansEn = [
   {
     name: "Introductory Special!",
-    price: "$19",
+    price: "$8",
     features: [
       "Up to 10 photos",
       "Custom message & names",
@@ -610,7 +610,7 @@ const plansEn = [
   },
   {
     name: "Premium",
-    price: "$49",
+    price: "$15",
     features: [
       "Up to 32 photos",
       "Custom message & names",
@@ -624,7 +624,7 @@ const plansEn = [
   },
   {
     name: "Premium+",
-    price: "$99",
+    price: "$25",
     features: [
       "Up to 64 photos",
       "Custom message & names",
@@ -889,7 +889,7 @@ function Hero({ settings, lang }: { settings: any; lang?: string }) {
         style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center" }}
       >
         <a
-          href="https://www.shopier.com/birlikteydikcom"
+          href={isEn ? "https://birlikteydik.gumroad.com/" : "https://www.shopier.com/birlikteydikcom"}
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: "13px",
@@ -1017,7 +1017,7 @@ function Hero({ settings, lang }: { settings: any; lang?: string }) {
             color: "rgba(240,237,232,0.2)",
           }}
         >
-          Keşfet
+          {isEn ? "Discover" : "Keşfet"}
         </span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
@@ -1708,7 +1708,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
                         <span>{t.viewDemo}</span>
                       </Link>
 
-                      <a href="https://www.shopier.com/birlikteydikcom" target="_blank" rel="noopener noreferrer" style={{
+                      <a href={isEn ? "https://birlikteydik.gumroad.com/" : "https://www.shopier.com/birlikteydikcom"} target="_blank" rel="noopener noreferrer" style={{
                         flex: 1.2,
                         display: "flex",
                         alignItems: "center",
@@ -1979,7 +1979,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
                 {isEn ? "Place your order, send your photos. Your special link is ready in 24 hours." : "Siparişini ver, fotoğraflarını gönder. 24 saat içinde özel linkin hazır."}
               </p>
               <a
-                href="https://www.shopier.com/birlikteydikcom"
+                href={isEn ? "https://birlikteydik.gumroad.com/" : "https://www.shopier.com/birlikteydikcom"}
                 style={{
                   display: "inline-block",
                   fontFamily: "'Inter', sans-serif",

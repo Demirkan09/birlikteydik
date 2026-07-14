@@ -7,6 +7,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
+    const lang = searchParams.get("lang") || "tr";
+    const isEn = lang === "en";
 
     if (!email) {
       return NextResponse.json({ error: "E-posta parametresi gerekli." }, { status: 400 });
@@ -59,7 +61,7 @@ export async function GET(request: Request) {
       const diffTime = end.getTime() - now.getTime();
       
       if (diffTime <= 0) {
-        return { text: "Süresi Doldu", expired: true };
+        return { text: isEn ? "Expired" : "Süresi Doldu", expired: true };
       }
       
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -67,9 +69,22 @@ export async function GET(request: Request) {
       const days = diffDays % 30;
       
       if (months > 0) {
-        return { text: `Kalan Süre: ${months} Ay ${days > 0 ? days + ' Gün' : ''}`, expired: false };
+        const monLabel = isEn ? (months === 1 ? "Month" : "Months") : "Ay";
+        const dayLabel = isEn ? (days === 1 ? "Day" : "Days") : "Gün";
+        return { 
+          text: isEn 
+            ? `Remaining Time: ${months} ${monLabel} ${days > 0 ? days + ' ' + dayLabel : ''}` 
+            : `Kalan Süre: ${months} Ay ${days > 0 ? days + ' Gün' : ''}`, 
+          expired: false 
+        };
       }
-      return { text: `Kalan Süre: ${days} Gün`, expired: false };
+      const dayLabel = isEn ? (diffDays === 1 ? "Day" : "Days") : "Gün";
+      return { 
+        text: isEn 
+          ? `Remaining Time: ${diffDays} ${dayLabel}` 
+          : `Kalan Süre: ${diffDays} Gün`, 
+        expired: false 
+      };
     }
 
     return NextResponse.json({
