@@ -1675,7 +1675,7 @@ export default function LandingPage({ lang }: LandingPageProps) {
                     </ul>
 
                     <div style={{ display: "flex", gap: "10px", marginTop: "auto" }}>
-                      <Link href={isEn ? `/en/sablonlar/${tpl.id}` : `/sablonlar/${tpl.id}`} style={{
+                      <Link href={tpl.demoUrl} style={{
                         flex: 1,
                         display: "flex",
                         alignItems: "center",
