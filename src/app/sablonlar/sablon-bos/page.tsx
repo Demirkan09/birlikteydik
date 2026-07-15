@@ -446,9 +446,12 @@ function CountdownBlock({ memory, accentColor, bodyFont, headingFont, textColor 
 
   const pad = (n: number) => String(n).padStart(2, "0");
 
+  const context = useContext(TemplateContext);
+  const isInstagram = context?.isInstagram ?? false;
+
   return (
     <motion.div
-      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
+      initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }}
       variants={fadeUp}
       style={{
         display: "flex", flexDirection: "column", alignItems: "center", gap: "20px",
@@ -522,9 +525,12 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textC
 
   const options: string[] = Array.isArray(memory.options) ? memory.options : [];
 
+  const context = useContext(TemplateContext);
+  const isInstagram = context?.isInstagram ?? false;
+
   return (
     <motion.div
-      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
+      initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }}
       variants={stagger}
       style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "32px 24px", border: `1px solid ${accentColor}22`, background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}
     >
@@ -586,9 +592,12 @@ function QuizBlock({ memory, accentColor, bodyFont, headingFont, pageSlug, textC
 function LetterBlock({ memory, accentColor, bodyFont, headingFont }: { memory: any; accentColor: string; bodyFont: string; headingFont: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const context = useContext(TemplateContext);
+  const isInstagram = context?.isInstagram ?? false;
+
   return (
     <motion.div
-      initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}
+      initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }}
       variants={fadeUp}
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0px" }}
     >
@@ -703,7 +712,7 @@ function LetterBlock({ memory, accentColor, bodyFont, headingFont }: { memory: a
 // ─────────────────────────────────────────────────────────────────────────────
 // 📸  CONTEXT
 // ─────────────────────────────────────────────────────────────────────────────
-const TemplateContext = createContext<{ config: TemplateConfig; memories: typeof defaultMemories } | null>(null);
+const TemplateContext = createContext<{ config: TemplateConfig; memories: typeof defaultMemories; isInstagram: boolean } | null>(null);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 📸  PLAIN KART (sablon-bos orijinal stili)
@@ -738,8 +747,10 @@ function PlainMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor
     </div>
   );
 
+  const isInstagram = context?.isInstagram ?? false;
+
   return (
-    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "28px" }}>
+    <motion.div initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "28px" }}>
       <motion.div variants={fadeUp} style={{ width: "100%", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, borderRadius: "2px", background: accentColor, filter: "blur(24px)", opacity: 0.06, pointerEvents: "none" }} />
         {memory.backlightEnabled ? (
@@ -798,8 +809,10 @@ function PolaroidMemoryCard({ memory, accentColor, headingFont, bodyFont, tiltEn
     </div>
   );
 
+  const isInstagram = context?.isInstagram ?? false;
+
   return (
-    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+    <motion.div initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
       <motion.div
         variants={fadeUp}
         whileHover={{ scale: 1.02 }}
@@ -872,8 +885,10 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textC
     </div>
   );
 
+  const isInstagram = context?.isInstagram ?? false;
+
   return (
-    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <motion.div initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <motion.div variants={fadeUp} style={{ position: "relative" }}>
         {memory.backlightEnabled ? (
           <Backlight blur={memory.backlightBlur ?? 35} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
@@ -906,8 +921,12 @@ export default function BosTemplate({
 } = {}) {
   const [config, setConfig] = useState<TemplateConfig>({ ...defaultConfig, ...(propConfig ?? {}) });
   const [memories, setMemories] = useState(propMemories ?? defaultMemories);
+  const [isInstagram, setIsInstagram] = useState(false);
 
   useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      setIsInstagram(/instagram/i.test(navigator.userAgent));
+    }
     if (typeof window !== "undefined") {
       const search = new URLSearchParams(window.location.search);
       
@@ -1041,7 +1060,7 @@ export default function BosTemplate({
   const isArcade = hFont.includes("Press Start") || hFont.includes("VT323") || bFont.includes("Press Start") || bFont.includes("VT323");
 
   return (
-    <TemplateContext.Provider value={{ config, memories }}>
+    <TemplateContext.Provider value={{ config, memories, isInstagram }}>
       {/* ── GİRİŞ ANİMASYONU ─────────────────────────────────────────────── */}
       <AnimatePresence>
         {entranceVisible && (
@@ -1097,7 +1116,7 @@ export default function BosTemplate({
 
           {/* ── HERO ──────────────────────────────────────────────────────── */}
           <section className="relative flex flex-col items-center justify-center overflow-hidden w-full h-[100svh]">
-            <motion.div initial="hidden" animate="visible" variants={stagger} className="relative z-20 flex flex-col items-center px-6 text-center">
+            <motion.div initial={isInstagram ? "visible" : "hidden"} animate="visible" variants={stagger} className="relative z-20 flex flex-col items-center px-6 text-center">
               {/* Eyebrow: Özel Tarih */}
               <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
                 <div style={{ width: "28px", height: "1px", background: `${ac}55` }} />
@@ -1147,7 +1166,7 @@ export default function BosTemplate({
           {/* ── BÖLÜM BAŞLIĞI ─────────────────────────────────────────────── */}
           {(config.storyTitlePrefix || config.storyTitleSuffix) && (
             <motion.div
-              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger}
+              initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger}
               style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b" }}
             >
               {config.storyTitlePrefix && (
@@ -1180,7 +1199,7 @@ export default function BosTemplate({
             <section style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(circle at 50% 50%, ${ac}14 0%, transparent 70%)` }} />
               <motion.div
-                initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={stagger}
+                initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger}
                 style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "20px" }}
               >
                 <motion.div variants={fadeUp}>
