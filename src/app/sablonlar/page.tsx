@@ -6,11 +6,12 @@ import Link from "next/link";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { HiOutlineEye } from "react-icons/hi";
 
-const WHATSAPP_NUMBER  = "905349829940";
+const WHATSAPP_NUMBER = "905349829940";
 const WHATSAPP_MESSAGE = "Merhaba! birlikteydik.com'dan sipariş vermek istiyorum.";
-const INSTAGRAM_URL    = "https://instagram.com/birlikteydikcom";
+const INSTAGRAM_URL = "https://instagram.com/birlikteydikcom";
 const INSTAGRAM_URL_EN = "https://www.instagram.com/birlikteydikcomglobal/";
-function SmartphoneMockup({ accentColor, title, isEn = false }: { accentColor: string; title: string; isEn?: boolean }) {
+
+function SmartphoneMockup({ accentColor, title, isEn = false }: { accentColor: string; title: string; isEn?: boolean }) {
   return (
     <div style={{
       width: "100%",
@@ -221,19 +222,19 @@ export default function TemplatesPage({ lang }: { lang?: string }) {
   const t = {
     metaTitle: isEn ? "Our Collection" : "Koleksiyonumuz",
     title: isEn ? "All Our Designs" : "Tüm Tasarımlarımız",
-    desc: isEn 
+    desc: isEn
       ? "Choose the theme that best reflects your love and memories. Let us customize it as you wish."
       : "Aşkınızı ve anılarınızı en iyi yansıtan temayı seçin. İstediğiniz gibi özelleştirelim.",
     demoBtn: isEn ? "Live Demo" : "Canlı Demoyu Aç",
     orderBtn: isEn ? "Order Now" : "Sipariş Ver",
     homeBtn: isEn ? "← Back to Home" : "← Ana Sayfaya Dön",
     footerMadeWith: isEn ? "Made with love" : "Sevgiyle yapıldı",
-    whatsappMsg: isEn 
-      ? "Hello! I selected the template \"{title}\". I would like to order or get detailed information." 
+    whatsappMsg: isEn
+      ? "Hello! I selected the template \"{title}\". I would like to order or get detailed information."
       : "Merhaba! \"{title}\" isimli şablonu seçtim. Sipariş vermek veya detaylı bilgi almak istiyorum.",
     underMaintenance: isEn ? "Under Maintenance" : "Bakım Modundayız",
-    maintenanceDesc: isEn 
-      ? "We are currently updating our website. We will be back online shortly." 
+    maintenanceDesc: isEn
+      ? "We are currently updating our website. We will be back online shortly."
       : "Sitemiz üzerinde güncellemeler yapıyoruz. En kısa sürede tekrar hizmetinizde olacağız.",
     maintenanceStart: isEn ? "Maintenance Start: " : "Bakım Başlangıcı: ",
     contactWhatsApp: isEn ? "Contact via WhatsApp" : "WhatsApp ile İletişim",
@@ -294,7 +295,7 @@ export default function TemplatesPage({ lang }: { lang?: string }) {
           )}
         </p>
         <a href={`https://wa.me/${siteSettings.whatsapp_number || "905349829940"}`}
-           style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          style={{ padding: "12px 28px", borderRadius: "30px", background: "#C9A84C", color: "#0B0F1A", textDecoration: "none", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>
           {t.contactWhatsApp}
         </a>
       </div>
@@ -342,9 +343,9 @@ export default function TemplatesPage({ lang }: { lang?: string }) {
                 textAlign: "left"
               }}>
                 <strong style={{ color: "#C9A84C", fontWeight: 600 }}>
-                  {isEn ? "Instagram May Break the Page!" : "Instagram Sayfayı Bozabilir!"}
+                  {isEn ? "Instagram May Break the Page!" : "Instagram Görsellerin Yüklenmemesine Sebep Olabilir!"}
                 </strong>{" "}
-                {isEn 
+                {isEn
                   ? "To view templates in full screen and without issues, click the three dots (⋮) in the top right and select 'Open in Browser'."
                   : "Şablonları tam ekran ve sorunsuz incelemek için sağ üstteki üç noktaya (⋮) tıklayıp Tarayıcıda Aç seçeneğini kullanın."}
               </p>

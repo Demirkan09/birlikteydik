@@ -922,10 +922,16 @@ export default function BosTemplate({
   const [config, setConfig] = useState<TemplateConfig>({ ...defaultConfig, ...(propConfig ?? {}) });
   const [memories, setMemories] = useState(propMemories ?? defaultMemories);
   const [isInstagram, setIsInstagram] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     if (typeof navigator !== "undefined") {
-      setIsInstagram(/instagram/i.test(navigator.userAgent));
+      const isInsta = /instagram/i.test(navigator.userAgent);
+      setIsInstagram(isInsta);
+      const dismissed = sessionStorage.getItem("insta_banner_dismissed");
+      if (isInsta && dismissed !== "true") {
+        setShowBanner(true);
+      }
     }
     if (typeof window !== "undefined") {
       const search = new URLSearchParams(window.location.search);
@@ -1091,6 +1097,77 @@ export default function BosTemplate({
       ` }} />
 
       <main className="min-h-screen overflow-x-hidden" style={{ background: config.bgColor ?? "#09090b", color: isArcade ? ac : "#FFFFFF", fontFamily: bFont, position: "relative" }}>
+        {/* Banner */}
+        <AnimatePresence>
+          {showBanner && (
+            <motion.div
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -100, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 120, damping: 20 }}
+              style={{
+                position: "sticky",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 100,
+                background: "rgba(201, 168, 76, 0.12)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderBottom: "1px solid rgba(201, 168, 76, 0.3)",
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(201, 168, 76, 0.05)",
+                padding: "14px 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "16px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", flex: 1 }}>
+                <span style={{ fontSize: "18px", lineHeight: "1.2", flexShrink: 0 }}>⚠️</span>
+                <p style={{
+                  fontFamily: "var(--font-inter), sans-serif",
+                  fontSize: "12px",
+                  color: "#F0EDE8",
+                  lineHeight: "1.5",
+                  margin: 0,
+                  fontWeight: 450,
+                  textAlign: "left"
+                }}>
+                  <strong style={{ color: "#C9A84C", fontWeight: 600 }}>
+                    {config.lang === "en" ? "Instagram May Break the Page!" : "Instagram Görsellerin Yüklenmemesine Sebep Olabilir!"}
+                  </strong>{" "}
+                  {config.lang === "en"
+                    ? "To view templates in full screen and without issues, click the three dots (⋮) in the top right and select 'Open in Browser'."
+                    : "Şablonları tam ekran ve sorunsuz incelemek için sağ üstteki üç noktaya (⋮) tıklayıp Tarayıcıda Aç seçeneğini kullanın."}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowBanner(false);
+                  sessionStorage.setItem("insta_banner_dismissed", "true");
+                }}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "rgba(240, 237, 232, 0.6)",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  padding: "4px 8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#C9A84C"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "rgba(240, 237, 232, 0.6)"}
+              >
+                ✕
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Arcade Scanlines */}
         {isArcade && (
           <div className="fixed inset-0 pointer-events-none z-30" style={{ backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px)", animation: "scanMove 8s linear infinite" }} />
