@@ -1,4 +1,4 @@
-import { type ReactNode } from "react"
+import { type ReactNode, useState, useEffect, useRef } from "react"
 
 type BacklightProps = {
   children?: ReactNode;
@@ -9,10 +9,34 @@ type BacklightProps = {
 }
 
 export function Backlight({ blur = 32, children, className, imageUrl, style }: BacklightProps) {
+  const [isInView, setIsInView] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = elementRef.current;
+    if (!el || !imageUrl) return;
+
+    // Use IntersectionObserver to lazy load the backlight image
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.unobserve(el);
+        }
+      },
+      { rootMargin: "200px" } // Load slightly before it enters the viewport
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [imageUrl]);
+
   return (
-    <div className={className} style={{ position: "relative", isolation: "isolate", ...style }}>
+    <div ref={elementRef} className={className} style={{ position: "relative", isolation: "isolate", ...style }}>
       {/* Silky-smooth GPU-accelerated Ambilight or solid fallback with Safari fixes */}
-      {imageUrl ? (
+      {imageUrl && isInView ? (
         <div
           style={{
             position: "absolute",
@@ -26,7 +50,6 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
             WebkitFilter: `blur(${blur}px) saturate(2.5) brightness(0.95)`,
             transform: "translate3d(0, 0, -1px) scale(1.02)",
             WebkitTransform: "translate3d(0, 0, -1px) scale(1.02)",
-            willChange: "filter, transform",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             pointerEvents: "none",
@@ -46,7 +69,6 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
             WebkitFilter: `blur(${blur}px)`,
             transform: "translate3d(0, 0, -1px) scale(1.02)",
             WebkitTransform: "translate3d(0, 0, -1px) scale(1.02)",
-            willChange: "filter, transform",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             pointerEvents: "none",
@@ -59,3 +81,4 @@ export function Backlight({ blur = 32, children, className, imageUrl, style }: B
     </div>
   )
 }
+
