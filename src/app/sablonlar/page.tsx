@@ -314,7 +314,7 @@ export default function TemplatesPage({ lang }: { lang?: string }) {
             exit={{ y: -100, opacity: 0 }}
             transition={{ type: "spring", stiffness: 120, damping: 20 }}
             style={{
-              position: "sticky",
+              position: "fixed",
               top: 0,
               left: 0,
               right: 0,
