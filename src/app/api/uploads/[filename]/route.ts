@@ -10,31 +10,36 @@ export async function GET(
     const { filename } = await params;
     const decodedFilename = decodeURIComponent(filename);
 
-    // Determine the host and protocol from forwarded headers to support reverse-proxy setups
-    const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "birlikteydik.com";
-    const proto = request.headers.get("x-forwarded-proto") || "https";
-    const isLocal = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("3000");
-
-    if (isLocal) {
-      // Check if the file exists locally
-      const filePath = path.join(process.cwd(), "public", "uploads", decodedFilename);
-      let localExists = false;
-      try {
-        await fs.access(filePath);
-        localExists = true;
-      } catch {
-        localExists = false;
+    const filePath = path.join(process.cwd(), "public", "uploads", decodedFilename);
+    
+    try {
+      const fileBuffer = await fs.readFile(filePath);
+      
+      // Determine content type based on extension
+      const ext = path.extname(decodedFilename).toLowerCase();
+      let contentType = "application/octet-stream";
+      if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";
+      else if (ext === ".png") contentType = "image/png";
+      else if (ext === ".webp") contentType = "image/webp";
+      else if (ext === ".mp3") contentType = "audio/mpeg";
+      else if (ext === ".mp4") contentType = "video/mp4";
+      
+      return new Response(fileBuffer, {
+        headers: {
+          "Content-Type": contentType,
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    } catch {
+      // If file does not exist locally (e.g. during local dev), fallback to production URL
+      const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+      const isLocal = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("3000");
+      
+      if (isLocal) {
+        return NextResponse.redirect(new URL(`https://birlikteydik.com/api/uploads/${decodedFilename}`));
       }
-
-      if (localExists) {
-        return NextResponse.redirect(new URL(`http://${host}/uploads/${decodedFilename}`));
-      } else {
-        // Fallback to production VDS URL so that images load during local development/testing.
-        return NextResponse.redirect(new URL(`https://birlikteydik.com/uploads/${decodedFilename}`));
-      }
-    } else {
-      // On production, redirect to the correct public path using forwarded headers
-      return NextResponse.redirect(new URL(`${proto}://${host}/uploads/${decodedFilename}`));
+      
+      return new Response("File Not Found", { status: 404 });
     }
   } catch (err) {
     console.error("Upload streaming GET error:", err);
