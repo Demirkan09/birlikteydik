@@ -15,12 +15,13 @@
 
 # next.js
 # /.next/
+.next/cache/
+.next/dev/
 /out/
 
 # production
 /build
-.next/cache/
-.next/dev/
+
 # misc
 .DS_Store
 *.pem
@@ -33,7 +34,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-
+.env.local
 # vercel
 .vercel
 

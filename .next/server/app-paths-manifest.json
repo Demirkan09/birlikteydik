@@ -38,7 +38,6 @@
   "/api/unsubscribe/route": "app/api/unsubscribe/route.js",
   "/api/uploads/[filename]/route": "app/api/uploads/[filename]/route.js",
   "/api/verify-email/route": "app/api/verify-email/route.js",
-  "/demirkanmelis/page": "app/demirkanmelis/page.js",
   "/en/[slug]/page": "app/en/[slug]/page.js",
   "/en/forgot-password/page": "app/en/forgot-password/page.js",
   "/en/login/page": "app/en/login/page.js",

@@ -311,12 +311,6 @@
       "namedRegex": "^/api/verify\\-email(?:/)?$"
     },
     {
-      "page": "/demirkanmelis",
-      "regex": "^/demirkanmelis(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/demirkanmelis(?:/)?$"
-    },
-    {
       "page": "/en",
       "regex": "^/en(?:/)?$",
       "routeKeys": {},

@@ -4,6 +4,8 @@ import { HiOutlineExternalLink, HiOutlineCheck, HiOutlineTrash, HiOutlineUpload,
 import { C } from "../../_utils/constants";
 import { formatActiveDuration } from "../../_utils/dateUtils";
 import { TEMPLATE_SCHEMAS } from "../../../../lib/templateSchemas";
+import QrCodeModal from "./QrCodeModal";
+
 
 const SHOWCASE_SLUGS = [
   "sablon-retro", "sablon-minimal", "sablon-sinematik", "sablon-emerald", 
@@ -389,6 +391,10 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [integrateLoading, setIntegrateLoading] = useState(false);
   const [integrateSuccess, setIntegrateSuccess] = useState("");
   const [integrateError, setIntegrateError] = useState("");
+
+  // QR code states
+  const [showQrModal, setShowQrModal] = useState(false);
+
 
   // Custom (özel) şablonlar
   const TEMPLATE_DEFAULTS: Record<string, any> = {
@@ -1042,6 +1048,18 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                         >
                           Bu Sayfa İçin Kod Üret
                         </button>
+
+                        {/* QR Oluştur Kısayolu */}
+                        <button
+                          onClick={() => setShowQrModal(true)}
+                          style={{
+                            padding: "8px 16px", borderRadius: "10px", border: `1px solid rgba(201,168,76,0.3)`,
+                            background: "rgba(201,168,76,0.06)", color: C.gold, fontSize: "13px", cursor: "pointer"
+                          }}
+                        >
+                          QR Oluştur
+                        </button>
+
 
                         {/* Portal Linki Gönder */}
                         <button
@@ -3052,7 +3070,17 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                     </div>
                   </div>
                 )}
+
+
+                <QrCodeModal
+                  isOpen={showQrModal}
+                  onClose={() => setShowQrModal(false)}
+                  selectedEditSlug={selectedEditSlug}
+                  pageSetting={{ config: editConfig }}
+                />
+
                 {selectedEditSlug && (
+
                   <div style={{
                     position: "fixed",
                     bottom: "24px",
