@@ -679,16 +679,16 @@ export default function QrCodeModal({
     document.body.removeChild(downloadLink);
   };
 
-  // Convert the SVG elements to standard CAD DXF format (using LINES and CIRCLES)
   const downloadDxf = () => {
     const svgElement = document.getElementById("qr-svg-necklace");
     if (!svgElement) return;
 
+    // Use AutoCAD Release 12 (AC1009) version - the absolute industry standard for EzCad 2/3 compatibility
     let dxfContent = [
       "  0", "SECTION",
       "  2", "HEADER",
       "  9", "$ACADVER",
-      "  1", "AC1015",
+      "  1", "AC1009",
       "  0", "ENDSEC",
       "  0", "SECTION",
       "  2", "ENTITIES"
@@ -696,7 +696,6 @@ export default function QrCodeModal({
 
     // Helper to add a circle to DXF content
     const addDxfCircle = (cx: number, cy: number, r: number) => {
-      // Invert Y axis for CAD standard orientation (origin at bottom-left of 300x300 canvas)
       const cadX = cx;
       const cadY = 300 - cy;
       
@@ -710,23 +709,23 @@ export default function QrCodeModal({
       );
     };
 
-    // Helper to add a line to DXF content
-    const addDxfLine = (x1: number, y1: number, x2: number, y2: number) => {
-      const cadX1 = x1;
-      const cadY1 = 300 - y1;
-      const cadX2 = x2;
-      const cadY2 = 300 - y2;
-
+    // Helper to add a closed/open lightweight polyline to DXF (fully supported by EzCad for hatching/filling)
+    const addDxfPolyline = (points: {x: number, y: number}[], closed: boolean = true) => {
+      if (points.length < 2) return;
       dxfContent.push(
-        "  0", "LINE",
+        "  0", "LWPOLYLINE",
         "  8", "0",
-        " 10", cadX1.toFixed(4),
-        " 20", cadY1.toFixed(4),
-        " 30", "0.0",
-        " 11", cadX2.toFixed(4),
-        " 21", cadY2.toFixed(4),
-        " 31", "0.0"
+        " 90", points.length.toString(),
+        " 70", closed ? "1" : "0" // 1 = closed, 0 = open
       );
+      points.forEach(pt => {
+        const cadX = pt.x;
+        const cadY = 300 - pt.y;
+        dxfContent.push(
+          " 10", cadX.toFixed(4),
+          " 20", cadY.toFixed(4)
+        );
+      });
     };
 
     // Recursively traverse DOM nodes to generate DXF vectors
@@ -739,11 +738,9 @@ export default function QrCodeModal({
         const strokeWidth = strokeWidthAttr ? parseFloat(strokeWidthAttr) : 0;
 
         if (strokeWidth > 0) {
-          // Stroked circle: draw inner and outer borders for CAD vector definition
           addDxfCircle(cx, cy, r - strokeWidth / 2);
           addDxfCircle(cx, cy, r + strokeWidth / 2);
         } else {
-          // Regular filled/solid circle
           addDxfCircle(cx, cy, r);
         }
       } else if (node.tagName === "rect") {
@@ -752,11 +749,13 @@ export default function QrCodeModal({
         const w = parseFloat(node.getAttribute("width") || "0");
         const h = parseFloat(node.getAttribute("height") || "0");
 
-        // Represent square modules and finders as 4 CAD lines
-        addDxfLine(x, y, x + w, y);
-        addDxfLine(x + w, y, x + w, y + h);
-        addDxfLine(x + w, y + h, x, y + h);
-        addDxfLine(x, y + h, x, y);
+        // Represent square modules and finders as closed LWPOLYLINEs for instant hatching in EzCad
+        addDxfPolyline([
+          { x, y },
+          { x: x + w, y },
+          { x: x + w, y: y + h },
+          { x, y: y + h }
+        ], true);
       } else if (node.tagName === "path") {
         const d = node.getAttribute("d") || "";
         const transform = node.getAttribute("transform") || "";
@@ -778,79 +777,72 @@ export default function QrCodeModal({
           scaleY = sy;
         }
 
-        const scaleXMatch = transform.match(/scaleX\(([^)]+)\)/);
-        if (scaleXMatch) {
-          scaleX *= parseFloat(scaleXMatch[1]);
-        }
-
-        const scaleYMatch = transform.match(/scaleY\(([^)]+)\)/);
-        if (scaleYMatch) {
-          scaleY *= parseFloat(scaleYMatch[1]);
-        }
-        
-        const rotateMatch = transform.match(/rotate\(([^)]+)\)/);
-        if (rotateMatch) {
-          rotDeg = parseFloat(rotateMatch[1]);
+        const rotMatch = transform.match(/rotate\(([^)]+)\)/);
+        if (rotMatch) {
+          rotDeg = parseFloat(rotMatch[1]);
         }
 
         const rotRad = (rotDeg * Math.PI) / 180;
 
         const applyTransform = (px: number, py: number) => {
-          // 1. Scale
           let sx = px * scaleX;
           let sy = py * scaleY;
-          // 2. Rotate
           let rx = sx * Math.cos(rotRad) - sy * Math.sin(rotRad);
           let ry = sx * Math.sin(rotRad) + sy * Math.cos(rotRad);
-          // 3. Translate
           return { x: rx + tx, y: ry + ty };
         };
 
-        // Parse SVG path commands
+        // Parse SVG path commands and group into closed/open LWPOLYLINEs
         const commands = d.match(/[a-df-z][^a-df-z]*/ig) || [];
-        let startPoint = { x: 0, y: 0 };
-        let currentPoint = { x: 0, y: 0 };
+        let currentPolyline: {x: number, y: number}[] = [];
+        let isClosed = false;
+
+        const flushPolyline = () => {
+          if (currentPolyline.length > 1) {
+            addDxfPolyline(currentPolyline, isClosed);
+          }
+          currentPolyline = [];
+          isClosed = false;
+        };
 
         commands.forEach(cmdStr => {
           const type = cmdStr[0];
           const args = (cmdStr.substring(1).trim().split(/[\s,]+/) || []).map(parseFloat).filter(v => !isNaN(v));
 
           if (type.toUpperCase() === "M" && args.length >= 2) {
+            flushPolyline();
             const pt = applyTransform(args[0], args[1]);
-            startPoint = pt;
-            currentPoint = pt;
+            currentPolyline.push(pt);
           } else if (type.toUpperCase() === "L" && args.length >= 2) {
             for (let i = 0; i < args.length; i += 2) {
               const nextPoint = applyTransform(args[i], args[i+1]);
-              addDxfLine(currentPoint.x, currentPoint.y, nextPoint.x, nextPoint.y);
-              currentPoint = nextPoint;
+              currentPolyline.push(nextPoint);
             }
           } else if (type.toUpperCase() === "C" && args.length >= 6) {
-            // Cubic bezier curve approximation: divide into 8 linear segments
             for (let k = 0; k < args.length; k += 6) {
               const cp1 = applyTransform(args[k], args[k+1]);
               const cp2 = applyTransform(args[k+2], args[k+3]);
               const end = applyTransform(args[k+4], args[k+5]);
               
-              const start = { ...currentPoint };
+              const start = currentPolyline[currentPolyline.length - 1] || { x: 0, y: 0 };
               const steps = 8;
               for (let i = 1; i <= steps; i++) {
                 const t = i / steps;
                 const mt = 1 - t;
                 const x = mt * mt * mt * start.x + 3 * mt * mt * t * cp1.x + 3 * mt * t * t * cp2.x + t * t * t * end.x;
                 const y = mt * mt * mt * start.y + 3 * mt * mt * t * cp1.y + 3 * mt * t * t * cp2.y + t * t * t * end.y;
-                addDxfLine(currentPoint.x, currentPoint.y, x, y);
-                currentPoint = { x, y };
+                currentPolyline.push({ x, y });
               }
             }
           } else if (type.toUpperCase() === "Z") {
-            addDxfLine(currentPoint.x, currentPoint.y, startPoint.x, startPoint.y);
-            currentPoint = startPoint;
+            isClosed = true;
+            flushPolyline();
           }
         });
+
+        flushPolyline();
       }
       
-      // Traverse children nodes
       Array.from(node.children).forEach(child => traverse(child));
     };
 
