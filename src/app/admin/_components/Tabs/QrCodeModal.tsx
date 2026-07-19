@@ -633,6 +633,185 @@ export default function QrCodeModal({
     document.body.removeChild(downloadLink);
   };
 
+  // Convert the SVG elements to standard CAD DXF format (using LINES and CIRCLES)
+  const downloadDxf = () => {
+    const svgElement = document.getElementById("qr-svg-necklace");
+    if (!svgElement) return;
+
+    let dxfContent = [
+      "  0", "SECTION",
+      "  2", "HEADER",
+      "  9", "$ACADVER",
+      "  1", "AC1015",
+      "  0", "ENDSEC",
+      "  0", "SECTION",
+      "  2", "ENTITIES"
+    ];
+
+    // Helper to add a circle to DXF content
+    const addDxfCircle = (cx: number, cy: number, r: number) => {
+      // Invert Y axis for CAD standard orientation (origin at bottom-left of 300x300 canvas)
+      const cadX = cx;
+      const cadY = 300 - cy;
+      
+      dxfContent.push(
+        "  0", "CIRCLE",
+        "  8", "0",
+        " 10", cadX.toFixed(4),
+        " 20", cadY.toFixed(4),
+        " 30", "0.0",
+        " 40", r.toFixed(4)
+      );
+    };
+
+    // Helper to add a line to DXF content
+    const addDxfLine = (x1: number, y1: number, x2: number, y2: number) => {
+      const cadX1 = x1;
+      const cadY1 = 300 - y1;
+      const cadX2 = x2;
+      const cadY2 = 300 - y2;
+
+      dxfContent.push(
+        "  0", "LINE",
+        "  8", "0",
+        " 10", cadX1.toFixed(4),
+        " 20", cadY1.toFixed(4),
+        " 30", "0.0",
+        " 11", cadX2.toFixed(4),
+        " 21", cadY2.toFixed(4),
+        " 31", "0.0"
+      );
+    };
+
+    // Recursively traverse DOM nodes to generate DXF vectors
+    const traverse = (node: Element) => {
+      if (node.tagName === "circle") {
+        const cx = parseFloat(node.getAttribute("cx") || "0");
+        const cy = parseFloat(node.getAttribute("cy") || "0");
+        const r = parseFloat(node.getAttribute("r") || "0");
+        const strokeWidthAttr = node.getAttribute("stroke-width");
+        const strokeWidth = strokeWidthAttr ? parseFloat(strokeWidthAttr) : 0;
+
+        if (strokeWidth > 0) {
+          // Stroked circle: draw inner and outer borders for CAD vector definition
+          addDxfCircle(cx, cy, r - strokeWidth / 2);
+          addDxfCircle(cx, cy, r + strokeWidth / 2);
+        } else {
+          // Regular filled/solid circle
+          addDxfCircle(cx, cy, r);
+        }
+      } else if (node.tagName === "path") {
+        const d = node.getAttribute("d") || "";
+        const transform = node.getAttribute("transform") || "";
+        
+        // Parse transformations: translate, scale, scaleX, scaleY, rotate
+        let tx = 0, ty = 0, scaleX = 1, scaleY = 1, rotDeg = 0;
+        
+        const translateMatch = transform.match(/translate\(([^,)]+),?\s*([^)]*)\)/);
+        if (translateMatch) {
+          tx = parseFloat(translateMatch[1]);
+          ty = translateMatch[2] ? parseFloat(translateMatch[2]) : 0;
+        }
+        
+        const scaleMatch = transform.match(/scale\(([^,)]+),?\s*([^)]*)\)/);
+        if (scaleMatch) {
+          const sx = parseFloat(scaleMatch[1]);
+          const sy = scaleMatch[2] ? parseFloat(scaleMatch[2]) : sx;
+          scaleX = sx;
+          scaleY = sy;
+        }
+
+        const scaleXMatch = transform.match(/scaleX\(([^)]+)\)/);
+        if (scaleXMatch) {
+          scaleX *= parseFloat(scaleXMatch[1]);
+        }
+
+        const scaleYMatch = transform.match(/scaleY\(([^)]+)\)/);
+        if (scaleYMatch) {
+          scaleY *= parseFloat(scaleYMatch[1]);
+        }
+        
+        const rotateMatch = transform.match(/rotate\(([^)]+)\)/);
+        if (rotateMatch) {
+          rotDeg = parseFloat(rotateMatch[1]);
+        }
+
+        const rotRad = (rotDeg * Math.PI) / 180;
+
+        const applyTransform = (px: number, py: number) => {
+          // 1. Scale
+          let sx = px * scaleX;
+          let sy = py * scaleY;
+          // 2. Rotate
+          let rx = sx * Math.cos(rotRad) - sy * Math.sin(rotRad);
+          let ry = sx * Math.sin(rotRad) + sy * Math.cos(rotRad);
+          // 3. Translate
+          return { x: rx + tx, y: ry + ty };
+        };
+
+        // Parse SVG path commands
+        const commands = d.match(/[a-df-z][^a-df-z]*/ig) || [];
+        let startPoint = { x: 0, y: 0 };
+        let currentPoint = { x: 0, y: 0 };
+
+        commands.forEach(cmdStr => {
+          const type = cmdStr[0];
+          const args = (cmdStr.substring(1).trim().split(/[\s,]+/) || []).map(parseFloat).filter(v => !isNaN(v));
+
+          if (type.toUpperCase() === "M" && args.length >= 2) {
+            const pt = applyTransform(args[0], args[1]);
+            startPoint = pt;
+            currentPoint = pt;
+          } else if (type.toUpperCase() === "L" && args.length >= 2) {
+            for (let i = 0; i < args.length; i += 2) {
+              const nextPoint = applyTransform(args[i], args[i+1]);
+              addDxfLine(currentPoint.x, currentPoint.y, nextPoint.x, nextPoint.y);
+              currentPoint = nextPoint;
+            }
+          } else if (type.toUpperCase() === "C" && args.length >= 6) {
+            // Cubic bezier curve approximation: divide into 8 linear segments
+            for (let k = 0; k < args.length; k += 6) {
+              const cp1 = applyTransform(args[k], args[k+1]);
+              const cp2 = applyTransform(args[k+2], args[k+3]);
+              const end = applyTransform(args[k+4], args[k+5]);
+              
+              const start = { ...currentPoint };
+              const steps = 8;
+              for (let i = 1; i <= steps; i++) {
+                const t = i / steps;
+                const mt = 1 - t;
+                const x = mt * mt * mt * start.x + 3 * mt * mt * t * cp1.x + 3 * mt * t * t * cp2.x + t * t * t * end.x;
+                const y = mt * mt * mt * start.y + 3 * mt * mt * t * cp1.y + 3 * mt * t * t * cp2.y + t * t * t * end.y;
+                addDxfLine(currentPoint.x, currentPoint.y, x, y);
+                currentPoint = { x, y };
+              }
+            }
+          } else if (type.toUpperCase() === "Z") {
+            addDxfLine(currentPoint.x, currentPoint.y, startPoint.x, startPoint.y);
+            currentPoint = startPoint;
+          }
+        });
+      }
+      
+      // Traverse children nodes
+      Array.from(node.children).forEach(child => traverse(child));
+    };
+
+    traverse(svgElement);
+
+    dxfContent.push("  0", "ENDSEC", "  0", "EOF");
+
+    const dxfBlob = new Blob([dxfContent.join("\r\n")], { type: "application/dxf;charset=utf-8" });
+    const dxfUrl = URL.createObjectURL(dxfBlob);
+    
+    const downloadLink = document.createElement("a");
+    downloadLink.href = dxfUrl;
+    downloadLink.download = `qr-kolye-${selectedEditSlug.toLowerCase()}-${selectedStyle + 1}.dxf`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   // Convert SVG to high-res PNG and download
   const downloadPng = () => {
     const svgElement = document.getElementById("qr-svg-necklace");
@@ -843,6 +1022,20 @@ export default function QrCodeModal({
               <button
                 onClick={downloadSvg}
                 style={{
+                  flex: 1, padding: "14px", borderRadius: "30px", border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.05)", color: C.text, fontSize: "13px", fontWeight: 600,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                  transition: "background 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+              >
+                <HiOutlineDownload size={16} />
+                SVG İndir
+              </button>
+              <button
+                onClick={downloadDxf}
+                style={{
                   flex: 1.2, padding: "14px", borderRadius: "30px", border: "none",
                   background: C.gold, color: "#0B0F1A", fontSize: "13px", fontWeight: 700,
                   cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -850,7 +1043,7 @@ export default function QrCodeModal({
                 }}
               >
                 <HiOutlineDownload size={16} />
-                Vektör SVG İndir (Lazer)
+                DXF İndir (AutoCAD)
               </button>
             </div>
 
