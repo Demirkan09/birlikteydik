@@ -31,6 +31,8 @@ export default function QrCodeModal({
 }: QrCodeModalProps) {
   const [selectedStyle, setSelectedStyle] = useState<number>(0);
   const [qrMatrix, setQrMatrix] = useState<any>(null);
+  const [dotShape, setDotShape] = useState<"square" | "circle">("square"); // default square for optimal metal scan
+  const [errorCorrection, setErrorCorrection] = useState<"L" | "M" | "Q" | "H">("M"); // default Medium for laser balance
 
   // Generate QR Code Matrix using the qrcode library
   useEffect(() => {
@@ -40,13 +42,13 @@ export default function QrCodeModal({
       // Build the target URL
       const targetUrl = `https://birlikteydik.com/${selectedEditSlug.toLowerCase().trim()}`;
       
-      // Create QR code with Low error correction (maximizes module size for scanability)
-      const qr = QRCode.create(targetUrl, { errorCorrectionLevel: "L" });
+      // Create QR code with dynamic error correction
+      const qr = QRCode.create(targetUrl, { errorCorrectionLevel: errorCorrection });
       setQrMatrix(qr);
     } catch (err) {
       console.error("Failed to generate QR code matrix:", err);
     }
-  }, [isOpen, selectedEditSlug]);
+  }, [isOpen, selectedEditSlug, errorCorrection]);
 
   if (!isOpen) return null;
 
@@ -88,21 +90,34 @@ export default function QrCodeModal({
           if (!isFinderPattern(x, y)) {
             const cx = startX + (x + 0.5) * S;
             const cy = startY + (y + 0.5) * S;
-            gridPoints.push(
-              <circle
-                key={`dot-${x}-${y}`}
-                cx={cx}
-                cy={cy}
-                r={S * 0.48} // Increased radius so dots overlap/touch slightly, making it highly scanable
-                fill="black"
-              />
-            );
+            if (dotShape === "circle") {
+              gridPoints.push(
+                <circle
+                  key={`dot-${x}-${y}`}
+                  cx={cx}
+                  cy={cy}
+                  r={S * 0.48} // Slightly touching circles
+                  fill="black"
+                />
+              );
+            } else {
+              gridPoints.push(
+                <rect
+                  key={`dot-${x}-${y}`}
+                  x={startX + x * S}
+                  y={startY + y * S}
+                  width={S + 0.05}
+                  height={S + 0.05}
+                  fill="black"
+                />
+              );
+            }
           }
         }
       }
     }
 
-    // Draw the 3 custom circular finder patterns (eyes)
+    // Draw the 3 custom finder patterns (eyes)
     // IMPORTANT: Ratios MUST strictly follow the 1:1:3:1:1 standard for QR reader algorithms to scan instantly.
     const finderCoords = [
       { cx: startX + 3.5 * S, cy: startY + 3.5 * S }, // Top-Left
@@ -111,26 +126,57 @@ export default function QrCodeModal({
     ];
 
     finderCoords.forEach((coord, idx) => {
-      finders.push(
-        <g key={`finder-${idx}`}>
-          {/* Outer ring: center radius at 3.0 * S with strokeWidth S spans from 2.5 * S to 3.5 * S */}
-          <circle
-            cx={coord.cx}
-            cy={coord.cy}
-            r={S * 3.0}
-            stroke="black"
-            strokeWidth={S}
-            fill="none"
-          />
-          {/* Inner solid circle: radius 1.5 * S (diameter 3.0 * S) */}
-          <circle
-            cx={coord.cx}
-            cy={coord.cy}
-            r={S * 1.5}
-            fill="black"
-          />
-        </g>
-      );
+      if (dotShape === "square") {
+        finders.push(
+          <g key={`finder-${idx}`}>
+            {/* Outer black square (7x7 modules) */}
+            <rect
+              x={coord.cx - S * 3.5}
+              y={coord.cy - S * 3.5}
+              width={S * 7}
+              height={S * 7}
+              fill="black"
+            />
+            {/* Middle white cutout (5x5 modules) */}
+            <rect
+              x={coord.cx - S * 2.5}
+              y={coord.cy - S * 2.5}
+              width={S * 5}
+              height={S * 5}
+              fill="white"
+            />
+            {/* Inner solid black square (3x3 modules) */}
+            <rect
+              x={coord.cx - S * 1.5}
+              y={coord.cy - S * 1.5}
+              width={S * 3}
+              height={S * 3}
+              fill="black"
+            />
+          </g>
+        );
+      } else {
+        finders.push(
+          <g key={`finder-${idx}`}>
+            {/* Outer ring: center radius at 3.0 * S with strokeWidth S spans from 2.5 * S to 3.5 * S */}
+            <circle
+              cx={coord.cx}
+              cy={coord.cy}
+              r={S * 3.0}
+              stroke="black"
+              strokeWidth={S}
+              fill="none"
+            />
+            {/* Inner solid circle: radius 1.5 * S (diameter 3.0 * S) */}
+            <circle
+              cx={coord.cx}
+              cy={coord.cy}
+              r={S * 1.5}
+              fill="black"
+            />
+          </g>
+        );
+      }
     });
   }
 
@@ -700,6 +746,17 @@ export default function QrCodeModal({
           // Regular filled/solid circle
           addDxfCircle(cx, cy, r);
         }
+      } else if (node.tagName === "rect") {
+        const x = parseFloat(node.getAttribute("x") || "0");
+        const y = parseFloat(node.getAttribute("y") || "0");
+        const w = parseFloat(node.getAttribute("width") || "0");
+        const h = parseFloat(node.getAttribute("height") || "0");
+
+        // Represent square modules and finders as 4 CAD lines
+        addDxfLine(x, y, x + w, y);
+        addDxfLine(x + w, y, x + w, y + h);
+        addDxfLine(x + w, y + h, x, y + h);
+        addDxfLine(x, y + h, x, y);
       } else if (node.tagName === "path") {
         const d = node.getAttribute("d") || "";
         const transform = node.getAttribute("transform") || "";
@@ -988,6 +1045,49 @@ export default function QrCodeModal({
               </div>
             </div>
 
+            {/* Lazer Optimizasyon Seçenekleri */}
+            <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 600, display: "block", marginBottom: "8px" }}>
+                  Nokta Tipi
+                </span>
+                <select
+                  value={dotShape}
+                  onChange={(e) => setDotShape(e.target.value as any)}
+                  style={{
+                    width: "100%", padding: "10px 12px", borderRadius: "12px",
+                    background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`,
+                    color: C.text, fontSize: "13px", outline: "none", cursor: "pointer",
+                    fontFamily: "var(--font-inter), sans-serif"
+                  }}
+                >
+                  <option value="square">Kare (Önerilen)</option>
+                  <option value="circle">Yuvarlak</option>
+                </select>
+              </div>
+
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, fontWeight: 600, display: "block", marginBottom: "8px" }}>
+                  Hata Toleransı
+                </span>
+                <select
+                  value={errorCorrection}
+                  onChange={(e) => setErrorCorrection(e.target.value as any)}
+                  style={{
+                    width: "100%", padding: "10px 12px", borderRadius: "12px",
+                    background: "rgba(255,255,255,0.03)", border: `1px solid ${C.border}`,
+                    color: C.text, fontSize: "13px", outline: "none", cursor: "pointer",
+                    fontFamily: "var(--font-inter), sans-serif"
+                  }}
+                >
+                  <option value="M">Medium (%15 - Önerilen)</option>
+                  <option value="Q">Quartile (%25 - Yüksek)</option>
+                  <option value="H">High (%30 - Maksimum)</option>
+                  <option value="L">Low (%7 - Büyük Noktalar)</option>
+                </select>
+              </div>
+            </div>
+
             {/* Target URL Info */}
             <div style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${C.border}`, borderRadius: "16px", padding: "16px" }}>
               <div style={{ fontSize: "11px", color: C.muted, marginBottom: "4px" }}>Bağlantı Adresi:</div>
@@ -998,9 +1098,9 @@ export default function QrCodeModal({
 
             {/* Lazer Engraving Information */}
             <div style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.15)", borderRadius: "16px", padding: "16px", fontSize: "12px", color: "#E5C2BA", lineHeight: "1.6" }}>
-              <strong>⚠️ Lazer Baskı & Ölçek Bilgisi:</strong>
+              <strong>⚠️ Parlak Metal ve Lazer Baskı Ayarı:</strong>
               <div style={{ marginTop: "6px" }}>
-                Bu tasarımlar <strong>2cm x 2cm</strong> yuvarlak kolyelere uygun şekilde dış halka ile QR kod arasına yerleştirilmiştir. Kodun taranabilirliği için lazer ayarlarında dolgu (fill) yerine sadece <strong>keskin anahat çizimi (vector outline)</strong> veya <strong>yüksek kontrastlı lazer kazıma</strong> tercih edilmelidir.
+                Kolyeniz aynalı/parlak metal ise yansımaları önlemek için <strong>Kare Nokta Tipi</strong>'ni seçin. Kare seçiminde pikseller birleşerek boşluksuz, pürüzsüz bloklar oluşturur ve telefon kamerası yansımalardan etkilenmeden kodu kolayca okur. Ayrıca hata toleransını <strong>Medium (%15) veya daha yüksek</strong> tutarak taranabilirliği garantileyebilirsiniz.
               </div>
             </div>
 
