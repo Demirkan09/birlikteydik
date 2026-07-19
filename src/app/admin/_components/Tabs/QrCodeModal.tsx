@@ -702,6 +702,7 @@ export default function QrCodeModal({
       dxfContent.push(
         "  0", "CIRCLE",
         "  8", layer,
+        " 62", layer, // Explicitly tell EzCad which Pen number (Color Index) to use
         " 10", cadX.toFixed(4),
         " 20", cadY.toFixed(4),
         " 30", "0.0",
@@ -715,6 +716,7 @@ export default function QrCodeModal({
       dxfContent.push(
         "  0", "LWPOLYLINE",
         "  8", layer,
+        " 62", layer, // Explicitly tell EzCad which Pen number (Color Index) to use
         " 90", points.length.toString(),
         " 70", closed ? "1" : "0" // 1 = closed, 0 = open
       );
