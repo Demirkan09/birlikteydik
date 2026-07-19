@@ -695,7 +695,7 @@ export default function QrCodeModal({
     ];
 
     // Helper to add a circle to DXF content
-    const addDxfCircle = (cx: number, cy: number, r: number, layer: string = "DEKORASYON") => {
+    const addDxfCircle = (cx: number, cy: number, r: number, layer: string = "1") => {
       const cadX = cx;
       const cadY = 300 - cy;
       
@@ -710,7 +710,7 @@ export default function QrCodeModal({
     };
 
     // Helper to add a closed/open lightweight polyline to DXF (fully supported by EzCad for hatching/filling)
-    const addDxfPolyline = (points: {x: number, y: number}[], closed: boolean = true, layer: string = "DEKORASYON") => {
+    const addDxfPolyline = (points: {x: number, y: number}[], closed: boolean = true, layer: string = "1") => {
       if (points.length < 2) return;
       dxfContent.push(
         "  0", "LWPOLYLINE",
@@ -729,14 +729,14 @@ export default function QrCodeModal({
     };
 
     // Recursively traverse DOM nodes to generate DXF vectors on separate layers
-    const traverse = (node: Element, currentLayer: string = "DEKORASYON") => {
+    const traverse = (node: Element, currentLayer: string = "1") => {
       let layer = currentLayer;
       
       const id = node.getAttribute("id");
       if (id === "dxf-layer-dekorasyon") {
-        layer = "DEKORASYON";
+        layer = "1";
       } else if (id === "dxf-layer-qr-kod") {
-        layer = "QR_KOD";
+        layer = "0";
       }
 
       if (node.tagName === "circle") {
@@ -746,9 +746,8 @@ export default function QrCodeModal({
         const strokeWidthAttr = node.getAttribute("stroke-width");
         const strokeWidth = strokeWidthAttr ? parseFloat(strokeWidthAttr) : 0;
 
-        // Auto-detect outer necklace border (radius >= 115 near center) and put on DIS_KESIM layer
         const isOuterCutBorder = Math.abs(cx - 150) < 0.1 && Math.abs(cy - 150) < 0.1 && r >= 115;
-        const targetLayer = isOuterCutBorder ? "DIS_KESIM" : layer;
+        const targetLayer = isOuterCutBorder ? "2" : layer;
 
         if (strokeWidth > 0) {
           // Stroked circle: draw inner and outer borders for CAD vector definition
@@ -905,7 +904,7 @@ export default function QrCodeModal({
               
               dxfContent.push(
                 "  0", "TEXT",
-                "  8", "DEKORASYON",
+                "  8", layer,
                 " 10", cadX.toFixed(4),
                 " 20", cadY.toFixed(4),
                 " 30", "0.0",
@@ -923,7 +922,7 @@ export default function QrCodeModal({
             
             dxfContent.push(
               "  0", "TEXT",
-              "  8", "DEKORASYON",
+              "  8", layer,
               " 10", cadX.toFixed(4),
               " 20", cadY.toFixed(4),
               " 30", "0.0",
