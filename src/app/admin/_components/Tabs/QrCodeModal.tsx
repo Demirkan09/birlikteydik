@@ -695,13 +695,13 @@ export default function QrCodeModal({
     ];
 
     // Helper to add a circle to DXF content
-    const addDxfCircle = (cx: number, cy: number, r: number) => {
+    const addDxfCircle = (cx: number, cy: number, r: number, layer: string = "DEKORASYON") => {
       const cadX = cx;
       const cadY = 300 - cy;
       
       dxfContent.push(
         "  0", "CIRCLE",
-        "  8", "0",
+        "  8", layer,
         " 10", cadX.toFixed(4),
         " 20", cadY.toFixed(4),
         " 30", "0.0",
@@ -710,11 +710,11 @@ export default function QrCodeModal({
     };
 
     // Helper to add a closed/open lightweight polyline to DXF (fully supported by EzCad for hatching/filling)
-    const addDxfPolyline = (points: {x: number, y: number}[], closed: boolean = true) => {
+    const addDxfPolyline = (points: {x: number, y: number}[], closed: boolean = true, layer: string = "DEKORASYON") => {
       if (points.length < 2) return;
       dxfContent.push(
         "  0", "LWPOLYLINE",
-        "  8", "0",
+        "  8", layer,
         " 90", points.length.toString(),
         " 70", closed ? "1" : "0" // 1 = closed, 0 = open
       );
@@ -728,8 +728,17 @@ export default function QrCodeModal({
       });
     };
 
-    // Recursively traverse DOM nodes to generate DXF vectors
-    const traverse = (node: Element) => {
+    // Recursively traverse DOM nodes to generate DXF vectors on separate layers
+    const traverse = (node: Element, currentLayer: string = "DEKORASYON") => {
+      let layer = currentLayer;
+      
+      const id = node.getAttribute("id");
+      if (id === "dxf-layer-dekorasyon") {
+        layer = "DEKORASYON";
+      } else if (id === "dxf-layer-qr-kod") {
+        layer = "QR_KOD";
+      }
+
       if (node.tagName === "circle") {
         const cx = parseFloat(node.getAttribute("cx") || "0");
         const cy = parseFloat(node.getAttribute("cy") || "0");
@@ -737,11 +746,17 @@ export default function QrCodeModal({
         const strokeWidthAttr = node.getAttribute("stroke-width");
         const strokeWidth = strokeWidthAttr ? parseFloat(strokeWidthAttr) : 0;
 
+        // Auto-detect outer necklace border (radius >= 115 near center) and put on DIS_KESIM layer
+        const isOuterCutBorder = Math.abs(cx - 150) < 0.1 && Math.abs(cy - 150) < 0.1 && r >= 115;
+        const targetLayer = isOuterCutBorder ? "DIS_KESIM" : layer;
+
         if (strokeWidth > 0) {
-          addDxfCircle(cx, cy, r - strokeWidth / 2);
-          addDxfCircle(cx, cy, r + strokeWidth / 2);
+          // Stroked circle: draw inner and outer borders for CAD vector definition
+          addDxfCircle(cx, cy, r - strokeWidth / 2, targetLayer);
+          addDxfCircle(cx, cy, r + strokeWidth / 2, targetLayer);
         } else {
-          addDxfCircle(cx, cy, r);
+          // Regular filled/solid circle
+          addDxfCircle(cx, cy, r, targetLayer);
         }
       } else if (node.tagName === "rect") {
         const x = parseFloat(node.getAttribute("x") || "0");
@@ -749,13 +764,13 @@ export default function QrCodeModal({
         const w = parseFloat(node.getAttribute("width") || "0");
         const h = parseFloat(node.getAttribute("height") || "0");
 
-        // Represent square modules and finders as closed LWPOLYLINEs for instant hatching in EzCad
+        // Represent square modules and finders as closed LWPOLYLINEs
         addDxfPolyline([
           { x, y },
           { x: x + w, y },
           { x: x + w, y: y + h },
           { x, y: y + h }
-        ], true);
+        ], true, layer);
       } else if (node.tagName === "path") {
         const d = node.getAttribute("d") || "";
         const transform = node.getAttribute("transform") || "";
@@ -777,9 +792,19 @@ export default function QrCodeModal({
           scaleY = sy;
         }
 
-        const rotMatch = transform.match(/rotate\(([^)]+)\)/);
-        if (rotMatch) {
-          rotDeg = parseFloat(rotMatch[1]);
+        const scaleXMatch = transform.match(/scaleX\(([^)]+)\)/);
+        if (scaleXMatch) {
+          scaleX *= parseFloat(scaleXMatch[1]);
+        }
+
+        const scaleYMatch = transform.match(/scaleY\(([^)]+)\)/);
+        if (scaleYMatch) {
+          scaleY *= parseFloat(scaleYMatch[1]);
+        }
+        
+        const rotateMatch = transform.match(/rotate\(([^)]+)\)/);
+        if (rotateMatch) {
+          rotDeg = parseFloat(rotateMatch[1]);
         }
 
         const rotRad = (rotDeg * Math.PI) / 180;
@@ -799,7 +824,7 @@ export default function QrCodeModal({
 
         const flushPolyline = () => {
           if (currentPolyline.length > 1) {
-            addDxfPolyline(currentPolyline, isClosed);
+            addDxfPolyline(currentPolyline, isClosed, layer);
           }
           currentPolyline = [];
           isClosed = false;
@@ -841,9 +866,77 @@ export default function QrCodeModal({
         });
 
         flushPolyline();
+      } else if (node.tagName === "text") {
+        const textPath = node.querySelector("textPath");
+        const textContent = (textPath ? textPath.textContent : node.textContent) || "";
+        const href = textPath ? textPath.getAttribute("href") || "" : "";
+        
+        const cleanText = textContent.trim();
+        if (cleanText) {
+          // If it is a textPath on top or bottom circle arcs, render curved letters manually
+          if (href === "#qr-text-path-top" || href === "#qr-text-path-bottom") {
+            const isTop = href === "#qr-text-path-top";
+            const chars = cleanText.split("");
+            const N = chars.length;
+            
+            // Angular span mapping to match SVG curved layout:
+            // Top: 155deg to 25deg, Bottom: 205deg to 335deg
+            const startAngle = isTop ? 155 : 205; 
+            const endAngle = isTop ? 25 : 335;
+            const radius = 104; // Path radius (110 - padding/offset)
+            
+            for (let i = 0; i < N; i++) {
+              const t = N > 1 ? i / (N - 1) : 0.5;
+              const angleDeg = startAngle + t * (endAngle - startAngle);
+              const angleRad = (angleDeg * Math.PI) / 180;
+              
+              // Calculate letter coordinate
+              const x = 150 + radius * Math.cos(angleRad);
+              const y = 150 + radius * Math.sin(angleRad);
+              
+              // Tangential rotation
+              let rotDeg = angleDeg - 90;
+              if (isTop) {
+                rotDeg = angleDeg + 90;
+              }
+              
+              const cadX = x;
+              const cadY = 300 - y;
+              
+              dxfContent.push(
+                "  0", "TEXT",
+                "  8", "DEKORASYON",
+                " 10", cadX.toFixed(4),
+                " 20", cadY.toFixed(4),
+                " 30", "0.0",
+                " 40", "6.5", // Text height
+                "  1", chars[i],
+                " 50", rotDeg.toFixed(4)
+              );
+            }
+          } else {
+            // Normal fallback straight text
+            const x = parseFloat(node.getAttribute("x") || "150");
+            const y = parseFloat(node.getAttribute("y") || "150");
+            const cadX = x;
+            const cadY = 300 - y;
+            
+            dxfContent.push(
+              "  0", "TEXT",
+              "  8", "DEKORASYON",
+              " 10", cadX.toFixed(4),
+              " 20", cadY.toFixed(4),
+              " 30", "0.0",
+              " 40", "8.0",
+              "  1", cleanText,
+              " 50", "0.0"
+            );
+          }
+        }
       }
       
-      Array.from(node.children).forEach(child => traverse(child));
+      // Traverse children nodes while passing current inherited layer
+      Array.from(node.children).forEach(child => traverse(child, layer));
     };
 
     traverse(svgElement);
@@ -977,13 +1070,15 @@ export default function QrCodeModal({
                   style={{ width: "100%", height: "100%", background: "#FFFFFF" }}
                 >
                   {/* Decorative Frame based on selection */}
-                  {renderFrame()}
+                  <g id="dxf-layer-dekorasyon">
+                    {renderFrame()}
+                  </g>
 
-                  {/* QR Grid modules */}
-                  {gridPoints}
-
-                  {/* Concentric Circle Finders */}
-                  {finders}
+                  {/* QR Grid modules and finders */}
+                  <g id="dxf-layer-qr-kod">
+                    {gridPoints}
+                    {finders}
+                  </g>
                 </svg>
               ) : (
                 <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", color: "#111111", fontSize: "13px" }}>
