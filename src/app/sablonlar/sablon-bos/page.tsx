@@ -1031,8 +1031,18 @@ export default function BosTemplate({
     };
   }, [effectiveBgColor]);
 
+  const isPlayingRef = useRef(false);
   useEffect(() => {
-    if (audioRef.current) audioRef.current.pause();
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setIsPlaying(false);
+
     if (config.musicUrl && config.musicWidgetEnabled) {
       const audio = new Audio(config.musicUrl);
       audio.loop = true;
@@ -1040,7 +1050,7 @@ export default function BosTemplate({
       audioRef.current = audio;
 
       const handleStall = () => {
-        if (audioRef.current && audioRef.current.paused && isPlaying) {
+        if (audioRef.current && audioRef.current.paused && isPlayingRef.current) {
           audioRef.current.play().catch(() => {});
         }
       };
@@ -1052,7 +1062,13 @@ export default function BosTemplate({
       if (!config.entranceEnabled) {
         const playAudio = () => {
           if (audioRef.current) {
-            audioRef.current.play().then(() => { setIsPlaying(true); removeListeners(); }).catch(() => {});
+            audioRef.current
+              .play()
+              .then(() => {
+                setIsPlaying(true);
+                removeListeners();
+              })
+              .catch(() => {});
           }
         };
         const removeListeners = () => {
@@ -1068,18 +1084,18 @@ export default function BosTemplate({
           removeListeners();
           audio.removeEventListener("stalled", handleStall);
           audio.removeEventListener("waiting", handleStall);
-          audioRef.current?.pause();
+          audio.pause();
         };
       } else {
         // Entrance aktif — müzik handleEnter'da başlayacak
         return () => {
           audio.removeEventListener("stalled", handleStall);
           audio.removeEventListener("waiting", handleStall);
-          audioRef.current?.pause();
+          audio.pause();
         };
       }
     }
-  }, [config.musicUrl, config.musicWidgetEnabled, config.entranceEnabled, isPlaying]);
+  }, [config.musicUrl, config.musicWidgetEnabled, config.entranceEnabled]);
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
