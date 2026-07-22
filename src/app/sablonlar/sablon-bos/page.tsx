@@ -1034,8 +1034,20 @@ export default function BosTemplate({
   useEffect(() => {
     if (audioRef.current) audioRef.current.pause();
     if (config.musicUrl && config.musicWidgetEnabled) {
-      audioRef.current = new Audio(config.musicUrl);
-      audioRef.current.loop = true;
+      const audio = new Audio(config.musicUrl);
+      audio.loop = true;
+      audio.preload = "auto";
+      audioRef.current = audio;
+
+      const handleStall = () => {
+        if (audioRef.current && audioRef.current.paused && isPlaying) {
+          audioRef.current.play().catch(() => {});
+        }
+      };
+
+      audio.addEventListener("stalled", handleStall);
+      audio.addEventListener("waiting", handleStall);
+
       // Entrance aktifse müzik otomatik başlamasın — handleEnter beklesin
       if (!config.entranceEnabled) {
         const playAudio = () => {
@@ -1052,13 +1064,22 @@ export default function BosTemplate({
         window.addEventListener("click", playAudio);
         window.addEventListener("touchstart", playAudio);
         window.addEventListener("scroll", playAudio);
-        return () => { removeListeners(); audioRef.current?.pause(); };
+        return () => {
+          removeListeners();
+          audio.removeEventListener("stalled", handleStall);
+          audio.removeEventListener("waiting", handleStall);
+          audioRef.current?.pause();
+        };
       } else {
         // Entrance aktif — müzik handleEnter'da başlayacak
-        return () => { audioRef.current?.pause(); };
+        return () => {
+          audio.removeEventListener("stalled", handleStall);
+          audio.removeEventListener("waiting", handleStall);
+          audioRef.current?.pause();
+        };
       }
     }
-  }, [config.musicUrl, config.musicWidgetEnabled, config.entranceEnabled]);
+  }, [config.musicUrl, config.musicWidgetEnabled, config.entranceEnabled, isPlaying]);
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
