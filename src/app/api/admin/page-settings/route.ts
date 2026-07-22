@@ -61,6 +61,7 @@ const DEFAULT_CONFIGS: Record<string, { config: any; memories: any }> = {
     config: {
       coupleNames: "Sen & Ben",
       tagline: "Aşkın en sıcak tonunda, kalbimin her atışında saklanan en derin hislerim...",
+      bgColor: "#160408",
       accentColor: "#E63946",
       specialDate: "14 Şubat 2026",
       musicUrl: "/music/default.mp3",
@@ -69,6 +70,34 @@ const DEFAULT_CONFIGS: Record<string, { config: any; memories: any }> = {
     memories: [
       { id: 1, image: "/moment.jpg", title: "Aşkın Rengi", description: "İlk kez bana sımsıcak gülümsediğinde, tüm kışların eriyip bahara döndüğü gün.", date: "14 Şubat 2025" },
       { id: 2, image: "/moment2.jpg", title: "Kalp Atışlarımız", description: "Birlikte geçen her saniye, kalbimi sonsuza dek sana emanet ediyorum.", date: "12 Mart 2025" }
+    ]
+  },
+  "modern-minimal": {
+    config: {
+      coupleNames: "Sen & Ben",
+      tagline: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben...",
+      bgColor: "#F6F3F0",
+      accentColor: "#8C7E6C",
+      specialDate: "14 Şubat 2026",
+      musicUrl: "/music/default.mp3",
+    },
+    memories: [
+      { id: 1, image: "/moment.jpg", title: "Sadelik", description: "Bana sımsıcak gülümsediğin o güzel an.", date: "14 Şubat 2025" },
+      { id: 2, image: "/moment2.jpg", title: "Huzur", description: "Sadece elini tutmak bile yetiyor bana.", date: "12 Mart 2025" }
+    ]
+  },
+  "sablon-minimal": {
+    config: {
+      coupleNames: "Sen & Ben",
+      tagline: "Gürültüden uzak, en saf halimizle. Sadece sen ve ben...",
+      bgColor: "#F6F3F0",
+      accentColor: "#8C7E6C",
+      specialDate: "14 Şubat 2026",
+      musicUrl: "/music/default.mp3",
+    },
+    memories: [
+      { id: 1, image: "/moment.jpg", title: "Sadelik", description: "Bana sımsıcak gülümsediğin o güzel an.", date: "14 Şubat 2025" },
+      { id: 2, image: "/moment2.jpg", title: "Huzur", description: "Sadece elini tutmak bile yetiyor bana.", date: "12 Mart 2025" }
     ]
   },
 };

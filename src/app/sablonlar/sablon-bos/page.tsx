@@ -89,6 +89,21 @@ const BODY_FONT: Record<string, string> = {
   "press-start": "'Press Start 2P', monospace",
 };
 
+const TEMPLATE_BG_MAP: Record<string, string> = {
+  "modern-minimal": "#F6F3F0",
+  "sablon-minimal": "#F6F3F0",
+  "sablon-rose": "#F8F0EA",
+  "klasik-retro": "#160C0E",
+  "romantik-kirmizi": "#160408",
+  "sinematik-ask": "#0C0C0E",
+  "premium-emerald": "#022C22",
+  "sablon-oyun": "#111111",
+  "sablon-lavanta": "#1E1B4B",
+  "sablon-amber": "#090300",
+  "sablon-indigo": "#04091a",
+  "sablon-siyah": "#09090b",
+};
+
 function hexToRgb(hex: string) {
   let cleanHex = (hex || "#C9A84C").replace("#", "");
   if (cleanHex.length === 3) {
@@ -991,6 +1006,31 @@ export default function BosTemplate({
     }
   };
 
+  const ac = config.accentColor;
+  const pc = (config.particlesColor && config.particlesColor.length > 2) ? config.particlesColor : ac; // partikül rengi
+  const hFont = HEADING_FONT[config.headingFont] ?? HEADING_FONT.cormorant;
+  const bFont = BODY_FONT[config.bodyFont] ?? BODY_FONT.inter;
+
+  const templateKey = (config as any).templateId || pageSlug || "";
+  const fallbackBg = TEMPLATE_BG_MAP[templateKey] || (templateKey.includes("minimal") ? "#F6F3F0" : "#09090b");
+  const effectiveBgColor = (config.bgColor && config.bgColor !== "#09090b")
+    ? config.bgColor
+    : (fallbackBg || config.bgColor || "#09090b");
+
+  useEffect(() => {
+    const bg = effectiveBgColor;
+    const origBodyBg = document.body.style.backgroundColor;
+    const origHtmlBg = document.documentElement.style.backgroundColor;
+
+    document.body.style.backgroundColor = bg;
+    document.documentElement.style.backgroundColor = bg;
+
+    return () => {
+      document.body.style.backgroundColor = origBodyBg;
+      document.documentElement.style.backgroundColor = origHtmlBg;
+    };
+  }, [effectiveBgColor]);
+
   useEffect(() => {
     if (audioRef.current) audioRef.current.pause();
     if (config.musicUrl && config.musicWidgetEnabled) {
@@ -1025,11 +1065,6 @@ export default function BosTemplate({
     if (isPlaying) { audioRef.current.pause(); setIsPlaying(false); }
     else { audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {}); }
   };
-
-  const ac = config.accentColor;
-  const pc = (config.particlesColor && config.particlesColor.length > 2) ? config.particlesColor : ac; // partikül rengi
-  const hFont = HEADING_FONT[config.headingFont] ?? HEADING_FONT.cormorant;
-  const bFont = BODY_FONT[config.bodyFont] ?? BODY_FONT.inter;
 
   const renderParticles = () => {
     if (!config.particlesEnabled || config.particlesType === "none") return null;
@@ -1098,7 +1133,7 @@ export default function BosTemplate({
         }
       ` }} />
 
-      <main className="min-h-screen overflow-x-hidden" style={{ background: config.bgColor ?? "#09090b", color: isArcade ? ac : "#FFFFFF", fontFamily: bFont, position: "relative" }}>
+      <main className="min-h-screen overflow-x-hidden" style={{ background: effectiveBgColor, color: isArcade ? ac : "#FFFFFF", fontFamily: bFont, position: "relative" }}>
         {/* Banner */}
         <AnimatePresence>
           {showBanner && (
@@ -1176,14 +1211,14 @@ export default function BosTemplate({
         )}
 
         {/* Arka plan gradient — zIndex 0, partiküller 1'de bunun üzerinde görünür */}
-        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, background: isArcade ? (config.bgColor ?? "#111111") : `radial-gradient(ellipse 80% 55% at 50% -5%, ${ac}22 0%, transparent 60%), radial-gradient(ellipse 60% 45% at 85% 80%, ${ac}0d 0%, transparent 60%), linear-gradient(to bottom, ${config.bgColor ?? "#09090b"}, ${config.bgColor ?? "#09090b"})` }} />
+        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, background: isArcade ? (effectiveBgColor ?? "#111111") : `radial-gradient(ellipse 80% 55% at 50% -5%, ${ac}22 0%, transparent 60%), radial-gradient(ellipse 60% 45% at 85% 80%, ${ac}0d 0%, transparent 60%), linear-gradient(to bottom, ${effectiveBgColor}, ${effectiveBgColor})` }} />
 
 
         {/* Partiküller */}
         {renderParticles()}
 
         {/* Mobil merkez çerçeve */}
-        <div className="relative w-full max-w-[480px] mx-auto min-h-screen flex flex-col" style={{ zIndex: 10, borderLeft: `1px solid ${ac}12`, borderRight: `1px solid ${ac}12` }}>
+        <div className="relative w-full max-w-[480px] mx-auto min-h-[100dvh] flex flex-col" style={{ zIndex: 10, borderLeft: `1px solid ${ac}12`, borderRight: `1px solid ${ac}12`, background: effectiveBgColor }}>
           {isArcade && (
             <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: `linear-gradient(rgba(${hexToRgb(ac)},0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(${hexToRgb(ac)},0.03) 1px, transparent 1px)`, backgroundSize: "32px 32px", zIndex: 0 }} />
           )}
@@ -1194,7 +1229,7 @@ export default function BosTemplate({
           )}
 
           {/* ── HERO ──────────────────────────────────────────────────────── */}
-          <section className="relative flex flex-col items-center justify-center overflow-hidden w-full h-[100svh]">
+          <section className="relative flex flex-col items-center justify-center overflow-hidden w-full min-h-[100dvh] py-12" style={{ background: effectiveBgColor }}>
             <motion.div initial={isInstagram ? "visible" : "hidden"} animate="visible" variants={stagger} className="relative z-20 flex flex-col items-center px-6 text-center">
               {/* Eyebrow: Özel Tarih */}
               <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
@@ -1246,7 +1281,7 @@ export default function BosTemplate({
           {(config.storyTitlePrefix || config.storyTitleSuffix) && (
             <motion.div
               initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b" }}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: effectiveBgColor }}
             >
               {config.storyTitlePrefix && (
                 <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: config.headingEyebrowColor || config.textColor || `${ac}99`, marginBottom: "12px" }}>
@@ -1275,7 +1310,7 @@ export default function BosTemplate({
 
           {/* ── FİNAL / EPİLOG ────────────────────────────────────────────── */}
           {config.finalEnabled !== false && (
-            <section style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", borderTop: `1px solid ${ac}18`, background: config.bgColor ?? "#09090b", overflow: "hidden" }}>
+            <section style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", borderTop: `1px solid ${ac}18`, background: effectiveBgColor, overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(circle at 50% 50%, ${ac}14 0%, transparent 70%)` }} />
               <motion.div
                 initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger}
