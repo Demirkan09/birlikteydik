@@ -359,6 +359,8 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
   const [portalLinkUrl, setPortalLinkUrl] = useState("");
   const [portalLinkError, setPortalLinkError] = useState("");
   const [portalLinkCopied, setPortalLinkCopied] = useState(false);
+  const [portalLinkRequiresEmail, setPortalLinkRequiresEmail] = useState(false);
+  const [portalTargetEmail, setPortalTargetEmail] = useState("");
   
   // Editor state
   const [editTemplateId, setEditTemplateId] = useState("klasik-retro");
@@ -1067,6 +1069,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                             setPortalLinkLoading(true);
                             setPortalLinkError("");
                             setPortalLinkUrl("");
+                            setPortalLinkRequiresEmail(false);
                             try {
                               const res = await fetch("/api/portal/generate", {
                                 method: "POST",
@@ -1075,7 +1078,11 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               });
                               const data = await res.json();
                               if (!res.ok) {
-                                setPortalLinkError(data.error || "Link oluşturulamadı.");
+                                if (data.requiresEmail) {
+                                  setPortalLinkRequiresEmail(true);
+                                } else {
+                                  setPortalLinkError(data.error || "Link oluşturulamadı.");
+                                }
                               } else {
                                 setPortalLinkUrl(data.portalUrl);
                               }
@@ -1097,6 +1104,114 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           {portalLinkLoading ? "📨 Oluşturuluyor..." : "📨 Portal Linki Gönder"}
                         </button>
                       </div>
+
+                      {/* Manual email input box when page is not assigned to a user */}
+                      {portalLinkRequiresEmail && (
+                        <div style={{
+                          marginTop: "12px",
+                          padding: "16px",
+                          borderRadius: "12px",
+                          background: "rgba(201,168,76,0.06)",
+                          border: "1px solid rgba(201,168,76,0.25)",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "12px"
+                        }}>
+                          <div style={{ fontSize: "12px", color: C.gold, display: "flex", alignItems: "center", gap: "6px" }}>
+                            <span>⚠️ Bu sayfa henüz bir kullanıcıya tanımlı değil. Portal linkinin gönderileceği e-posta adresini girin:</span>
+                          </div>
+                          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                            <input
+                              type="email"
+                              placeholder="ornek@musteri.com"
+                              value={portalTargetEmail}
+                              onChange={(e) => setPortalTargetEmail(e.target.value)}
+                              onKeyDown={async (e) => {
+                                if (e.key === "Enter" && portalTargetEmail.trim() && !portalLinkLoading) {
+                                  e.preventDefault();
+                                  setPortalLinkLoading(true);
+                                  setPortalLinkError("");
+                                  setPortalLinkUrl("");
+                                  try {
+                                    const res = await fetch("/api/portal/generate", {
+                                      method: "POST",
+                                      headers: { "Content-Type": "application/json" },
+                                      body: JSON.stringify({ adminEmail, pageSlug: selectedEditSlug, targetEmail: portalTargetEmail }),
+                                    });
+                                    const data = await res.json();
+                                    if (!res.ok) {
+                                      setPortalLinkError(data.error || "Link oluşturulamadı.");
+                                    } else {
+                                      setPortalLinkUrl(data.portalUrl);
+                                      setPortalLinkRequiresEmail(false);
+                                      setPortalTargetEmail("");
+                                    }
+                                  } catch {
+                                    setPortalLinkError("Sunucuya bağlanılamadı.");
+                                  } finally {
+                                    setPortalLinkLoading(false);
+                                  }
+                                }
+                              }}
+                              style={{
+                                flex: 1,
+                                minWidth: "220px",
+                                padding: "10px 14px",
+                                borderRadius: "10px",
+                                background: "rgba(255,255,255,0.03)",
+                                border: `1px solid ${C.border}`,
+                                color: C.text,
+                                fontSize: "13px",
+                                outline: "none"
+                              }}
+                            />
+                            <button
+                              onClick={async () => {
+                                if (!portalTargetEmail || !portalTargetEmail.includes("@")) {
+                                  setPortalLinkError("Lütfen geçerli bir e-posta adresi giriniz.");
+                                  return;
+                                }
+                                setPortalLinkLoading(true);
+                                setPortalLinkError("");
+                                setPortalLinkUrl("");
+                                try {
+                                  const res = await fetch("/api/portal/generate", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ adminEmail, pageSlug: selectedEditSlug, targetEmail: portalTargetEmail }),
+                                  });
+                                  const data = await res.json();
+                                  if (!res.ok) {
+                                    setPortalLinkError(data.error || "Link oluşturulamadı.");
+                                  } else {
+                                    setPortalLinkUrl(data.portalUrl);
+                                    setPortalLinkRequiresEmail(false);
+                                    setPortalTargetEmail("");
+                                  }
+                                } catch {
+                                  setPortalLinkError("Sunucuya bağlanılamadı.");
+                                } finally {
+                                  setPortalLinkLoading(false);
+                                }
+                              }}
+                              disabled={portalLinkLoading || !portalTargetEmail.trim()}
+                              style={{
+                                padding: "10px 20px",
+                                borderRadius: "10px",
+                                background: (portalLinkLoading || !portalTargetEmail.trim()) ? "rgba(201,168,76,0.3)" : "linear-gradient(135deg, #C9A84C, #e0c068)",
+                                border: "none",
+                                color: "#0B0F1A",
+                                fontWeight: 600,
+                                fontSize: "13px",
+                                cursor: (portalLinkLoading || !portalTargetEmail.trim()) ? "not-allowed" : "pointer",
+                                whiteSpace: "nowrap"
+                              }}
+                            >
+                              {portalLinkLoading ? "Gönderiliyor..." : "Gönder 🚀"}
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Portal link result */}
                       {(portalLinkUrl || portalLinkError) && (

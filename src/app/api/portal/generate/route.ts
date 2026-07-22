@@ -19,13 +19,15 @@ async function verifyAdminOrStaff(adminEmail: string) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { adminEmail, userPageId, pageSlug: rawPageSlug, lang } = body as {
+    const { adminEmail, userPageId, pageSlug: rawPageSlug, targetEmail: rawTargetEmail, lang } = body as {
       adminEmail?: string;
       userPageId?: number;
       pageSlug?: string;
+      targetEmail?: string;
       lang?: string;
     };
     const activeLang = lang === "en" ? "en" : "tr";
+    const targetEmail = rawTargetEmail?.trim().toLowerCase();
 
     if (!adminEmail || (!userPageId && !rawPageSlug)) {
       return NextResponse.json(
@@ -65,27 +67,55 @@ export async function POST(request: Request) {
       pageSlug = row.page_slug;
       resolvedUserPageId = row.id;
       userName = row.user_name;
-      userEmail = row.user_email;
+      userEmail = targetEmail || row.user_email;
     } else {
       // Look up by pageSlug
+      const cleanSlug = rawPageSlug!.trim().toLowerCase();
+
       const pageRes = await pool.query(
         `SELECT up.id, up.page_slug, u.name AS user_name, u.email AS user_email
          FROM user_pages up
          JOIN users u ON u.id = up.user_id
          WHERE up.page_slug = $1
          LIMIT 1`,
-        [rawPageSlug]
+        [cleanSlug]
       );
 
-      if ((pageRes.rowCount ?? 0) === 0) {
-        return NextResponse.json({ error: "Bu sayfaya ait bir kullanıcı bulunamadı." }, { status: 404 });
-      }
+      if ((pageRes.rowCount ?? 0) > 0) {
+        const row = pageRes.rows[0];
+        pageSlug = row.page_slug;
+        resolvedUserPageId = row.id;
+        userName = row.user_name;
+        userEmail = targetEmail || row.user_email;
+      } else {
+        // Page is not assigned to a user in user_pages table. Check if page_settings exists.
+        const settingsRes = await pool.query(
+          `SELECT page_slug FROM page_settings WHERE page_slug = $1 LIMIT 1`,
+          [cleanSlug]
+        );
 
-      const row = pageRes.rows[0];
-      pageSlug = row.page_slug;
-      resolvedUserPageId = row.id;
-      userName = row.user_name;
-      userEmail = row.user_email;
+        if ((settingsRes.rowCount ?? 0) === 0) {
+          return NextResponse.json({ error: "Belirtilen sayfa bulunamadı." }, { status: 404 });
+        }
+
+        pageSlug = cleanSlug;
+
+        if (targetEmail) {
+          if (!targetEmail.includes("@") || !targetEmail.includes(".")) {
+            return NextResponse.json({ error: "Lütfen geçerli bir e-posta adresi girin." }, { status: 400 });
+          }
+          userEmail = targetEmail;
+          userName = targetEmail.split("@")[0] || "Müşterimiz";
+        } else {
+          return NextResponse.json(
+            {
+              requiresEmail: true,
+              error: "Bu sayfa bir kullanıcıya tanımlı değil. Lütfen portal linkinin gönderileceği e-posta adresini girin.",
+            },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     // Check for an existing non-expired pending/submitted submission for this page_slug
