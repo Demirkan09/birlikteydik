@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HiOutlineExternalLink, HiOutlineCheck, HiOutlineTrash, HiOutlineUpload, HiOutlineLink, HiOutlineRefresh, HiOutlineMail, HiOutlineClipboardCopy, HiOutlineChevronDown, HiOutlineSearch } from "react-icons/hi";
 import { C } from "../../_utils/constants";
 import { formatActiveDuration } from "../../_utils/dateUtils";
-import { TEMPLATE_SCHEMAS } from "../../../../lib/templateSchemas";
+import { TEMPLATE_SCHEMAS, formatCoupleNames } from "../../../../lib/templateSchemas";
 import QrCodeModal from "./QrCodeModal";
 
 
@@ -1357,19 +1357,13 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                               <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "10px" }}>
                                 <input
                                   value={(() => {
-                                    const fullName = editConfig.coupleNames || "";
-                                    if (fullName.includes("\n&\n")) return fullName.split("\n&\n")[0] || "";
-                                    if (fullName.includes("\n")) return fullName.split("\n").filter((p: string) => p.trim() !== "&")[0] || "";
-                                    if (fullName.includes("&")) return fullName.split("&")[0]?.trim() || "";
-                                    return fullName;
+                                    const formatted = formatCoupleNames(editConfig.coupleNames);
+                                    return formatted.includes("\n&\n") ? formatted.split("\n&\n")[0] || "" : editConfig.coupleNames || "";
                                   })()}
                                   onChange={(e) => {
                                     const name1 = e.target.value;
-                                    const fullName = editConfig.coupleNames || "";
-                                    let name2 = "";
-                                    if (fullName.includes("\n&\n")) name2 = fullName.split("\n&\n")[1] || "";
-                                    else if (fullName.includes("\n")) name2 = fullName.split("\n").filter((p: string) => p.trim() !== "&")[1] || "";
-                                    else if (fullName.includes("&")) name2 = fullName.split("&")[1]?.trim() || "";
+                                    const formatted = formatCoupleNames(editConfig.coupleNames);
+                                    const name2 = formatted.includes("\n&\n") ? formatted.split("\n&\n")[1] || "" : "";
                                     setEditConfig({ ...editConfig, coupleNames: `${name1}\n&\n${name2}` });
                                   }}
                                   placeholder="1. İsim"
@@ -1381,20 +1375,13 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 <span style={{ color: C.gold, fontSize: "16px", fontWeight: "bold" }}>&</span>
                                 <input
                                   value={(() => {
-                                    const fullName = editConfig.coupleNames || "";
-                                    if (fullName.includes("\n&\n")) return fullName.split("\n&\n")[1] || "";
-                                    if (fullName.includes("\n")) return fullName.split("\n").filter((p: string) => p.trim() !== "&")[1] || "";
-                                    if (fullName.includes("&")) return fullName.split("&")[1]?.trim() || "";
-                                    return "";
+                                    const formatted = formatCoupleNames(editConfig.coupleNames);
+                                    return formatted.includes("\n&\n") ? formatted.split("\n&\n")[1] || "" : "";
                                   })()}
                                   onChange={(e) => {
                                     const name2 = e.target.value;
-                                    const fullName = editConfig.coupleNames || "";
-                                    let name1 = "";
-                                    if (fullName.includes("\n&\n")) name1 = fullName.split("\n&\n")[0] || "";
-                                    else if (fullName.includes("\n")) name1 = fullName.split("\n").filter((p: string) => p.trim() !== "&")[0] || "";
-                                    else if (fullName.includes("&")) name1 = fullName.split("&")[0]?.trim() || "";
-                                    else name1 = fullName;
+                                    const formatted = formatCoupleNames(editConfig.coupleNames);
+                                    const name1 = formatted.includes("\n&\n") ? formatted.split("\n&\n")[0] || "" : "";
                                     setEditConfig({ ...editConfig, coupleNames: `${name1}\n&\n${name2}` });
                                   }}
                                   placeholder="2. İsim"

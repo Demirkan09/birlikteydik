@@ -6,6 +6,7 @@ import EntranceScreen, { EntranceType } from "@/components/EntranceScreen";
 import { ChevronDown, Volume2, VolumeX, Heart } from "lucide-react";
 import VideoPlayerPro from "@/components/ui/video-player-pro";
 import { Backlight } from "@/components/magicui/backlight";
+import { formatCoupleNames } from "@/lib/templateSchemas";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ⚙️  ŞABLON AYARLARI (statik varsayılanlar — admin panelinden override edilir)
@@ -1064,6 +1065,7 @@ export default function BosTemplate({
   };
 
   const isArcade = hFont.includes("Press Start") || hFont.includes("VT323") || bFont.includes("Press Start") || bFont.includes("VT323");
+  const formattedCoupleNames = formatCoupleNames(config.coupleNames);
 
   return (
     <TemplateContext.Provider value={{ config, memories, isInstagram }}>
@@ -1080,7 +1082,7 @@ export default function BosTemplate({
             <EntranceScreen
               type={config.entranceType ?? "curtain"}
               accentColor={config.accentColor}
-              coupleNames={config.coupleNames}
+              coupleNames={formattedCoupleNames}
               onEnter={handleEnter}
               lang={config.lang}
             />
@@ -1206,13 +1208,13 @@ export default function BosTemplate({
               {/* İsimler */}
               <motion.h1 variants={fadeUp} style={{
                 fontFamily: hFont,
-                fontSize: getDynamicFontSize(config.coupleNames, 2.5, 4.8, 7),
+                fontSize: getDynamicFontSize(formattedCoupleNames, 2.5, 4.8, 7),
                 fontWeight: 400, lineHeight: 1.2, paddingBottom: "0.1em", letterSpacing: "0.04em",
                 backgroundImage: `linear-gradient(160deg, ${config.nameGradientStart || "rgba(255,255,255,0.96)"} 0%, ${config.nameGradientEnd || `${ac}cc`} 100%)`,
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 whiteSpace: "pre-line",
               }}>
-                {config.coupleNames}
+                {formattedCoupleNames}
               </motion.h1>
 
               {/* Dekoratif kalp çizgisi */}
@@ -1291,7 +1293,7 @@ export default function BosTemplate({
                   <Heart size={6} fill={ac} stroke="none" style={{ opacity: 0.35 }} />
                 </motion.div>
                  <motion.div variants={fadeUp} style={{ fontFamily: bFont, fontSize: "11px", letterSpacing: "0.42em", textTransform: "uppercase", color: config.taglineColor || "rgba(255,255,255,0.6)", whiteSpace: "pre-line", lineHeight: 1.5 }}>
-                  {config.coupleNames}
+                  {formattedCoupleNames}
                 </motion.div>
                 <motion.span variants={fadeIn} style={{ fontFamily: "monospace", fontSize: "9px", color: config.specialDateColor || "rgba(255,255,255,0.25)", letterSpacing: "0.3em", textTransform: "uppercase" }}>
                   {config.specialDate}

@@ -26,9 +26,6 @@ export default function PasswordGate({ slug, children, lang }: PasswordGateProps
 
   const t = {
     title: isEn ? "This Page is Protected" : "Bu Sayfa Korumalı",
-    desc: isEn 
-      ? "To view these shared special memories and photo gallery, please enter the page password."
-      : "Paylaşılan özel anıları ve fotoğraf galerisini görüntülemek için sayfa şifresini girmeniz gerekmektedir.",
     label: isEn ? "Page Password" : "Sayfa Şifresi",
     placeholder: isEn ? "Enter password here..." : "Şifreyi buraya girin...",
     errorEmpty: isEn ? "Please enter the password." : "Lütfen şifrenizi girin.",
@@ -251,18 +248,6 @@ export default function PasswordGate({ slug, children, lang }: PasswordGateProps
           >
             {t.title}
           </h2>
-          <p
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: "14px",
-              color: C.muted,
-              lineHeight: "1.6",
-              margin: 0,
-              padding: "0 10px",
-            }}
-          >
-            {t.desc}
-          </p>
         </div>
 
         {/* Error Message */}

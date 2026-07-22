@@ -80,3 +80,47 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateSchema> = {
     memoryFields: ["title", "date", "description"],
   },
 };
+
+export function formatCoupleNames(rawNames?: string | null): string {
+  if (!rawNames) return "Sen\n&\nBen";
+  const str = rawNames.trim();
+  if (!str) return "Sen\n&\nBen";
+
+  // If already multi-line, preserve or format to \n&\n
+  if (str.includes("\n")) {
+    if (str.includes("\n&\n")) return str;
+    const parts = str.split("\n").map((s) => s.trim()).filter(Boolean);
+    if (parts.length >= 2) {
+      const name1 = parts[0];
+      const name2 = parts[parts.length - 1];
+      return `${name1}\n&\n${name2}`;
+    }
+    return str;
+  }
+
+  // Check for separators
+  let name1 = "";
+  let name2 = "";
+
+  if (str.includes(" & ")) {
+    [name1, name2] = str.split(" & ");
+  } else if (str.includes("&")) {
+    [name1, name2] = str.split("&");
+  } else if (str.toLowerCase().includes(" ve ")) {
+    const idx = str.toLowerCase().indexOf(" ve ");
+    name1 = str.substring(0, idx);
+    name2 = str.substring(idx + 4);
+  } else if (str.includes(" - ")) {
+    [name1, name2] = str.split(" - ");
+  } else if (str.includes(" / ")) {
+    [name1, name2] = str.split(" / ");
+  } else if (str.includes(" + ")) {
+    [name1, name2] = str.split(" + ");
+  }
+
+  if (name1 && name2 && name1.trim() && name2.trim()) {
+    return `${name1.trim()}\n&\n${name2.trim()}`;
+  }
+
+  return str;
+}
