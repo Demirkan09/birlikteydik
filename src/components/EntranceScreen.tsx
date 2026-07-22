@@ -709,7 +709,7 @@ function PolaroidFlashEntrance({ accentColor, onEnter, reduced, isEn }: { accent
           fontWeight: 400, color: "rgba(240,237,232,0.52)",
           letterSpacing: "0.05em",
         }}>
-          {isEn ? "tap to capture the moment" : "anı yakalamak için dokun"}
+          {isEn ? "tap to capture the moment" : "Anıları Görüntülemek İçin Dokun"}
         </div>
       </div>
 
