@@ -371,8 +371,8 @@ function EnvelopeEntrance({ accentColor, coupleNames, onEnter, reduced, isEn }: 
   );
 }
 
-// ─── POLAROID FLASH — Polaroid Flaş ─────────────────────────────────────────
-// Kamera vizöründen bakar, tıklandığında flaş patlar ve şipşak ses çıkar
+// ─── POLAROID FLASH — Vintage Kamera Çizimi ─────────────────────────────────
+// Karakalem çizimi tarzı vintage kamera; deklanşöre basınca flaş patlar ve sayfa açılır
 function PolaroidFlashEntrance({ accentColor, onEnter, reduced, isEn }: { accentColor: string; onEnter: () => void; reduced: boolean; isEn: boolean }) {
   const [phase, setPhase] = useState<"idle" | "rising" | "done">("idle");
 
@@ -386,55 +386,48 @@ function PolaroidFlashEntrance({ accentColor, onEnter, reduced, isEn }: { accent
     if (reduced) {
       setTimeout(() => { setPhase("done"); onEnter(); }, 300);
     } else {
-      setTimeout(() => { setPhase("done"); onEnter(); }, 1200);
+      // Flash visible for ~400ms, then page fades in over 900ms
+      setTimeout(() => { setPhase("done"); onEnter(); }, 1500);
     }
   };
 
-  // Polaroid Camera Shutter Sound Synthesizer
+  // Camera shutter + flash sound synthesizer
   const playCameraSound = () => {
     try {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContext) return;
       const ctx = new AudioContext();
-      
+
       // High-pitched shutter blade click
       const osc = ctx.createOscillator();
       const oscGain = ctx.createGain();
       osc.type = "triangle";
-      osc.frequency.setValueAtTime(1500, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.06);
-      oscGain.gain.setValueAtTime(0.35, ctx.currentTime);
-      oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.06);
-      
+      osc.frequency.setValueAtTime(1800, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.055);
+      oscGain.gain.setValueAtTime(0.4, ctx.currentTime);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
       osc.connect(oscGain);
       oscGain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.07);
-      
-      // Mechanical shutter body/spring noise
-      const bufferSize = ctx.sampleRate * 0.12;
+
+      // Mechanical body noise
+      const bufferSize = ctx.sampleRate * 0.14;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
-      
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
       const noise = ctx.createBufferSource();
       noise.buffer = buffer;
-      
       const filter = ctx.createBiquadFilter();
       filter.type = "bandpass";
-      filter.frequency.value = 1100;
-      filter.Q.value = 3;
-      
+      filter.frequency.value = 1200;
+      filter.Q.value = 2.5;
       const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.25, ctx.currentTime);
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-      
+      noiseGain.gain.setValueAtTime(0.28, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
       noise.connect(filter);
       filter.connect(noiseGain);
       noiseGain.connect(ctx.destination);
-      
       noise.start(ctx.currentTime + 0.015);
       noise.stop(ctx.currentTime + 0.13);
     } catch (e) {
@@ -442,117 +435,328 @@ function PolaroidFlashEntrance({ accentColor, onEnter, reduced, isEn }: { accent
     }
   };
 
+
   return (
     <div
       onClick={handleClick}
       style={{
         position: "fixed", inset: 0, zIndex: 9999, cursor: "pointer",
         overflow: "hidden", userSelect: "none",
-        background: "#080B11",
-        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "#070A10",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        gap: "0px",
       }}
     >
-      {/* ── Viewfinder Lines ── */}
-      {/* Top Left Corner */}
-      <div style={{ position: "absolute", top: "40px", left: "40px", width: "32px", height: "32px", borderTop: "2px solid rgba(255,255,255,0.18)", borderLeft: "2px solid rgba(255,255,255,0.18)" }} />
-      {/* Top Right Corner */}
-      <div style={{ position: "absolute", top: "40px", right: "40px", width: "32px", height: "32px", borderTop: "2px solid rgba(255,255,255,0.18)", borderRight: "2px solid rgba(255,255,255,0.18)" }} />
-      {/* Bottom Left Corner */}
-      <div style={{ position: "absolute", bottom: "40px", left: "40px", width: "32px", height: "32px", borderBottom: "2px solid rgba(255,255,255,0.18)", borderLeft: "2px solid rgba(255,255,255,0.18)" }} />
-      {/* Bottom Right Corner */}
-      <div style={{ position: "absolute", bottom: "40px", right: "40px", width: "32px", height: "32px", borderBottom: "2px solid rgba(255,255,255,0.18)", borderRight: "2px solid rgba(255,255,255,0.18)" }} />
-      
-      {/* Center Viewfinder Circle */}
+      {/* Vignette overlay */}
       <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "140px", height: "140px",
-        borderRadius: "50%",
-        border: "1.5px dashed rgba(255,255,255,0.08)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        {/* Tiny center dot */}
-        <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "rgba(255,255,255,0.2)" }} />
-      </div>
+        position: "absolute", inset: 0,
+        background: "radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,0.75) 100%)",
+        pointerEvents: "none", zIndex: 1,
+      }} />
 
-      {/* ── Content ── */}
+      {/* ── Main content ── */}
       <div style={{
         position: "relative", zIndex: 5,
-        display: "flex", flexDirection: "column", alignItems: "center", gap: "24px",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "20px",
         textAlign: "center",
         opacity: phase === "idle" ? 1 : 0,
-        transition: "opacity 0.2s ease",
+        transition: "opacity 0.15s ease",
       }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <div style={{
-            fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif",
-            fontSize: "clamp(2rem, 6vw, 3rem)",
-            fontWeight: 400, color: "#F0EDE8",
-            letterSpacing: "0.04em",
-          }}>
-            {isEn ? "Camera Ready" : "Kamera Hazır"}
-          </div>
-          <div style={{
-            fontFamily: "var(--font-inter), 'Inter', sans-serif",
-            fontSize: "10px", letterSpacing: "0.25em", textTransform: "uppercase",
-            color: `${acc}aa`,
-          }}>
-            {isEn ? "Focus on Lens" : "Objektife Odaklan"}
-          </div>
+
+        {/* Top label */}
+        <div style={{
+          fontFamily: "var(--font-inter), 'Inter', sans-serif",
+          fontSize: "9px", letterSpacing: "0.38em", textTransform: "uppercase",
+          color: `${acc}77`, fontWeight: 400,
+        }}>
+          {isEn ? "— vintage moment —" : "— nostaljik an —"}
         </div>
 
-        {/* Shutter Button representation */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-          style={{
-            width: "80px", height: "80px", borderRadius: "50%",
-            background: `radial-gradient(circle, #E03E3E 0%, #B81D1D 100%)`,
-            border: "4px solid #ffffff",
-            boxShadow: "0 10px 30px rgba(184, 29, 29, 0.4), inset 0 4px 8px rgba(255,255,255,0.3)",
-            cursor: "pointer",
-            outline: "none",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "var(--font-inter), sans-serif",
-            fontSize: "9px", fontWeight: 700, color: "#ffffff",
-            textTransform: "uppercase", letterSpacing: "0.08em",
-            transition: "transform 0.1s, box-shadow 0.1s",
-          }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.92)"; }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-          onTouchStart={(e) => { e.currentTarget.style.transform = "scale(0.92)"; }}
-          onTouchEnd={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-        >
-          {isEn ? "START MEMORY" : "ANAYI BAŞLAT"}
-        </button>
+        {/* ── Vintage Camera SVG (karakalem çizimi tarzı) ── */}
+        <div style={{
+          position: "relative",
+          animation: "cameraFloat 5s ease-in-out infinite",
+        }}>
+          <svg
+            viewBox="0 0 380 280"
+            width="clamp(270px, 52vw, 400px)"
+            height="auto"
+            style={{ display: "block", overflow: "visible", filter: "drop-shadow(0 24px 70px rgba(0,0,0,0.9))" }}
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              {/* Very subtle pencil sketch displacement */}
+              <filter id="pencilSketch" x="-5%" y="-5%" width="110%" height="110%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.065 0.065" numOctaves="3" seed="7" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+              {/* Lens glass gradient */}
+              <radialGradient id="lensGlass" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stopColor="rgba(200,210,230,0.12)" />
+                <stop offset="40%" stopColor="rgba(10,14,22,0.92)" />
+                <stop offset="100%" stopColor="rgba(2,4,10,0.98)" />
+              </radialGradient>
+              <radialGradient id="lensGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor={acc} stopOpacity="0.22" />
+                <stop offset="100%" stopColor={acc} stopOpacity="0" />
+              </radialGradient>
+            </defs>
+
+            {/* ── Hands holding camera (lower edge suggestion) ── */}
+            <path
+              d="M 40 265 Q 50 255 65 258 Q 80 262 85 252 Q 92 240 80 235 Q 66 230 55 242 Q 42 250 38 260 Z"
+              fill="none" stroke="rgba(240,237,232,0.28)" strokeWidth="2"
+              filter="url(#pencilSketch)"
+            />
+            <path
+              d="M 42 270 Q 55 268 68 265 Q 80 263 88 255"
+              fill="none" stroke="rgba(240,237,232,0.18)" strokeWidth="1.4"
+              strokeLinecap="round" filter="url(#pencilSketch)"
+            />
+            <path
+              d="M 340 265 Q 330 255 315 258 Q 300 262 295 252 Q 288 240 300 235 Q 314 230 325 242 Q 338 250 342 260 Z"
+              fill="none" stroke="rgba(240,237,232,0.28)" strokeWidth="2"
+              filter="url(#pencilSketch)"
+            />
+            <path
+              d="M 338 270 Q 325 268 312 265 Q 300 263 292 255"
+              fill="none" stroke="rgba(240,237,232,0.18)" strokeWidth="1.4"
+              strokeLinecap="round" filter="url(#pencilSketch)"
+            />
+
+            {/* ── Camera body ── */}
+            <rect
+              x="44" y="72" width="292" height="176" rx="16"
+              fill="rgba(8,11,18,0.7)"
+              stroke="rgba(240,237,232,0.80)"
+              strokeWidth="2.6"
+              strokeLinejoin="round"
+              filter="url(#pencilSketch)"
+            />
+            {/* Subtle body shading */}
+            <line x1="56" y1="80" x2="56" y2="240" stroke="rgba(240,237,232,0.05)" strokeWidth="0.8" />
+            <line x1="68" y1="80" x2="68" y2="240" stroke="rgba(240,237,232,0.04)" strokeWidth="0.8" />
+            <line x1="320" y1="80" x2="320" y2="240" stroke="rgba(240,237,232,0.05)" strokeWidth="0.8" />
+
+            {/* ── Top ridge / pentaprism hump ── */}
+            <path
+              d="M 120 72 L 108 48 L 272 48 L 260 72"
+              fill="rgba(8,11,18,0.6)"
+              stroke="rgba(240,237,232,0.70)"
+              strokeWidth="2.2"
+              strokeLinejoin="round"
+              filter="url(#pencilSketch)"
+            />
+
+            {/* ── Flash unit ── */}
+            <rect
+              x="228" y="34" width="58" height="18" rx="5"
+              fill="none"
+              stroke={`${acc}bb`}
+              strokeWidth="2"
+              filter="url(#pencilSketch)"
+            />
+            {/* Flash zigzag icon */}
+            <path
+              d="M 243 34 L 238 43 L 248 43 L 243 52"
+              fill="none" stroke={acc} strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round"
+            />
+            {/* Flash glow pulse */}
+            <ellipse cx="257" cy="43" rx="14" ry="9"
+              fill={`${acc}18`}
+              style={{ animation: "flashPulse 2.4s ease-in-out infinite" }}
+            />
+
+            {/* ── Shutter button (top of camera) ── */}
+            <ellipse
+              cx="136" cy="49" rx="13" ry="9"
+              fill="rgba(240,237,232,0.10)"
+              stroke="rgba(240,237,232,0.55)"
+              strokeWidth="1.8"
+              filter="url(#pencilSketch)"
+            />
+            <ellipse cx="136" cy="47" rx="7" ry="5"
+              fill="rgba(240,237,232,0.18)"
+              stroke="rgba(240,237,232,0.4)"
+              strokeWidth="1.2"
+            />
+
+            {/* ── Viewfinder ── */}
+            <rect
+              x="60" y="86" width="40" height="30" rx="5"
+              fill="rgba(0,0,0,0.55)"
+              stroke="rgba(240,237,232,0.45)"
+              strokeWidth="1.6"
+              filter="url(#pencilSketch)"
+            />
+            <line x1="70" y1="101" x2="90" y2="101" stroke="rgba(240,237,232,0.22)" strokeWidth="0.8" />
+            <line x1="80" y1="90" x2="80" y2="112" stroke="rgba(240,237,232,0.22)" strokeWidth="0.8" />
+
+            {/* ── Main lens assembly ── */}
+            {/* Outer mount ring */}
+            <circle cx="190" cy="168" r="76"
+              fill="rgba(4,6,12,0.85)"
+              stroke="rgba(240,237,232,0.76)"
+              strokeWidth="3"
+              filter="url(#pencilSketch)"
+            />
+            {/* Aperture ring tick marks */}
+            {[0,30,60,90,120,150,180,210,240,270,300,330].map((deg, i) => {
+              const rad = (deg * Math.PI) / 180;
+              const r1 = 64, r2 = i % 3 === 0 ? 58 : 61;
+              return (
+                <line
+                  key={deg}
+                  x1={190 + r1 * Math.cos(rad)} y1={168 + r1 * Math.sin(rad)}
+                  x2={190 + r2 * Math.cos(rad)} y2={168 + r2 * Math.sin(rad)}
+                  stroke="rgba(240,237,232,0.28)" strokeWidth={i % 3 === 0 ? 1.4 : 0.8}
+                />
+              );
+            })}
+            {/* Focus ring */}
+            <circle cx="190" cy="168" r="58"
+              fill="none"
+              stroke="rgba(240,237,232,0.40)"
+              strokeWidth="1.4"
+              filter="url(#pencilSketch)"
+            />
+            {/* Inner lens barrel */}
+            <circle cx="190" cy="168" r="44"
+              fill="url(#lensGlass)"
+              stroke="rgba(240,237,232,0.25)"
+              strokeWidth="1.2"
+              filter="url(#pencilSketch)"
+            />
+            {/* Lens inner glass */}
+            <circle cx="190" cy="168" r="30"
+              fill="rgba(2,4,10,0.95)"
+              stroke="rgba(240,237,232,0.14)"
+              strokeWidth="1"
+            />
+            {/* Lens glow accent */}
+            <circle cx="190" cy="168" r="30"
+              fill="url(#lensGlow)"
+              style={{ animation: "lensBreath 3.5s ease-in-out infinite" }}
+            />
+            {/* Lens reflection highlights */}
+            <ellipse cx="178" cy="157" rx="9" ry="5.5"
+              fill="rgba(240,237,232,0.10)"
+              transform="rotate(-25, 178, 157)"
+            />
+            <ellipse cx="200" cy="178" rx="4" ry="2.5"
+              fill="rgba(240,237,232,0.05)"
+              transform="rotate(-25, 200, 178)"
+            />
+
+            {/* ── Film advance knob ── */}
+            <rect x="288" y="76" width="22" height="38" rx="6"
+              fill="rgba(4,6,12,0.6)"
+              stroke="rgba(240,237,232,0.42)" strokeWidth="1.6"
+              filter="url(#pencilSketch)"
+            />
+            {[82,88,94,100,106].map((y) => (
+              <line key={y} x1="291" y1={y} x2="307" y2={y}
+                stroke="rgba(240,237,232,0.22)" strokeWidth="0.8"
+              />
+            ))}
+
+            {/* ── Strap lugs ── */}
+            <rect x="44" y="84" width="12" height="22" rx="4"
+              fill="none" stroke="rgba(240,237,232,0.38)" strokeWidth="1.4"
+              filter="url(#pencilSketch)"
+            />
+            <rect x="324" y="84" width="12" height="22" rx="4"
+              fill="none" stroke="rgba(240,237,232,0.38)" strokeWidth="1.4"
+              filter="url(#pencilSketch)"
+            />
+
+            {/* ── Bottom plate detail ── */}
+            <line x1="74" y1="238" x2="306" y2="238"
+              stroke="rgba(240,237,232,0.15)" strokeWidth="1"
+              strokeDasharray="5 6"
+            />
+            <text
+              x="190" y="256"
+              textAnchor="middle"
+              fontFamily="'Courier New', Courier, monospace"
+              fontSize="7.5"
+              fill="rgba(240,237,232,0.28)"
+              letterSpacing="0.26em"
+            >
+              BİRLİKTEYDİK · 35MM · NO.001
+            </text>
+          </svg>
+
+          {/* ── Full-camera tap target (transparent overlay) ── */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); handleClick(); }}
+            aria-label={isEn ? "Press shutter to enter" : "Deklanşöre bas ve gir"}
+            style={{
+              position: "absolute", inset: 0,
+              background: "transparent", border: "none", cursor: "pointer",
+              outline: "none", borderRadius: "16px",
+            }}
+          />
+        </div>
+
+        {/* Bottom prompt */}
+        <div style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "clamp(0.95rem, 2.8vw, 1.3rem)",
+          fontWeight: 400, color: "rgba(240,237,232,0.52)",
+          letterSpacing: "0.05em",
+        }}>
+          {isEn ? "tap to capture the moment" : "anı yakalamak için dokun"}
+        </div>
       </div>
 
-      {/* ── White Flash Overlay ── */}
+      {/* ── Radial white flash burst ── */}
       {phase === "rising" && (
         <div
           style={{
-            position: "fixed", inset: 0,
-            background: "#ffffff",
-            zIndex: 10000,
-            animation: "polaroidFlashAnim 1.3s cubic-bezier(0.1, 0.8, 0.2, 1) forwards",
+            position: "fixed", inset: 0, zIndex: 10000,
             pointerEvents: "none",
+            animation: "cameraFlashBurst 1.5s cubic-bezier(0.08, 0.8, 0.18, 1) forwards",
+            background: "radial-gradient(circle at 50% 50%, #ffffff 0%, #fffef8 25%, #fff9e8 55%, rgba(255,253,235,0) 100%)",
           }}
         />
       )}
 
       <style>{`
-        @keyframes polaroidFlashAnim {
-          0% { opacity: 1; }
-          30% { opacity: 1; }
-          100% { opacity: 0; }
+        @keyframes cameraFloat {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          30% { transform: translateY(-7px) rotate(0.4deg); }
+          70% { transform: translateY(-4px) rotate(-0.3deg); }
+        }
+        @keyframes flashPulse {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.25); }
+        }
+        @keyframes lensBreath {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+        @keyframes cameraFlashBurst {
+          0% { opacity: 0; transform: scale(0.15); }
+          6% { opacity: 1; transform: scale(1); }
+          22% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          @keyframes cameraFloat { 0%, 100% { transform: none; } }
+          @keyframes flashPulse { 0%, 100% { opacity: 0.5; } }
+          @keyframes lensBreath { 0%, 100% { opacity: 0.7; } }
+          @keyframes cameraFlashBurst { 0% { opacity: 0; } 10% { opacity: 1; } 100% { opacity: 0; } }
         }
       `}</style>
     </div>
   );
 }
+
+
 
 // ─── FROSTED GLASS — Buzlu Cam ────────────────────────────────────────────────
 // Arka planı tamamen bulanıklaştırır ve tıklandığında/dokunulduğunda buğu eriyormuş gibi netleştirir.
