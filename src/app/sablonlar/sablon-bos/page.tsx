@@ -33,7 +33,7 @@ export const defaultConfig = {
   musicWidgetType: "vinyl" as "vinyl" | "minimal" | "hidden",
   musicWidgetPosition: "bottom-left" as "bottom-left" | "bottom-right" | "top-left" | "top-right",
   // Kart Stili
-  memoryCardStyle: "plain" as "plain" | "polaroid" | "cinematic",
+  memoryCardStyle: "plain" as "plain" | "polaroid" | "cinematic" | "glass",
   memoryCardLayout: "vertical" as "vertical" | "grid",
   polaroidTilt: true,
   roundCornersEnabled: false,
@@ -924,6 +924,178 @@ function CinematicMemoryCard({ memory, accentColor, headingFont, bodyFont, textC
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 🪟  GLASSMORPHISM KART
+// ─────────────────────────────────────────────────────────────────────────────
+function GlassMemoryCard({ memory, accentColor, headingFont, bodyFont, textColor }: { memory: any; accentColor: string; headingFont: string; bodyFont: string; textColor: string }) {
+  const context = useContext(TemplateContext);
+  const config = context?.config;
+  const isInstagram = context?.isInstagram ?? false;
+
+  const borderRadiusStyle = config?.roundCornersEnabled ? `${config.photoBorderRadius ?? 16}px` : "16px";
+
+  const dColor = memory.dateColor || textColor || accentColor;
+  const tColor = memory.titleColor || textColor || "#F0EDE8";
+  const descColor = memory.descriptionColor || textColor || "rgba(240,237,232,0.72)";
+
+  // Derive a glass tint from the page bgColor — transparent enough to blur through
+  const bg = config?.bgColor || "#09090b";
+  // Parse the hex to an rgba for the glass panel
+  const hexToRgba = (hex: string, alpha: number) => {
+    const h = hex.replace("#", "");
+    const len = h.length;
+    const r = parseInt(len === 3 ? h[0]+h[0] : h.slice(0,2), 16);
+    const g = parseInt(len === 3 ? h[1]+h[1] : h.slice(2,4), 16);
+    const b = parseInt(len === 3 ? h[2]+h[2] : h.slice(4,6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
+  const glassBg = hexToRgba(bg, 0.55);
+  const glassBorder = `1px solid ${accentColor}26`;
+  const glassHighlight = `1px solid rgba(255,255,255,0.12)`;
+
+  const videoBorderStyle = config?.photoBorderEnabled !== false
+    ? `1px solid ${config?.photoBorderColor || "rgba(255,255,255,0.06)"}`
+    : "none";
+
+  const mediaContent = memory.video ? (
+    <VideoPlayerPro src={memory.video} style={{ border: videoBorderStyle, borderRadius: borderRadiusStyle }} />
+  ) : (
+    <img
+      src={memory.image}
+      alt={memory.title}
+      loading="lazy"
+      draggable={false}
+      style={{
+        width: "100%",
+        display: "block",
+        borderRadius: borderRadiusStyle,
+        filter: "brightness(0.88) contrast(1.04) saturate(0.9)",
+        pointerEvents: "none",
+        userSelect: "none",
+        WebkitUserSelect: "none",
+      }}
+    />
+  );
+
+  return (
+    <motion.div
+      initial={isInstagram ? "visible" : "hidden"}
+      whileInView="visible"
+      viewport={{ once: true, margin: "-20px" }}
+      variants={stagger}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0px" }}
+    >
+      <motion.div
+        variants={fadeUp}
+        whileHover={{ scale: 1.015, y: -3 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+        style={{
+          position: "relative",
+          width: "100%",
+          maxWidth: "340px",
+          borderRadius: borderRadiusStyle,
+          overflow: "hidden",
+          // Card-level glass shell
+          background: glassBg,
+          backdropFilter: "blur(18px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(18px) saturate(1.4)",
+          border: glassBorder,
+          boxShadow: [
+            `0 2px 0 0 rgba(255,255,255,0.10) inset`,          // top highlight line
+            `0 24px 60px rgba(0,0,0,0.55)`,                    // deep drop shadow
+            `0 0 0 1px rgba(255,255,255,0.04) inset`,          // outer rim
+            `0 0 40px ${accentColor}14`,                       // accent ambient glow
+          ].join(", "),
+        }}
+      >
+        {/* Photo */}
+        <div style={{ position: "relative", overflow: "hidden" }}>
+          {memory.backlightEnabled ? (
+            <Backlight blur={memory.backlightBlur ?? 30} className="w-full" imageUrl={memory.image} style={{ "--backlight-color": `${accentColor}a0` } as any}>
+              {mediaContent}
+            </Backlight>
+          ) : (
+            mediaContent
+          )}
+          {/* Gradient fade into glass info panel */}
+          <div style={{
+            position: "absolute",
+            bottom: 0, left: 0, right: 0,
+            height: "60%",
+            background: `linear-gradient(to bottom, transparent 0%, ${glassBg} 100%)`,
+            pointerEvents: "none",
+          }} />
+        </div>
+
+        {/* Glass info panel */}
+        <div style={{
+          padding: "16px 20px 20px",
+          backdropFilter: "blur(24px) saturate(1.6)",
+          WebkitBackdropFilter: "blur(24px) saturate(1.6)",
+          background: glassBg,
+          borderTop: glassHighlight,
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}>
+          {/* Date eyebrow */}
+          <div style={{
+            fontFamily: bodyFont,
+            fontSize: "8px",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            color: dColor,
+            opacity: 0.85,
+          }}>
+            {memory.date}
+          </div>
+
+          {/* Title */}
+          <div style={{
+            fontFamily: headingFont,
+            fontSize: "clamp(1.3rem, 4vw, 1.7rem)",
+            fontWeight: 400,
+            color: tColor,
+            lineHeight: 1.15,
+            letterSpacing: "0.01em",
+          }}>
+            {memory.caption || memory.title}
+          </div>
+
+          {/* Description */}
+          {memory.description && (
+            <div style={{
+              fontFamily: bodyFont,
+              fontSize: "0.82rem",
+              color: descColor,
+              lineHeight: 1.75,
+              marginTop: "4px",
+            }}>
+              {memory.description}
+            </div>
+          )}
+
+          {/* Accent rule */}
+          <div style={{
+            marginTop: "10px",
+            height: "1px",
+            background: `linear-gradient(to right, ${accentColor}60, transparent)`,
+          }} />
+        </div>
+
+        {/* Inner top-edge glass shine */}
+        <div style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0,
+          height: "1px",
+          background: "linear-gradient(to right, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%)",
+          pointerEvents: "none",
+        }} />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 👑  ANA COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BosTemplate({
@@ -1132,6 +1304,9 @@ export default function BosTemplate({
     }
     if (config.memoryCardStyle === "cinematic") {
       return <CinematicMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
+    }
+    if (config.memoryCardStyle === "glass") {
+      return <GlassMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
     }
     return <PlainMemoryCard key={memory.id} memory={memory} accentColor={ac} headingFont={hFont} bodyFont={bFont} textColor={txtColor} />;
   };

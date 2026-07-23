@@ -15,7 +15,7 @@ interface TemplateConfig {
   musicWidgetEnabled: boolean;
   musicWidgetType: "vinyl" | "minimal" | "hidden";
   musicWidgetPosition: "bottom-left" | "bottom-right" | "top-left" | "top-right";
-  memoryCardStyle: "plain" | "polaroid" | "cinematic";
+  memoryCardStyle: "plain" | "polaroid" | "cinematic" | "glass";
   memoryCardLayout: "vertical" | "grid";
   polaroidTilt: boolean;
   headingFont: "cormorant" | "playfair" | "cinzel" | "pinyon";
@@ -518,6 +518,7 @@ export function TemplateBuilderTab({ adminEmail, onTemplateCreated }: TemplateBu
                 { value: "plain", label: "⬜ Düz / Minimal" },
                 { value: "polaroid", label: "📷 Polaroid" },
                 { value: "cinematic", label: "🎬 Sinematik" },
+                { value: "glass", label: "🪟 Glassmorphism" },
               ]}
             />
             <SelectField label="Listeleme Düzeni" value={config.memoryCardLayout} onChange={(v) => updateConfig("memoryCardLayout", v as TemplateConfig["memoryCardLayout"])}

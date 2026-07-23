@@ -1676,6 +1676,7 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                   <option value="plain">⬜ Düz / Minimal</option>
                                   <option value="polaroid">📷 Polaroid</option>
                                   <option value="cinematic">🎬 Sinematik</option>
+                                  <option value="glass">🪟 Glassmorphism</option>
                                 </select>
                               </div>
                               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
