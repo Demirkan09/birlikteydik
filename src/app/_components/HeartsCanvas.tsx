@@ -93,7 +93,7 @@ export function HeartsCanvas() {
         position: "fixed",
         inset: 0,
         pointerEvents: "none",
-        zIndex: 0,
+        zIndex: 1,
       }}
     />
   );

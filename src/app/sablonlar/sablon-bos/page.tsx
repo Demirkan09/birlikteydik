@@ -1430,7 +1430,7 @@ export default function BosTemplate({
         {renderParticles()}
 
         {/* Mobil merkez çerçeve */}
-        <div className="relative w-full max-w-[480px] mx-auto min-h-[100dvh] flex flex-col" style={{ zIndex: 10, borderLeft: `1px solid ${ac}12`, borderRight: `1px solid ${ac}12`, background: effectiveBgColor }}>
+        <div className="relative w-full max-w-[480px] mx-auto min-h-[100dvh] flex flex-col" style={{ zIndex: 10, borderLeft: `1px solid ${ac}12`, borderRight: `1px solid ${ac}12`, background: "transparent" }}>
           {isArcade && (
             <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: `linear-gradient(rgba(${hexToRgb(ac)},0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(${hexToRgb(ac)},0.03) 1px, transparent 1px)`, backgroundSize: "32px 32px", zIndex: 0 }} />
           )}
@@ -1441,7 +1441,7 @@ export default function BosTemplate({
           )}
 
           {/* ── HERO ──────────────────────────────────────────────────────── */}
-          <section className="relative flex flex-col items-center justify-center overflow-hidden w-full min-h-[100dvh] py-12" style={{ background: effectiveBgColor }}>
+          <section className="relative flex flex-col items-center justify-center overflow-hidden w-full min-h-[100dvh] py-12" style={{ background: "transparent" }}>
             <motion.div initial={isInstagram ? "visible" : "hidden"} animate="visible" variants={stagger} className="relative z-20 flex flex-col items-center px-6 text-center">
               {/* Eyebrow: Özel Tarih */}
               <motion.div variants={fadeIn} style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
@@ -1493,7 +1493,7 @@ export default function BosTemplate({
           {(config.storyTitlePrefix || config.storyTitleSuffix) && (
             <motion.div
               initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: effectiveBgColor }}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 24px 56px", textAlign: "center", borderTop: `1px solid ${ac}18`, background: "transparent" }}
             >
               {config.storyTitlePrefix && (
                 <motion.span variants={fadeIn} style={{ fontFamily: bFont, fontSize: "9px", letterSpacing: "0.45em", textTransform: "uppercase", color: config.headingEyebrowColor || config.textColor || `${ac}99`, marginBottom: "12px" }}>
@@ -1522,7 +1522,7 @@ export default function BosTemplate({
 
           {/* ── FİNAL / EPİLOG ────────────────────────────────────────────── */}
           {config.finalEnabled !== false && (
-            <section style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", borderTop: `1px solid ${ac}18`, background: effectiveBgColor, overflow: "hidden" }}>
+            <section style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 24px", borderTop: `1px solid ${ac}18`, background: "transparent", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(circle at 50% 50%, ${ac}14 0%, transparent 70%)` }} />
               <motion.div
                 initial={isInstagram ? "visible" : "hidden"} whileInView="visible" viewport={{ once: true, margin: "-20px" }} variants={stagger}
