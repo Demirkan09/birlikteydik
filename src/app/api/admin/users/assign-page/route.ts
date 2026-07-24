@@ -46,14 +46,23 @@ export async function POST(request: Request) {
 
     // Check if it is already assigned to someone
     const existRes = await pool.query(
-      "SELECT id FROM user_pages WHERE page_slug = $1",
+      "SELECT id, user_id FROM user_pages WHERE page_slug = $1",
       [cleanSlug]
     );
     if ((existRes.rowCount ?? 0) > 0) {
-      return NextResponse.json(
-        { error: "Bu sayfa zaten bir kullanıcıya tanımlanmış." },
-        { status: 400 }
+      const existing = existRes.rows[0];
+      if (existing.user_id) {
+        return NextResponse.json(
+          { error: "Bu sayfa zaten bir kullanıcıya tanımlanmış." },
+          { status: 400 }
+        );
+      }
+      // If user_id IS NULL (manually started duration), link to this user
+      await pool.query(
+        "UPDATE user_pages SET user_id = $1 WHERE id = $2",
+        [userId, existing.id]
       );
+      return NextResponse.json({ success: true });
     }
 
     // Insert into user_pages

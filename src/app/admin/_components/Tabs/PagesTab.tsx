@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { HiOutlineExternalLink, HiOutlineCheck, HiOutlineTrash, HiOutlineUpload, HiOutlineLink, HiOutlineRefresh, HiOutlineMail, HiOutlineClipboardCopy, HiOutlineChevronDown, HiOutlineSearch } from "react-icons/hi";
-import { C } from "../../_utils/constants";
+import { HiOutlineExternalLink, HiOutlineCheck, HiOutlineTrash, HiOutlineUpload, HiOutlineLink, HiOutlineRefresh, HiOutlineMail, HiOutlineClipboardCopy, HiOutlineChevronDown, HiOutlineSearch, HiOutlineClock } from "react-icons/hi";
+import { C, PACKAGES } from "../../_utils/constants";
+import { Package } from "../../types";
 import { formatActiveDuration } from "../../_utils/dateUtils";
 import { TEMPLATE_SCHEMAS, formatCoupleNames } from "../../../../lib/templateSchemas";
 import QrCodeModal from "./QrCodeModal";
@@ -63,7 +64,7 @@ interface PagesTabProps {
 
 export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTabProps) {
   // Tab 0 — Sayfa Oluştur & Düzenle
-  const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; isShowcase?: boolean; activatedAt?: string; remainingTime?: string; config?: any }[]>([]);
+  const [allPages, setAllPages] = useState<{ pageSlug: string; templateId: string; isPublished: boolean; isShowcase?: boolean; activatedAt?: string; packageName?: string; remainingTime?: string; config?: any }[]>([]);
   const [pagesTab, setPagesTab] = useState<"published" | "drafts">("published");
   const [pagesLoading, setPagesLoading] = useState(false);
   const [customTemplates, setCustomTemplates] = useState<{ id: string; name: string; preview_color: string }[]>([]);
@@ -396,6 +397,103 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
 
   // QR code states
   const [showQrModal, setShowQrModal] = useState(false);
+
+  // Duration management states
+  const [showDurationModal, setShowDurationModal] = useState(false);
+  const [durationSelectedPackage, setDurationSelectedPackage] = useState<Package>("Standart Paket");
+  const [durationLoading, setDurationLoading] = useState(false);
+  const [durationMessage, setDurationMessage] = useState<{ text: string; type: "success" | "error" }>({ text: "", type: "success" });
+  const [customDaysInput, setCustomDaysInput] = useState("30");
+
+  const currentEditPage = useMemo(() => allPages.find((p) => p.pageSlug === selectedEditSlug), [allPages, selectedEditSlug]);
+
+  const handleStartDuration = async () => {
+    if (!selectedEditSlug) return;
+    setDurationLoading(true);
+    setDurationMessage({ text: "", type: "success" });
+    try {
+      const res = await fetch("/api/admin/page-duration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail,
+          action: "start",
+          pageSlug: selectedEditSlug,
+          packageName: durationSelectedPackage,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setDurationMessage({ text: data.error || "İşlem başarısız.", type: "error" });
+      } else {
+        setDurationMessage({ text: "Süre başarıyla başlatıldı! 🎉", type: "success" });
+        await fetchAllPages();
+      }
+    } catch {
+      setDurationMessage({ text: "Sunucuya bağlanılamadı.", type: "error" });
+    } finally {
+      setDurationLoading(false);
+    }
+  };
+
+  const handleAdjustDays = async (delta: number) => {
+    if (!selectedEditSlug || !delta) return;
+    setDurationLoading(true);
+    setDurationMessage({ text: "", type: "success" });
+    try {
+      const res = await fetch("/api/admin/page-duration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail,
+          action: "adjust_days",
+          pageSlug: selectedEditSlug,
+          packageName: durationSelectedPackage,
+          daysDelta: delta,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setDurationMessage({ text: data.error || "İşlem başarısız.", type: "error" });
+      } else {
+        setDurationMessage({ text: data.message || "Süre güncellendi.", type: "success" });
+        await fetchAllPages();
+      }
+    } catch {
+      setDurationMessage({ text: "Sunucuya bağlanılamadı.", type: "error" });
+    } finally {
+      setDurationLoading(false);
+    }
+  };
+
+  const handleCancelDuration = async () => {
+    if (!selectedEditSlug) return;
+    if (!confirm(`/${selectedEditSlug} sayfasının süresini tamamen sıfırlayıp pasife almak istediğinize emin misiniz?`)) return;
+    setDurationLoading(true);
+    setDurationMessage({ text: "", type: "success" });
+    try {
+      const res = await fetch("/api/admin/page-duration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail,
+          action: "cancel",
+          pageSlug: selectedEditSlug,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setDurationMessage({ text: data.error || "İşlem başarısız.", type: "error" });
+      } else {
+        setDurationMessage({ text: "Sayfa süresi tamamen pasife alındı! (Aktif Değil)", type: "success" });
+        await fetchAllPages();
+      }
+    } catch {
+      setDurationMessage({ text: "Sunucuya bağlanılamadı.", type: "error" });
+    } finally {
+      setDurationLoading(false);
+    }
+  };
 
 
   // Custom (özel) şablonlar
@@ -941,12 +1039,17 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                                 <span style={{ fontSize: "14px", fontWeight: 500, color: C.text }}>/{page.pageSlug}</span>
                                 <div style={{ display: "flex", gap: "10px", alignItems: "center", marginTop: "2px", flexWrap: "wrap" }}>
                                   <span style={{ fontSize: "11px", color: C.muted }}>Şablon: {page.templateId}</span>
-                                  {page.activatedAt && (
-                                    <>
-                                      <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "11px" }}>•</span>
-                                      <span style={{ fontSize: "11px", color: page.remainingTime === "Süresi Doldu" ? "#E8A0A0" : C.success + "cc" }}>{page.remainingTime || `Aktif: ${formatActiveDuration(page.activatedAt)}`}</span>
-                                    </>
-                                  )}
+                                  <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "11px" }}>•</span>
+                                  <span style={{
+                                    fontSize: "11px",
+                                    color: !page.activatedAt
+                                      ? C.muted
+                                      : page.remainingTime === "Süresi Doldu"
+                                      ? "#E8A0A0"
+                                      : C.success + "cc"
+                                  }}>
+                                    {page.remainingTime || (page.activatedAt ? `Aktif: ${formatActiveDuration(page.activatedAt)}` : "Aktif Değil")}
+                                  </span>
                                 </div>
                               </div>
                               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -1037,6 +1140,26 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                           Önizle <HiOutlineExternalLink size={14} />
                         </a>
                         
+                        {/* Süreyi Başlat / Düzenle Kısayolu */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDurationMessage({ text: "", type: "success" });
+                            setShowDurationModal(true);
+                          }}
+                          style={{
+                            padding: "8px 16px", borderRadius: "10px",
+                            border: currentEditPage?.activatedAt ? `1px solid rgba(52,211,153,0.3)` : `1px solid rgba(201,168,76,0.4)`,
+                            background: currentEditPage?.activatedAt ? "rgba(52,211,153,0.06)" : "rgba(201,168,76,0.1)",
+                            color: currentEditPage?.activatedAt ? C.success : C.gold,
+                            fontSize: "13px", cursor: "pointer", fontWeight: 500,
+                            display: "flex", alignItems: "center", gap: "6px"
+                          }}
+                        >
+                          <HiOutlineClock size={15} />
+                          {currentEditPage?.activatedAt ? "Süreyi Düzenle" : "Süreyi Başlat"}
+                        </button>
+
                         {/* Kod Üret Kısayolu */}
                         <button
                           onClick={() => {
@@ -3181,6 +3304,260 @@ export function PagesTab({ adminEmail, setPrefilledSlug, setActiveTab }: PagesTa
                   selectedEditSlug={selectedEditSlug}
                   pageSetting={{ config: editConfig }}
                 />
+
+                {/* Süreyi Başlat ve Yönet Modalı */}
+                {showDurationModal && (
+                  <div style={{
+                    position: "fixed", inset: 0, zIndex: 9999,
+                    background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                    display: "flex", alignItems: "center", justifyContent: "center", padding: "20px"
+                  }}>
+                    <div style={{
+                      background: "#0F1424", border: `1px solid ${C.border}`,
+                      borderRadius: "20px", width: "100%", maxWidth: "520px", padding: "28px",
+                      maxHeight: "90vh", overflowY: "auto", color: C.text, fontFamily: "var(--font-inter), sans-serif"
+                    }}>
+                      {/* Başlık ve Kapat */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                        <div>
+                          <h3 style={{ fontSize: "18px", fontWeight: 600, color: C.text, fontFamily: "'Cormorant Garamond', 'Cormorant Garamond Fallback', serif" }}>
+                            Sayfa Süresi Yönetimi
+                          </h3>
+                          <p style={{ fontSize: "12px", color: C.muted, marginTop: "2px" }}>
+                            /{selectedEditSlug}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowDurationModal(false)}
+                          style={{ background: "transparent", border: "none", color: C.muted, fontSize: "20px", cursor: "pointer" }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {/* Mevcut Süre Durum Kartı */}
+                      <div style={{
+                        padding: "16px", borderRadius: "14px",
+                        background: currentEditPage?.activatedAt ? "rgba(52,211,153,0.06)" : "rgba(201,168,76,0.06)",
+                        border: `1px solid ${currentEditPage?.activatedAt ? "rgba(52,211,153,0.2)" : "rgba(201,168,76,0.2)"}`,
+                        marginBottom: "20px"
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: C.muted, fontWeight: 500 }}>Mevcut Durum</div>
+                            <div style={{ fontSize: "15px", fontWeight: 600, color: currentEditPage?.activatedAt ? C.success : C.gold, marginTop: "4px" }}>
+                              {currentEditPage?.remainingTime || (currentEditPage?.activatedAt ? "Aktif" : "Aktif Değil (Süre Başlatılmadı)")}
+                            </div>
+                            {currentEditPage?.packageName && (
+                              <div style={{ fontSize: "12px", color: C.muted, marginTop: "4px" }}>
+                                Paket: <span style={{ color: C.text, fontWeight: 500 }}>{currentEditPage.packageName}</span>
+                              </div>
+                            )}
+                          </div>
+                          {currentEditPage?.activatedAt ? (
+                            <span style={{ fontSize: "10px", padding: "4px 10px", borderRadius: "20px", background: "rgba(52,211,153,0.15)", color: C.success, fontWeight: 600 }}>
+                              AKTİF
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: "10px", padding: "4px 10px", borderRadius: "20px", background: "rgba(201,168,76,0.15)", color: C.gold, fontWeight: 600 }}>
+                              BEKLEYEN
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Mesaj Bildirimi */}
+                      {durationMessage.text && (
+                        <div style={{
+                          padding: "12px 16px", borderRadius: "12px",
+                          background: durationMessage.type === "success" ? "rgba(52,211,153,0.12)" : "rgba(232,160,160,0.12)",
+                          border: `1px solid ${durationMessage.type === "success" ? "rgba(52,211,153,0.3)" : "rgba(232,160,160,0.3)"}`,
+                          fontSize: "13px", color: durationMessage.type === "success" ? C.success : C.error,
+                          marginBottom: "20px"
+                        }}>
+                          {durationMessage.text}
+                        </div>
+                      )}
+
+                      {/* Paket Seçimi */}
+                      <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "10px", fontWeight: 500 }}>
+                        Paket Seç
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+                        {PACKAGES.map((pkg) => (
+                          <button
+                            key={pkg.name}
+                            type="button"
+                            onClick={() => setDurationSelectedPackage(pkg.name as Package)}
+                            style={{
+                              padding: "12px 14px", borderRadius: "12px", border: "none",
+                              background: durationSelectedPackage === pkg.name ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.03)",
+                              borderWidth: "1px", borderStyle: "solid",
+                              borderColor: durationSelectedPackage === pkg.name ? C.gold + "55" : C.border,
+                              color: C.text, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between",
+                              textAlign: "left", transition: "all 0.2s"
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontSize: "13px", fontWeight: durationSelectedPackage === pkg.name ? 600 : 400, color: durationSelectedPackage === pkg.name ? C.gold : C.text }}>
+                                {pkg.name}
+                              </div>
+                              <div style={{ fontSize: "11px", color: C.muted, marginTop: "2px" }}>{pkg.desc}</div>
+                            </div>
+                            <span style={{ fontSize: "10px", padding: "2px 8px", borderRadius: "20px", background: durationSelectedPackage === pkg.name ? C.gold + "22" : "rgba(255,255,255,0.05)", color: durationSelectedPackage === pkg.name ? C.gold : C.muted, fontWeight: 500 }}>
+                              {pkg.badge}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Süreyi Başlat Butonu */}
+                      <button
+                        type="button"
+                        disabled={durationLoading}
+                        onClick={handleStartDuration}
+                        style={{
+                          width: "100%", padding: "14px", borderRadius: "30px", border: "none",
+                          background: durationLoading ? "rgba(201,168,76,0.5)" : C.gold, color: "#0B0F1A",
+                          fontSize: "13px", fontWeight: 600, letterSpacing: "0.05em",
+                          cursor: durationLoading ? "not-allowed" : "pointer", marginBottom: "24px"
+                        }}
+                      >
+                        {durationLoading ? "İşleniyor..." : currentEditPage?.activatedAt ? "Seçili Paket İle Süreyi Yeniden Başlat" : "Süreyi Başlat"}
+                      </button>
+
+                      {/* Süre Ekleme / Kısaltma Bölümü */}
+                      <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: "20px" }}>
+                        <p style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: "12px", fontWeight: 500 }}>
+                          ⚡ Süre Ekle veya Kısalt
+                        </p>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "16px" }}>
+                          {/* Hızlı Ekle */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                            <span style={{ fontSize: "11px", color: C.success, fontWeight: 600 }}>+ Süre Ekle</span>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(30)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.06)", color: C.success, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              +30 Gün (+1 Ay)
+                            </button>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(90)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.06)", color: C.success, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              +90 Gün (+3 Ay)
+                            </button>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(180)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.06)", color: C.success, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              +180 Gün (+6 Ay)
+                            </button>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(365)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.06)", color: C.success, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              +365 Gün (+1 Yıl)
+                            </button>
+                          </div>
+
+                          {/* Hızlı Kısalt */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                            <span style={{ fontSize: "11px", color: C.error, fontWeight: 600 }}>- Süre Kısalt</span>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(-30)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(232,160,160,0.3)", background: "rgba(232,160,160,0.06)", color: C.error, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              -30 Gün (-1 Ay)
+                            </button>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(-90)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(232,160,160,0.3)", background: "rgba(232,160,160,0.06)", color: C.error, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              -90 Gün (-3 Ay)
+                            </button>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(-180)}
+                              style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid rgba(232,160,160,0.3)", background: "rgba(232,160,160,0.06)", color: C.error, fontSize: "12px", cursor: "pointer", fontWeight: 500 }}
+                            >
+                              -180 Gün (-6 Ay)
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Özel Gün Girişi */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.02)", padding: "10px 14px", borderRadius: "12px", border: `1px solid ${C.border}`, marginBottom: "20px" }}>
+                          <input
+                            type="number"
+                            value={customDaysInput}
+                            onChange={(e) => setCustomDaysInput(e.target.value)}
+                            placeholder="30"
+                            style={{
+                              width: "80px", padding: "8px 12px", borderRadius: "8px",
+                              border: `1px solid ${C.border}`, background: C.card, color: C.text, fontSize: "13px", outline: "none"
+                            }}
+                          />
+                          <span style={{ fontSize: "12px", color: C.muted }}>Gün</span>
+                          <div style={{ display: "flex", gap: "6px", marginLeft: "auto" }}>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(Math.abs(parseInt(customDaysInput) || 0))}
+                              style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid rgba(52,211,153,0.3)", background: "rgba(52,211,153,0.12)", color: C.success, fontSize: "12px", cursor: "pointer", fontWeight: 600 }}
+                            >
+                              + Ekle
+                            </button>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={() => handleAdjustDays(-Math.abs(parseInt(customDaysInput) || 0))}
+                              style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid rgba(232,160,160,0.3)", background: "rgba(232,160,160,0.12)", color: C.error, fontSize: "12px", cursor: "pointer", fontWeight: 600 }}
+                            >
+                              - Kısalt
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Süreyi İptal Et / Pasife Al */}
+                        {currentEditPage?.activatedAt && (
+                          <div style={{ borderTop: `1px dashed rgba(232,160,160,0.3)`, paddingTop: "16px", marginTop: "16px" }}>
+                            <button
+                              type="button"
+                              disabled={durationLoading}
+                              onClick={handleCancelDuration}
+                              style={{
+                                width: "100%", padding: "12px", borderRadius: "12px",
+                                border: "1px solid rgba(232,160,160,0.4)",
+                                background: "rgba(232,160,160,0.08)", color: C.error,
+                                fontSize: "12px", fontWeight: 600, cursor: durationLoading ? "not-allowed" : "pointer",
+                                transition: "all 0.2s"
+                              }}
+                            >
+                              ⚠️ Süreyi İptal Et / Pasife Al (Sıfırla)
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {selectedEditSlug && (
 

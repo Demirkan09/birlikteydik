@@ -299,6 +299,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/admin/page-duration/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/admin/page-duration">> = Specific
+  const handler = {} as typeof import("../../src/app/api/admin/page-duration/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/api/admin/page-settings/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/admin/page-settings">> = Specific

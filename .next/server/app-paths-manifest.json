@@ -7,6 +7,7 @@
   "/api/admin/custom-templates/route": "app/api/admin/custom-templates/route.js",
   "/api/admin/generate-code/route": "app/api/admin/generate-code/route.js",
   "/api/admin/integrate-memories/route": "app/api/admin/integrate-memories/route.js",
+  "/api/admin/page-duration/route": "app/api/admin/page-duration/route.js",
   "/api/admin/page-settings/route": "app/api/admin/page-settings/route.js",
   "/api/admin/reset-page-password/route": "app/api/admin/reset-page-password/route.js",
   "/api/admin/send-marketing/route": "app/api/admin/send-marketing/route.js",

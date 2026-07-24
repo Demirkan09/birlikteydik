@@ -7,6 +7,7 @@
   "/api/admin/custom-templates/route": "/api/admin/custom-templates",
   "/api/admin/generate-code/route": "/api/admin/generate-code",
   "/api/admin/integrate-memories/route": "/api/admin/integrate-memories",
+  "/api/admin/page-duration/route": "/api/admin/page-duration",
   "/api/admin/page-settings/route": "/api/admin/page-settings",
   "/api/admin/reset-page-password/route": "/api/admin/reset-page-password",
   "/api/admin/send-marketing/route": "/api/admin/send-marketing",

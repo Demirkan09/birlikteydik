@@ -137,6 +137,12 @@
       "namedRegex": "^/api/admin/integrate\\-memories(?:/)?$"
     },
     {
+      "page": "/api/admin/page-duration",
+      "regex": "^/api/admin/page\\-duration(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/page\\-duration(?:/)?$"
+    },
+    {
       "page": "/api/admin/page-settings",
       "regex": "^/api/admin/page\\-settings(?:/)?$",
       "routeKeys": {},

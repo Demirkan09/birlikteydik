@@ -33,49 +33,61 @@ export async function POST(request: Request) {
 
     const activation = codeRes.rows[0];
 
-    // Check that the page_slug is not already taken by another user
+    // Check if the page_slug is already in user_pages
     const slugCheck = await pool.query(
-      "SELECT id, user_id FROM user_pages WHERE page_slug = $1",
+      "SELECT id, user_id, package_name, created_at FROM user_pages WHERE page_slug = $1",
       [activation.page_slug]
     );
 
+    let pageRecord: any = null;
+
     if ((slugCheck.rowCount ?? 0) > 0) {
       const existing = slugCheck.rows[0];
-      if (existing.user_id !== userId) {
+      if (existing.user_id && existing.user_id === userId) {
+        return NextResponse.json(
+          { error: "Bu sayfa zaten hesabınızda aktif." },
+          { status: 409 }
+        );
+      }
+      if (existing.user_id && existing.user_id !== userId) {
         return NextResponse.json(
           { error: "Bu sayfa adresi başka bir kullanıcı tarafından zaten kullanılıyor." },
           { status: 409 }
         );
       }
-      // Same user already has this page — treat as already activated
-      return NextResponse.json(
-        { error: "Bu sayfa zaten aktif." },
-        { status: 409 }
+
+      // existing.user_id IS NULL: Admin manually started duration. Claim it for this user!
+      const updateRes = await pool.query(
+        `UPDATE user_pages
+         SET user_id = $1
+         WHERE id = $2
+         RETURNING id, page_slug, package_name, created_at`,
+        [userId, existing.id]
       );
-    }
-
-    // Normalize packageName (fallback for older generated codes)
-    const rawPkg = activation.package_name || "premium";
-    const lowerPkg = rawPkg.toLowerCase().trim();
-    let dbPackageName = "premium";
-    if (lowerPkg.includes("temel")) dbPackageName = "temel";
-    else if (lowerPkg.includes("standart")) dbPackageName = "premium";
-    else if (lowerPkg.includes("premium+")) dbPackageName = "premium+";
-    else if (lowerPkg.includes("premium")) {
-      dbPackageName = lowerPkg.includes("paket") ? "premium+" : "premium";
+      pageRecord = updateRes.rows[0];
     } else {
-      dbPackageName = rawPkg;
+      // Normalize packageName (fallback for older generated codes)
+      const rawPkg = activation.package_name || "premium";
+      const lowerPkg = rawPkg.toLowerCase().trim();
+      let dbPackageName = "premium";
+      if (lowerPkg.includes("temel")) dbPackageName = "temel";
+      else if (lowerPkg.includes("standart")) dbPackageName = "premium";
+      else if (lowerPkg.includes("premium+")) dbPackageName = "premium+";
+      else if (lowerPkg.includes("premium")) {
+        dbPackageName = lowerPkg.includes("paket") ? "premium+" : "premium";
+      } else {
+        dbPackageName = rawPkg;
+      }
+
+      // Insert into user_pages
+      const insertRes = await pool.query(
+        `INSERT INTO user_pages (user_id, page_slug, package_name)
+         VALUES ($1, $2, $3)
+         RETURNING id, page_slug, package_name, created_at`,
+        [userId, activation.page_slug, dbPackageName]
+      );
+      pageRecord = insertRes.rows[0];
     }
-
-    // Insert into user_pages
-    const insertRes = await pool.query(
-      `INSERT INTO user_pages (user_id, page_slug, package_name)
-       VALUES ($1, $2, $3)
-       RETURNING id, page_slug, package_name, created_at`,
-      [userId, activation.page_slug, dbPackageName]
-    );
-
-    const newPage = insertRes.rows[0];
 
     // Mark activation code as used
     await pool.query(
@@ -86,10 +98,10 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: "Sayfa başarıyla aktive edildi.",
       page: {
-        id: newPage.id,
-        pageSlug: newPage.page_slug,
-        packageName: newPage.package_name,
-        createdAt: newPage.created_at,
+        id: pageRecord.id,
+        pageSlug: pageRecord.page_slug,
+        packageName: pageRecord.package_name,
+        createdAt: pageRecord.created_at,
       },
     });
   } catch (err) {

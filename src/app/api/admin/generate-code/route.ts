@@ -39,14 +39,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if page_slug is already activated in user_pages
+    // Check if page_slug is already claimed by a customer (user_id IS NOT NULL) in user_pages
     const activeCheck = await pool.query(
-      "SELECT id FROM user_pages WHERE page_slug = $1",
+      "SELECT id FROM user_pages WHERE page_slug = $1 AND user_id IS NOT NULL",
       [pageSlug]
     );
     if ((activeCheck.rowCount ?? 0) > 0) {
       return NextResponse.json(
-        { error: "Bu sayfa adresi zaten aktive edilmiş." },
+        { error: "Bu sayfa adresi zaten bir kullanıcıya ait (aktive edilmiş)." },
         { status: 409 }
       );
     }
